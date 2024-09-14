@@ -8,8 +8,8 @@ export default defineConfig({
             refresh: true,
         }),
     ],
-    server: {
-        host: '192.168.0.112',
-        port: 8000,
-    }
+    // server: {
+    //     host: '192.168.0.112',
+    //     port: 8000,
+    // }
 });

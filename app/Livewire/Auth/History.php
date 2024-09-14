@@ -4,15 +4,15 @@ namespace App\Livewire\Auth;
 
 use Livewire\Component;
 
-class Home extends Component
+class History extends Component
 {
-    public $title = "Home";
-    public $distance = 0;
+    public $title = "Histori";
     public function render()
     {
-        return view('livewire.auth.home')
+        return view('livewire.auth.history')
             ->layout('components.layouts.app', [
                 'title' => $this->title
             ]);
+        ;
     }
 }

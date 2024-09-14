@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0">
 
     <title>{{ $title ?? 'Page Title' }}</title>
 
@@ -22,7 +22,9 @@
     </main>
     {{-- Flowbite --}}
     <script src="{{ asset('assets/js/flowbite.min.js') }}"></script>
-
+    <script>
+        initFlowbite()
+    </script>
 </body>
 
 </html>

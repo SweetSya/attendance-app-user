@@ -1,9 +1,9 @@
 <div class="mx-auto p-6 md:p-12 tracking-wide-all">
-    <div class="mb-28">
+    <div class="mb-14 sm:mb-28">
         <img height="10" src="{{ asset('logo.svg') }}" alt="">
     </div>
     <form class="mb-6">
-        <div class="mb-14">
+        <div class="mb-7 sm:mb-14">
             <h1 class="text-3xl md:text-4xl font-bold text-white pb-1">Masuk ke Akun</h1>
             <p class="font-light text-white/90">Gunakan email yang sudah didaftar untuk mengakses sistem</p>
         </div>

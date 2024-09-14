@@ -4,15 +4,15 @@ namespace App\Livewire\Auth;
 
 use Livewire\Component;
 
-class Home extends Component
+class Attendance extends Component
 {
-    public $title = "Home";
-    public $distance = 0;
+    public $title = "Absensi";
     public function render()
     {
-        return view('livewire.auth.home')
+        return view('livewire.auth.attendance')
             ->layout('components.layouts.app', [
                 'title' => $this->title
             ]);
+        ;
     }
 }
