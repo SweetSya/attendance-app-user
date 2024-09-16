@@ -127,14 +127,23 @@ const openDrawer = async (option) => {
     attendanceDrawer.show();
 };
 const stopVideostream = () => {
-    const stream = videoStream.srcObject;
-    const tracks = stream.getTracks();
+    setTimeout(() => {
+        if (isVideoStreamActive()) {
+            try {
+                const stream = videoStream.srcObject;
+                const tracks = stream.getTracks();
 
-    tracks.forEach((track) => {
-        track.stop();
-    });
+                tracks.forEach((track) => {
+                    track.stop();
+                });
 
-    videoStream.srcObject = null;
+                videoStream.srcObject = null;
+            } catch (error) {
+                stopVideostream();
+                return;
+            }
+        }
+    }, 200);
 };
 const isVideoStreamActive = () => {
     if (videoStream.srcObject != null) {
@@ -144,14 +153,20 @@ const isVideoStreamActive = () => {
     }
 };
 document.addEventListener("visibilitychange", () => {
-    if (document.hidden) {
-        console.log('LEAVE');
-        if (isVideoStreamActive()) {
-            stopVideostream();
+    if (drawerSection === "checkin") {
+        if (document.hidden) {
+            if (isVideoStreamActive()) {
+                stopVideostream();
+            }
         }
-    } else {
-        if (!isVideoStreamActive()) {
-            startVideostream();
+        if (!document.hidden) {
+            if (!isVideoStreamActive()) {
+                startVideostream();
+            }
         }
     }
+});
+
+window.addEventListener("load", () => {
+    window.scrollTo(0, document.body.scrollHeight);
 });

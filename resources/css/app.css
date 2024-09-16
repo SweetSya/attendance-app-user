@@ -12,9 +12,9 @@
     html * {
         transition: 150ms ease;
     }
-    html::-webkit-scrollbar {
+    /* html::-webkit-scrollbar {
         width: 0px;
-      }
+      } */
 }
 
 @layer components {

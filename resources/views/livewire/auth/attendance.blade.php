@@ -7,7 +7,7 @@
             </div>
         </div>
     </div>
-    <div class="relative min-h-64 -mt-32 z-20 mx-auto py-5 px-4 sm:px-12 bg-white">
+    <div class="relative min-h-64 -mt-32 z-20 mx-auto py-5 px-4 sm:px-12 -mr-[1px] bg-white">
         <div class="flex items-center justify-between mb-10 text-nowrap">
             <p class="font-bold text-base sm:text-xl text-ocean-500">Absensi Kehadiran</p>
             <p class="font-light text-xs sm:text-base text-ocean-900/70">Selengkapnya <i
@@ -59,6 +59,8 @@
         <div class="mb-5 flex flex-wrap gap-2">
             <button @click="openDrawer({title: 'Verifikasi Kehadiran', 'section': 'checkin'})"
                 class="btn btn-outline-success flex-grow min-w-52 py-3">Check In</button>
+            <button @click="openDrawer({title: 'Verifikasi Checkout', 'section': 'checkout'})"
+                class="btn btn-outline-ocean flex-grow min-w-52 py-3">Check Out</button>
             <button @click="openDrawer({title: 'Pengajuan Izin', 'section': 'absence'})"
                 class="btn btn-outline-warning flex-grow min-w-52 py-3">Izin</button>
         </div>
@@ -80,7 +82,7 @@
         <div x-show="drawer.section === 'checkin'">
             <p class="mb-6 text-base sm:text-xl text-gray-500 text-center">Verifikasi Biometrik Wajah</p>
             <p class="mb-6 text-xs sm:text-base text-gray-500 text-center">Arahkan wajah di posisi dalam box untuk
-                memudahkan pemindaian</span></p>
+                memudahkan pemindaian</p>
             <div class="mx-auto rounded border relative w-fit mb-4">
                 <video muted autoplay id="verify-camera" class="max-h-96 rounded" src=""></video>
                 <div class="absolute w-36 h-36 sm:w-52 sm:h-52 left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
@@ -102,13 +104,43 @@
                     </div>
                 </div>
             </div>
-            <p class="mb-6 text-xs sm:text-base text-gray-500 text-center"> Lanjutkan tanpa menggunakan verifikasi
-                biometik? <span class="font-bold underline hover-opacity-down">ya, lanjutkan</span></p>
+            <p @click="$dispatch('set_drawer',{title: 'Verifikasi Kehadiran', 'section': 'checkedin'}), stopVideostream()"
+                class="mb-6 text-xs sm:text-base text-gray-500 text-center"> Lanjutkan tanpa menggunakan verifikasi
+                biometik? <span class="font-bold underline hover-opacity-down text-ocean-500">ya, lanjutkan</span></p>
+        </div>
+        <div x-show="drawer.section === 'checkedin'">
+            <p class="mb-6 text-base sm:text-xl text-gray-500 text-center">Verifikasi Berhasil</p>
+            <div class="mx-auto rounded relative w-fit mb-4">
+                <i class="bi bi-check-circle-fill text-ocean-600 text-6xl"></i>
+            </div>
+            <p class="mb-6 text-xs sm:text-base text-gray-500 text-center"> Otomatis melanjutkan dalam <span
+                    class="font-bold underline hover-opacity-down text-ocean-500">2 detik</span></p>
+        </div>
+        <div x-show="drawer.section === 'checkout'">
+            <p class="mb-6 text-base sm:text-xl text-gray-500 text-center">Ingin checkout sekarang?</p>
+            <p class="mb-6 text-xs sm:text-base text-gray-500 text-center">Pastikan kamu sudah selesai untuk hari ini
+                karena jika melanjutkan tidak dapat dikembalikan</p>
+            <div class="mx-auto rounded relative w-fit my-12">
+                <i class="bi bi-question-circle-fill text-ocean-600 text-6xl"></i>
+            </div>
+            <button @click="$dispatch('set_drawer',{title: 'Verifikasi Checkout', 'section': 'checkedout'})"
+                type="button" class="btn btn-ocean py-3 w-full">Ya, Checkout sekarang</button>
+
+        </div>
+        <div x-show="drawer.section === 'checkedout'">
+            <p class="mb-6 text-base sm:text-xl text-gray-500 text-center">Checkout Berhasil</p>
+            <div class="mx-auto rounded relative w-fit mb-4">
+                <i class="bi bi-check-circle-fill text-ocean-600 text-6xl"></i>
+            </div>
+            <p class="mb-6 text-xs sm:text-base text-gray-500 text-center"> Otomatis melanjutkan dalam <span
+                    class="font-bold underline hover-opacity-down text-ocean-500">2 detik</span></p>
         </div>
         <div x-show="drawer.section === 'absence'" class="pb-5">
-            <p class="mb-6 text-base text-gray-500 text-center">Harap diisi sesuai dengan keadaan yang sebenarnya yaa <i
-                    class="bi bi-emoji-smile-fill ml-1"></i></p>
-            <form @submit.prevent="console.log('x')" class="flex flex-col gap-3">
+            <p class="mb-6 text-base text-gray-500 text-center">Harap diisi sesuai dengan keadaan yang sebenarnya yaa
+                <i class="bi bi-emoji-smile-fill ml-1"></i>
+            </p>
+            <form @submit.prevent="$dispatch('set_drawer',{title: 'Pengajuan Izin', 'section': 'absenced'})"
+                class="flex flex-col gap-3">
                 <select id="countries"
                     class="font-semibold bg-gray-50 border border-gray-300 text-gray-600 text-sm rounded-lg focus:ring-ocean-500 focus:border-ocean-500 block w-full p-2.5">
                     <option class="font-semibold" value="">IZIN KARENA.. (PILIH)</option>
@@ -125,6 +157,14 @@
                 </div>
                 <button type="submit" class="btn btn-ocean py-3">Kirimkan</button>
             </form>
+        </div>
+        <div x-show="drawer.section === 'absenced'">
+            <p class="mb-6 text-base sm:text-xl text-gray-500 text-center">Permintaan Izin Dikirimkan</p>
+            <div class="mx-auto rounded relative w-fit mb-4">
+                <i class="bi bi-check-circle-fill text-ocean-600 text-6xl"></i>
+            </div>
+            <p class="mb-6 text-xs sm:text-base text-gray-500 text-center"> Otomatis melanjutkan dalam <span
+                    class="font-bold underline hover-opacity-down text-ocean-500">2 detik</span></p>
         </div>
     </div>
 </div>
