@@ -34,15 +34,24 @@ function formatDistance(value) {
 }
 
 let officeMarker = null;
+let officeIconMarker = null;
 let userMarker = null;
 let userPolyline = null;
 let userTileLayer = null;
 
 var userIcon = L.icon({
-    iconUrl: "/assets/images/current-location-icon.png", // Replace with your custom icon image path
-    iconSize: [30, 30], // Size of the custom icon [width, height]
-    iconAnchor: [15, 30], // Anchor point [left, top]
-    popupAnchor: [0, -38], // Popup should open above the icon
+    iconUrl: "/assets/images/icon/pinpoint-user.png", // Replace with your custom icon image path
+    iconSize: [41, 41], // Size of the custom icon [width, height]
+    iconAnchor: [21, 41], // Anchor point [left, top]
+    popupAnchor: [1, -34], // Popup should open above the icon
+    shadowSize: [41, 41],
+});
+var officeIcon = L.icon({
+    iconUrl: "/assets/images/icon/pinpoint-office.png", // Replace with your custom icon image path
+    iconSize: [41, 41], // Size of the custom icon [width, height]
+    iconAnchor: [21, 41], // Anchor point [left, top]
+    popupAnchor: [1, -34], // Popup should open above the icon
+    shadowSize: [41, 41],
 });
 var map = L.map("map", {
     zoomControl: false,
@@ -50,7 +59,10 @@ var map = L.map("map", {
 map.attributionControl.setPrefix(false);
 // Using Openstreetmap tile layer
 // https://tile.openstreetmap.org/{z}/{x}/{y}.png
-userTileLayer = L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}", {
-    maxZoom: 19,
-    // attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-}).addTo(map);
+userTileLayer = L.tileLayer(
+    "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
+    {
+        maxZoom: 19,
+        // attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+    }
+).addTo(map);

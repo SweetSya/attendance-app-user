@@ -1,32 +1,20 @@
 <?php
 
-namespace App\Livewire\Authentication;
+namespace App\Livewire;
 
-use App\Traits\HasApiConfiguration;
-use App\Traits\HasApiHelper;
 use App\Traits\HasSessionAuthentication;
-use Carbon\Carbon;
 use Illuminate\Support\Facades\Cookie;
-use Illuminate\Support\Facades\Http;
-use Illuminate\Support\Facades\Request;
 use Livewire\Component;
 
-class Login extends Component
+class LoginWithPin extends Component
 {
     use HasSessionAuthentication;
-    public $title = "Login";
+    public $title = "Login With Pin";
 
-    public $email, $password, $remember, $email_by_device;
+    public $pin, $email_by_device;
 
     public function boot()
     {
-        $response = $this->API_get(
-            'authenticated/renew-session',
-        );
-        if ($response->ok()) {
-            return redirect('/home');
-        }
-
         $response = $this->API_get(
             'get-device-uuid',
             ['device_uuid' => Cookie::get($this->COOKIES_getDeviceUUIDSessionName())]
@@ -38,7 +26,7 @@ class Login extends Component
     }
     public function render()
     {
-        return view('livewire.authentication.login')
+        return view('livewire.authentication.login-with-pin')
             ->layout('components.layouts.authentication', [
                 'title' => $this->title
             ]);
@@ -46,7 +34,7 @@ class Login extends Component
 
     public function login()
     {
-        if ($this->AUTH_login($this)) {
+        if ($this->AUTH_loginWithPin($this)) {
             return redirect('/home');
         };
         return redirect('/');

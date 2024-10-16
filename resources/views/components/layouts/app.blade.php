@@ -76,14 +76,22 @@
                     <i class="bi bi-x-lg"></i>
                     <span class="sr-only">Close menu</span>
                 </button>
-                <div class="mb-4">
+                <form class="mb-4" action="/logout" method="POST">
+                    @csrf
                     <p class="mb-3 font-bold text-xl sm:text-2xl text-ocean-700">Ingin keluar?</p>
                     <p class="mb-6 text-base sm:text-lg text-gray-500">Pastikan kamu sudah selesai ya, dan
-                        selamat berkativitas :)</p>
-                    <a href="/" class="flex justify-center w-full btn btn-outline-ocean py-3">
-                       Ya, Checkout sekarang
-                    </a>
-                </div>
+                        selamat beraktivitas :)</p>
+                    <div class="flex items-center mb-4">
+                        <input id="wipe-session" type="checkbox" name="wipe_session" value=""
+                            class="w-4 h-4 rounded bg-glass border-white focus:ring-0 accent-ocean-600">
+                        <label for="wipe-session" class="ms-2 text-base sm:text-lg font-medium text-ocean-600">Hapus
+                            seluruh ingatan pada
+                            perangkat</label>
+                    </div>
+                    <button type="submit" class="flex justify-center w-full btn btn-outline-ocean py-3">
+                        Ya, Keluar sekarang
+                    </button>
+                </form>
             </div>
         </div>
     </main>

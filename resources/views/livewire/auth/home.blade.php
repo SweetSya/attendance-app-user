@@ -12,7 +12,7 @@
                 </div>
                 <div class="flex flex-col">
                     <p class="text-sm sm:text-base font-light">Selamat Datang,</p>
-                    <p class="sm:text-lg font-semibold line-clamp-1">Sultan Hakim Herrysan</p>
+                    <p class="sm:text-lg font-semibold line-clamp-1">{{ $employee->name }}</p>
                 </div>
             </div>
             <div>
@@ -31,27 +31,38 @@
         <div class="relative mb-5 p-4 min-h-48 rounded bg-gradient-ocean shadow">
             <img src="{{ asset('logo.svg') }}" class="absolute top-4 right-4 w-28 xs:w-36 sm:w-48" alt="">
             <div class="flex flex-col text-white">
-                <div class="flex items-center gap-2">
-                    <i class="bi bi-person opacity-70"></i>
-                    <span class="font-light text-sm sm:text-2xl">Karyawan</span>
-                </div>
-                <div class="flex items-center gap-2">
+                <div class="flex items-center gap-2 mb-6">
                     <span class=" opacity-70 font-light">ID</span>
-                    <span class="font-bold text-lg xs:text-xl sm:text-3xl">1113060001</span>
+                    <span class="font-light text-sm md:text-base mr-40 line-clamp-1">{{ $employee->id }}</span>
+                </div>
+                <div class="flex gap-3 -ml-[2px]">
+                    <div class="flex items-center gap-2">
+                        <i class="bi bi-brightness-alt-high-fill opacity-70"></i>
+                        <span class="font-light text-sm md:text-base">9:30</span>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <i class="bi bi-moon-fill opacity-70 text-xs"></i>
+                        <span class="font-light text-sm md:text-base">17:30</span>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <i class="bi bi-pin-map-fill opacity-70 text-xs"></i>
+                        <span class="font-light text-sm md:text-base">300 m</span>
+                    </div>
+                </div>
+                <div class="flex items-center gap-2 mb-2">
+                    <i class="bi bi-calendar-week-fill opacity-70 text-xs"></i>
+                    <span
+                        class="font-semibold text-sm md:text-base lg:text-lg">{{ \Carbon\Carbon::now()->isoFormat('dddd, D MMM YYYY') }}</span>
                 </div>
                 <div class="my-2 tracking-wide-all">
-                    <h3 class="text-end mb-2 text-xs xs:text-base md:text-lg">Kamis, <span class="font-semibold">12
-                            Oktober 2024</span></h3>
                     <div class="bg-ocean-700/40 rounded flex justify-around py-4 px-1 sm:py-6">
                         <div class="w-1/2 text-center mx-auto">
-                            <p class="opacity-70 text-xs xs:text-base font-light">08:30</p>
-                            <p class="opacity-70 text-base xs:text-xl md:text-2xl font-light">Check In</p>
+                            <p class="opacity-70 text-base xs:text-xl md:text-2xl font-light">Clock In</p>
                             <p class="font-bold text-base xs:text-2xl md:text-3xl text-lime-400">08:29:12</p>
                         </div>
                         <div class="w-[1px] border"></div>
                         <div class="w-1/2 text-center mx-auto">
-                            <p class="opacity-70 text-xs xs:text-base font-light">17:30</p>
-                            <p class="opacity-70 text-base xs:text-xl md:text-2xl font-light">Check Out</p>
+                            <p class="opacity-70 text-base xs:text-xl md:text-2xl font-light">Clock Out</p>
                             <p class="font-bold text-base xs:text-2xl md:text-3xl text-red-300">-</p>
                         </div>
                     </div>
@@ -223,6 +234,9 @@
                 if (userMarker != null) {
                     map.removeLayer(userMarker);
                 }
+                if (officeIconMarker != null) {
+                    map.removeLayer(officeIconMarker);
+                }
                 if (userPolyline != null) {
                     map.removeLayer(userPolyline);
                 }
@@ -230,6 +244,10 @@
                 userMarker = L.marker(latlong, {
                     icon: userIcon,
                 }).addTo(map);
+                officeIconMarker = L.marker(office, {
+                    icon: officeIcon,
+                }).addTo(map);
+
                 userPolyline = L.polyline([latlong, office], {
                     color: "#30beff ",
                 }).addTo(map);
