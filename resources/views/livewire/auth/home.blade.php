@@ -7,64 +7,101 @@
         <div class="relative z-20 px-4 sm:px-12 py-4 flex justify-between items-center">
             <div class="flex gap-3 flex-grow">
                 <div
-                    class="relative inline-flex items-center justify-center w-12 h-12 sm:w-14 sm:h-14 overflow-hidden bg-gray-100 rounded-full border-2 border-gray-300">
-                    <span class="font-bold text-base sm:text-2xl text-gray-600">SH</span>
+                    class="relative inline-flex items-center justify-center w-12 h-12 sm:w-14 sm:h-14 overflow-hidden bg-gray-100 rounded-full border-2 border-ocean-50">
+                    {{-- <span class="font-bold text-base sm:text-2xl text-gray-600">SH</span> --}}
+                    <img class="object-cover h-full w-full"
+                        src="{{ $employee->image ? API_storage($employee->image) : API_storage($company->image) }}"
+                        alt="">
                 </div>
                 <div class="flex flex-col">
                     <p class="text-sm sm:text-base font-light">Selamat Datang,</p>
-                    <p class="sm:text-lg font-semibold line-clamp-1">{{ $employee->name }}</p>
+                    <p class="sm:text-lg font-semibold line-clamp-1">{{ $employee->full_name }}</p>
                 </div>
             </div>
-            <div>
+            {{-- <div>
                 <div
                     class="relative hover-opacity-down rounded-full bg-ocean-500 text-white h-9 w-9 flex items-center justify-center">
                     <span
                         class="absolute -right-2 -top-2 bg-cinnabar-500 rounded-full w-6 h-6 text-xs p-1 flex items-center justify-center">10</span>
                     <i class="bi bi-bell text-lg sm:text-xl"></i>
                 </div>
-            </div>
+            </div> --}}
         </div>
 
     </nav>
     {{-- End Header --}}
     <div class="mx-auto py-8 px-4 sm:px-12 text-all-wide">
         <div class="relative mb-5 p-4 min-h-48 rounded bg-gradient-ocean shadow">
-            <img src="{{ asset('logo.svg') }}" class="absolute top-4 right-4 w-28 xs:w-36 sm:w-48" alt="">
+            <img src="{{ API_storage($company->image) }}" class="absolute top-4 right-4 h-12" alt="">
             <div class="flex flex-col text-white">
-                <div class="flex items-center gap-2 mb-6">
-                    <span class=" opacity-70 font-light">ID</span>
-                    <span class="font-light text-sm md:text-base mr-40 line-clamp-1">{{ $employee->id }}</span>
+                <div class="flex items-center gap-2 w-3/5">
+                    <i class="bi bi-person-fill opacity-70 -ml-[2px] mr-[2px]"></i>
+                    <span class="font-light text-sm md:text-base line-clamp-1">{{ $employee->full_name }}</span>
                 </div>
-                <div class="flex gap-3 -ml-[2px]">
-                    <div class="flex items-center gap-2">
-                        <i class="bi bi-brightness-alt-high-fill opacity-70"></i>
-                        <span class="font-light text-sm md:text-base">9:30</span>
-                    </div>
-                    <div class="flex items-center gap-2">
-                        <i class="bi bi-moon-fill opacity-70 text-xs"></i>
-                        <span class="font-light text-sm md:text-base">17:30</span>
-                    </div>
-                    <div class="flex items-center gap-2">
-                        <i class="bi bi-pin-map-fill opacity-70 text-xs"></i>
-                        <span class="font-light text-sm md:text-base">300 m</span>
-                    </div>
-                </div>
-                <div class="flex items-center gap-2 mb-2">
-                    <i class="bi bi-calendar-week-fill opacity-70 text-xs"></i>
+                <div class="flex items-center gap-2 w-3/5">
+                    <i
+                        class="bi bi-circle-fill text-xs mr-1 {{ $employee->status == 'active' ? 'text-green-300' : '' }}"></i>
                     <span
-                        class="font-semibold text-sm md:text-base lg:text-lg">{{ \Carbon\Carbon::now()->isoFormat('dddd, D MMM YYYY') }}</span>
+                        class="font-light text-sm md:text-base line-clamp-1">{{ employee_status($employee->status) }}</span>
+                </div>
+                <div class="flex items-center justify-center mt-2 gap-2 mb-2">
+                    <span
+                        class="font-semibold text-sm md:text-base lg:text-lg">{{ \Carbon\Carbon::now()->isoFormat('dddd, D MMMM YYYY') }}</span>
                 </div>
                 <div class="my-2 tracking-wide-all">
                     <div class="bg-ocean-700/40 rounded flex justify-around py-4 px-1 sm:py-6">
-                        <div class="w-1/2 text-center mx-auto">
-                            <p class="opacity-70 text-base xs:text-xl md:text-2xl font-light">Clock In</p>
-                            <p class="font-bold text-base xs:text-2xl md:text-3xl text-lime-400">08:29:12</p>
-                        </div>
-                        <div class="w-[1px] border"></div>
-                        <div class="w-1/2 text-center mx-auto">
-                            <p class="opacity-70 text-base xs:text-xl md:text-2xl font-light">Clock Out</p>
-                            <p class="font-bold text-base xs:text-2xl md:text-3xl text-red-300">-</p>
-                        </div>
+                        @if ($HOLIDAY)
+                            <div class="w-2/3 text-center mx-auto">
+                                <p class="font-bold text-base xs:text-2xl md:text-3xl">Libur Bersama</p>
+                                <p class=" text-xs xs:text-base font-light">Kantormu menetapkan hari ini
+                                    sebagai hari libur bersama "<span
+                                        class="font-bold !opacity-100">{{ $HOLIDAY->name }}</span>", harap hubungi
+                                    pihak terkait
+                                    jika ada jam kerja di hari ini :)
+                                </p>
+                            </div>
+                        @elseif ($DAY_OFF)
+                            <div class="w-2/3 text-center mx-auto">
+                                <p class="font-bold text-base xs:text-2xl md:text-3xl">Libur Kantor</p>
+                                <p class=" text-xs xs:text-base font-light">Kantormu menetapkan hari ini
+                                    sebagai hari libur kerja, harap hubungi pihak terkait jika ada jam kerja di hari ini
+                                    :)
+                                </p>
+                            </div>
+                        @else
+                            <div class="w-1/2 text-center mx-auto">
+                                <p class="opacity-70 text-base xs:text-xl md:text-2xl font-light">Clock In</p>
+                                <p class="font-bold text-base xs:text-2xl md:text-3xl">
+                                    {{ $today->clock_in ? $today->clock_in : '-' }}</p>
+                            </div>
+                            <div class="w-[1px] border"></div>
+                            <div class="w-1/2 text-center mx-auto">
+                                <p class="opacity-70 text-base xs:text-xl md:text-2xl font-light">Clock Out</p>
+                                <p class="font-bold text-base xs:text-2xl md:text-3xl">
+                                    {{ $today->clock_out ? $today->clock_out : '-' }}</p>
+                            </div>
+                        @endif
+                    </div>
+                </div>
+                <div class="flex justify-center items-center gap-2">
+                    <i class="bi bi-building-fill opacity-70"></i>
+                    <span class="font-bold text-sm md:text-base line-clamp-1">{{ $company->ltd }}
+                        ({{ $office->type }})</span>
+                </div>
+                <div class="flex justify-center gap-3 -ml-[2px]">
+                    <div class="flex items-center gap-2">
+                        <i class="bi bi-brightness-alt-high-fill opacity-70"></i>
+                        <span
+                            class="font-light text-sm md:text-base">{{ \Carbon\Carbon::parse($office->clock_in)->isoFormat('HH:mm') }}</span>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <i class="bi bi-moon-fill opacity-70 text-xs"></i>
+                        <span
+                            class="font-light text-sm md:text-base">{{ \Carbon\Carbon::parse($office->clock_out)->isoFormat('HH:mm') }}</span>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <i class="bi bi-pin-map-fill opacity-70 text-xs"></i>
+                        <span class="font-light text-sm md:text-base">{{ $office->radius }} m</span>
                     </div>
                 </div>
             </div>
@@ -82,7 +119,7 @@
             <div @click="$dispatch('set_full_map', {state: true})"
                 class="relative w-1/2 min-h-24 rounded bg-gradient-ocean cursor-pointer group shadow">
                 <div :class="full_map ? '!hidden' : ''"
-                    class="absolute text-white text-center left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-20 hidden group-hover:block">
+                    class="absolute text-white text-center left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-[999] hidden group-hover:block">
                     <i class="bi bi-fullscreen"></i>
                     <p class="text-nowrap">Layar penuh</p>
                 </div>
@@ -112,103 +149,51 @@
         </div> --}}
         <div class="mb-5 flex items-center gap-3 text-gray-500">
             <i class="bi bi-info-circle"></i>
-            <span class="text-sm leading-tight">Gunakan <span class="italic">handphone & jaringan data</span> untuk
+            <span class="text-sm leading-tight">Gunakan <span class="italic font-bold">handphone & jaringan data</span>
+                untuk
                 meningkatkan akurasi posisi.</span>
         </div>
         <div class="relative mb-5 p-4 text-white rounded bg-gradient-ocean">
             <div class="flex flex-col justify-center gap-1">
                 <p class="font-light text-base xs:text-lg">Bulan ini</p>
-                <p class="font-bold text-xl xs:text-3xl">Sebanyak 22</p>
-                <p class="font-light text-base xs:text-lg">kehadiran dari total <span class="font-bold">28</span> hari
+                <p class="font-bold text-xl xs:text-3xl">Sebanyak {{ $total_attend }}</p>
+                <p class="font-light text-base xs:text-lg">kehadiran dari total <span
+                        class="font-bold">{{ $total_this_month }}</span> hari
                     kerja</p>
             </div>
         </div>
         <div class="relative mb-5">
             <div class="flex justify-between text-ocean-950 mb-2">
                 <p class="font-bold text-base sm:text-xl">Histori Kehadiran</p>
-                <a href="/history" class="font-light text-base sm:text-xl hover-opacity-down">Lihat semua</a>
+                {{-- <a href="/history" class="font-light text-base sm:text-xl hover-opacity-down">Lihat semua</a> --}}
             </div>
             <div class="flex flex-col gap-3">
-                <div class="p-4 text-sm text-ocean-800 border border-ocean-300 rounded bg-gradient-ocean-soft">
-                    <span class="sr-only">Info</span>
-                    <div class="flex items-center justify-between">
-                        <div class="rounded flex gap-3 sm:gap-7 px-1">
-                            <div class="w-1/2 text-center mx-auto">
-                                <p class="opacity-70 text-xs sm:text-base text-nowrap font-light">Check In</p>
-                                <p class="font-bold text-xs sm:text-base">08:29:12</p>
+                @foreach ($attendances as $attendance)
+                    <div class="p-4 text-sm text-ocean-800 border border-ocean-300 rounded bg-gradient-ocean-soft">
+                        <span class="sr-only">Info</span>
+                        <div class="flex items-center justify-between">
+                            <div class="rounded flex gap-3 sm:gap-7 px-1">
+                                <div class="w-1/2 text-center mx-auto">
+                                    <p class="opacity-70 text-xs sm:text-base text-nowrap font-light">Clock In</p>
+                                    <p class="font-bold text-xs sm:text-base">
+                                        {{ \Carbon\Carbon::parse($attendance->clock_in)->isoFormat('HH:mm:ss') }}</p>
+                                </div>
+                                <div class="w-[1px] border"></div>
+                                <div class="w-1/2 text-center mx-auto">
+                                    <p class="opacity-70 text-xs sm:text-base text-nowrap font-light">Clock Out</p>
+                                    <p class="font-bold text-xs sm:text-base">
+                                        {{ \Carbon\Carbon::parse($attendance->clock_out)->isoFormat('HH:mm:ss') }}</p>
+                                </div>
                             </div>
-                            <div class="w-[1px] border"></div>
-                            <div class="w-1/2 text-center mx-auto">
-                                <p class="opacity-70 text-xs sm:text-base text-nowrap font-light">Check Out</p>
-                                <p class="font-bold text-xs sm:text-base">17:31:25</p>
+                            <div class="text-right">
+                                <p class="text-xl sm:text-3xl font-bold">
+                                    {{ \Carbon\Carbon::parse($attendance->date)->isoFormat('DD') }}</p>
+                                <p class="text-xs sm:text-base text-gray-500">
+                                    {{ \Carbon\Carbon::parse($attendance->date)->isoFormat('MMM, YYYY') }}</p>
                             </div>
-                        </div>
-                        <div class="text-right">
-                            <p class="text-xl sm:text-3xl font-bold">31</p>
-                            <p class="text-xs sm:text-base text-gray-500">Sep, 2024</p>
                         </div>
                     </div>
-                </div>
-                <div class="p-4 text-sm text-ocean-800 border border-ocean-300 rounded bg-gradient-ocean-soft">
-                    <span class="sr-only">Info</span>
-                    <div class="flex items-center justify-between">
-                        <div class="rounded flex gap-3 sm:gap-7 px-1">
-                            <div class="w-1/2 text-center mx-auto">
-                                <p class="opacity-70 text-xs sm:text-base text-nowrap font-light">Check In</p>
-                                <p class="font-bold text-xs sm:text-base">08:29:12</p>
-                            </div>
-                            <div class="w-[1px] border"></div>
-                            <div class="w-1/2 text-center mx-auto">
-                                <p class="opacity-70 text-xs sm:text-base text-nowrap font-light">Check Out</p>
-                                <p class="font-bold text-xs sm:text-base">17:31:25</p>
-                            </div>
-                        </div>
-                        <div class="text-right">
-                            <p class="text-xl sm:text-3xl font-bold">31</p>
-                            <p class="text-xs sm:text-base text-gray-500">Sep, 2024</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="p-4 text-sm text-ocean-800 border border-ocean-300 rounded bg-gradient-ocean-soft">
-                    <span class="sr-only">Info</span>
-                    <div class="flex items-center justify-between">
-                        <div class="rounded flex gap-3 sm:gap-7 px-1">
-                            <div class="w-1/2 text-center mx-auto">
-                                <p class="opacity-70 text-xs sm:text-base text-nowrap font-light">Check In</p>
-                                <p class="font-bold text-xs sm:text-base">08:29:12</p>
-                            </div>
-                            <div class="w-[1px] border"></div>
-                            <div class="w-1/2 text-center mx-auto">
-                                <p class="opacity-70 text-xs sm:text-base text-nowrap font-light">Check Out</p>
-                                <p class="font-bold text-xs sm:text-base">17:31:25</p>
-                            </div>
-                        </div>
-                        <div class="text-right">
-                            <p class="text-xl sm:text-3xl font-bold">31</p>
-                            <p class="text-xs sm:text-base text-gray-500">Sep, 2024</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="p-4 text-sm text-ocean-800 border border-ocean-300 rounded bg-gradient-ocean-soft">
-                    <span class="sr-only">Info</span>
-                    <div class="flex items-center justify-between">
-                        <div class="rounded flex gap-3 sm:gap-7 px-1">
-                            <div class="w-1/2 text-center mx-auto">
-                                <p class="opacity-70 text-xs sm:text-base text-nowrap font-light">Check In</p>
-                                <p class="font-bold text-xs sm:text-base">08:29:12</p>
-                            </div>
-                            <div class="w-[1px] border"></div>
-                            <div class="w-1/2 text-center mx-auto">
-                                <p class="opacity-70 text-xs sm:text-base text-nowrap font-light">Check Out</p>
-                                <p class="font-bold text-xs sm:text-base">17:31:25</p>
-                            </div>
-                        </div>
-                        <div class="text-right">
-                            <p class="text-xl sm:text-3xl font-bold">31</p>
-                            <p class="text-xs sm:text-base text-gray-500">Sep, 2024</p>
-                        </div>
-                    </div>
-                </div>
+                @endforeach
             </div>
         </div>
     </div>
@@ -217,8 +202,8 @@
 
 @push('scripts')
     <script>
-        let office = [-6.255456838933905, 106.61991532354212];
-        let officeRadius = 300;
+        let office = [{{ $office->lat }}, {{ $office->lon }}];
+        let officeRadius = {{ $office->radius }};
         let autoSnap = true
     </script>
     <script src="{{ asset('assets/js/map.js') }}"></script>
@@ -264,14 +249,14 @@
                     officeMarker = L.circle(office, {
                         color: "green",
                         fillColor: "#00ff61",
-                        fillOpacity: 0.5,
+                        fillOpacity: 0.2,
                         radius: officeRadius,
                     }).addTo(map);
                 } else {
                     officeMarker = L.circle(office, {
                         color: "red",
                         fillColor: "#f03",
-                        fillOpacity: 0.5,
+                        fillOpacity: 0.2,
                         radius: officeRadius,
                     }).addTo(map);
                 }

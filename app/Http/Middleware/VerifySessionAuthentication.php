@@ -26,12 +26,6 @@ class VerifySessionAuthentication
         if (!$this->AUTH_check()) {
             return redirect('/');
         }
-
-        // Check if token are valid on parent server's session
-        $authed = $this->AUTH_get();
-        if (!$authed) {
-            return redirect('/');
-        }
         return $next($request);
     }
 }

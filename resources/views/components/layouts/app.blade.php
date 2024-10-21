@@ -17,7 +17,7 @@
 
 </head>
 
-<body>
+<body class="overflow-x-hidden">
 
     <?php
     $route = Route::currentRouteName();

@@ -31,9 +31,9 @@ trait HasApiConfiguration
     {
         $routes = [
             $this->API_getHost(),
+            $this->API_getModel(),
             'api',
             $this->API_getVersion(),
-            $this->API_getModel(),
             $target_url
         ];
         return implode('/', $routes);

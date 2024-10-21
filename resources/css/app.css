@@ -37,8 +37,7 @@
         @apply left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2  w-screen max-w-3xl;
     }
     .container-bottom-max-3xl {
-    @apply left-1/2 bottom-0 -translate-x-1/2 max-w-3xl;
-
+        @apply left-1/2 bottom-0 -translate-x-1/2 max-w-3xl;
     }
     /* Input Icon */
     .input-icon-end {
@@ -103,6 +102,16 @@
     .btn-outline-warning:hover {
         @apply bg-gradient-to-r from-yellow-300 to-yellow-200 border-yellow-100 text-black;
     }
+    /* Button Border */
+    .btn-border-success {
+        @apply border !border-green-300/50;
+    }
+    .btn-border-ocean {
+        @apply border !border-ocean-300/50;
+    }
+    .btn-border-warning {
+        @apply border !border-yellow-300/50;
+    }
     /* Background gradient */
     .bg-gradient-ocean {
         @apply bg-gradient-to-br from-ocean-600 via-ocean-500 to-ocean-400;
@@ -131,5 +140,9 @@
     }
     .bg-gradient-danger-soft {
         @apply bg-gradient-to-br from-red-300/40 via-red-200/40 to-red-100/40 border-red-300;
+    }
+
+    .settings-soon {
+        @apply pointer-events-none opacity-50 relative after:absolute after:right-5 after:top-1/2 after:text-ocean-500 after:font-bold after:-translate-y-1/2 after:content-['Soon'];
     }
 }

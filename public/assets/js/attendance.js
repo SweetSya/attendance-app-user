@@ -7,6 +7,7 @@ const refreshLocation = () => {
     navigator.geolocation.getCurrentPosition(
         (e) => {
             latlong = [e.coords.latitude, e.coords.longitude];
+
             if (userMarker != null) {
                 map.removeLayer(userMarker);
             }
@@ -33,20 +34,21 @@ const refreshLocation = () => {
                 officeMarker = L.circle(office, {
                     color: "green",
                     fillColor: "#00ff61",
-                    fillOpacity: 0.5,
+                    fillOpacity: 0.2,
                     radius: officeRadius,
                 }).addTo(map);
             } else {
                 officeMarker = L.circle(office, {
                     color: "red",
                     fillColor: "#f03",
-                    fillOpacity: 0.5,
+                    fillOpacity: 0.2,
                     radius: officeRadius,
                 }).addTo(map);
             }
             dispatchEvent(
                 new CustomEvent("set_distance", {
                     detail: {
+                        position: latlong,
                         range: distance,
                         refresh_at: new Date().toLocaleTimeString(),
                     },
@@ -125,6 +127,11 @@ const openDrawer = async (option) => {
         startVideostream();
     }
     attendanceDrawer.show();
+};
+const closeDrawer = async (time) => {
+    setTimeout(() => {
+        attendanceDrawer.hide();
+    }, time);
 };
 const stopVideostream = () => {
     setTimeout(() => {

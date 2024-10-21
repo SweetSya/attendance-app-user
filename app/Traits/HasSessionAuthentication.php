@@ -55,7 +55,7 @@ trait HasSessionAuthentication
     {
         try {
             $response = $this->API_get(
-                'authenticated/logout',
+                'logout',
                 [
                     'wipe' => $wipe
                 ]
@@ -65,7 +65,6 @@ trait HasSessionAuthentication
             }
             return false;
         } catch (\Throwable $th) {
-            dd($th);
             return false;
         }
     }
@@ -73,10 +72,10 @@ trait HasSessionAuthentication
     {
         try {
             $response = $this->API_get(
-                'authenticated/renew-session',
+                'renew-session',
             );
             if (!$response->ok()) {
-                return redirect('/');
+                return false;
             }
             $response_body = json_decode($response->body());
             $this->_checkCookie($response_body->auth_access_token);
@@ -89,7 +88,7 @@ trait HasSessionAuthentication
     {
         try {
             $response = $this->API_get(
-                'authenticated/get-session-data',
+                'get-session-data',
             );
             if (!$response->ok()) {
                 return redirect('/');

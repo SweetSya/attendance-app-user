@@ -22,5 +22,15 @@ trait HasApiHelper
             ->post($this->API_getURL($target_url), $data);
         return $response;
     }
+    public function API_getJSON($target_url, $data = [])
+    {
+    $response = $this->API_get($target_url, $data);
+        return json_decode($response->getBody());
+    }
+    public function API_postJSON($target_url, $data = [])
+    {
+        $response = $this->API_post($target_url, $data);
+        return json_decode($response->getBody());
+    }
     public function API_delete() {}
 }

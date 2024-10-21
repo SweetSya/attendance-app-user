@@ -32,9 +32,4 @@ class VerifyDeviceUUID
         }
         return redirect('/');
     }
-
-    public function COOKIES_getDeviceUUIDSessionName()
-    {
-        return env('APP_DEVICE_UUID_COOKIES_NAME');
-    }
 }

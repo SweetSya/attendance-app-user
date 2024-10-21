@@ -21,7 +21,7 @@ class Login extends Component
     public function boot()
     {
         $response = $this->API_get(
-            'authenticated/renew-session',
+            'renew-session',
         );
         if ($response->ok()) {
             return redirect('/home');

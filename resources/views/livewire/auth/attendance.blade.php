@@ -1,7 +1,7 @@
-<div id="data-wrapper" x-data="{ distance: { range: 0, refresh_at: '' }, drawer: { title: '', section: '' } }"
+<div id="data-wrapper" x-data="{ distance: { range: 0, refresh_at: '', position: [0, 0] }, drawer: { title: '', section: '' } }"
     @set_drawer.window.camel="drawer = $event.detail, drawerSection = $event.detail.section"
     @set_distance.window.camel="distance = $event.detail" class="text-all-wide">
-    <div class="h-screen">
+    <div wire:ignore class="h-screen">
         <div class="fixed w-full max-w-3xl h-screen">
             <div id="map" class="h-full w-full bg-gradient-ocean-soft z-10">
             </div>
@@ -15,59 +15,125 @@
         </div>
         <div class="flex justify-between gap-2 mb-4">
             <p class="">
-                <span class="text-base sm:text-lg text-ocean-900/80 font-bold">27 Januari 2025,</span>
+                <span
+                    class="text-base sm:text-lg text-ocean-900/80 font-bold">{{ \Carbon\Carbon::now()->isoFormat('DD MMMM YYYY') }},</span>
                 <br>
-                <span class="text-base sm:text-lg text-ocean-900/80 font-normal">Senin</span>
+                <span
+                    class="text-base sm:text-lg text-ocean-900/80 font-normal">{{ \Carbon\Carbon::now()->isoFormat('dddd') }}</span>
             </p>
             <div class="text-right">
-                <p class="text-base sm:text-lg text-ocean-900/80 font-bold">1113060001</p>
-                <p class="line-clamp-1 text-base sm:text-lg text-ocean-900/80">Sultan Hakim Herrysan</p>
+                <p class="text-base sm:text-lg text-ocean-900/80 font-bold">{{ $company->ltd }}</p>
+                <p class="line-clamp-1 text-base sm:text-lg text-ocean-900/80">{{ $employee->full_name }}</p>
             </div>
         </div>
-        <div class="w-full flex gap-2 text-ocean-800 mb-3">
-            <div :class="distance.range <= officeRadius ? 'bg-gradient-ocean-soft' : 'bg-gradient-danger-soft'"
-                class="relative flex flex-col justify-center gap-1 w-full p-4 min-h-24 rounded">
-                <i class="bi bi-compass-fill absolute right-2 top-2 text-2xl sm:text-4xl opacity-70"></i>
-                <p class="font-light text-base xs:text-lg">Jarakmu</p>
-                <p class="font-bold text-xl xs:text-2xl sm:text-3xl"
-                    x-text="distance.range == 0 ? 'Menghitung' : formatDistance(distance.range)">
-                </p>
-                <p class="font-light text-base xs:text-lg">Dari kantor</p>
-            </div>
-        </div>
-        <div class="mb-4 flex items-center gap-3 text-gray-500">
-            <i class="bi bi-info-circle"></i>
-            <span class="text-sm leading-tight">Harap dipersiapkan karena<span class="font-bold"> kamera akan
-                    aktif</span> untuk melakukan check in.</span>
-        </div>
-        <div class="w-full flex gap-2 text-ocean-800 mb-5">
-            <div
-                class="relative flex flex-col justify-center gap-1 w-1/2 p-4 min-h-24 rounded bg-gradient-success-soft">
-                <i class="bi bi-box-arrow-in-right absolute right-2 top-2 text-2xl sm:text-4xl opacity-70"></i>
-                <p class="font-light text-base xs:text-lg">Check In</p>
-                <p class="font-bold text-xl xs:text-2xl sm:text-3xl">10:16:11</p>
-                <p class="font-light text-base xs:text-lg">dari 08:30</p>
-            </div>
-            <div
-                class="relative flex flex-col justify-center gap-1 w-1/2 p-4 min-h-24 rounded bg-gradient-warning-soft">
-                <i class="bi bi-box-arrow-right absolute right-2 top-2 text-2xl sm:text-4xl opacity-70"></i>
-                <p class="font-light text-base xs:text-lg">Check Out</p>
-                <p class="font-bold text-xl xs:text-2xl sm:text-3xl">-</p>
-                <p class="font-light text-base xs:text-lg">dari 17.30</p>
-            </div>
+        <div class="w-full flex flex-col gap-2 text-ocean-800 mb-5">
+            @if ($HOLIDAY)
+                <div class="w-full flex gap-2 text-ocean-800 mb-3">
+                    <div
+                        class="relative text-center flex flex-col justify-center gap-1 w-full p-4 min-h-24 rounded bg-gradient-ocean-soft">
+                        <p class="font-bold text-base xs:text-2xl md:text-3xl">Libur Bersama</p>
+                        <p class=" text-xs xs:text-base font-light">Kantormu menetapkan hari ini
+                            sebagai hari libur bersama "<span
+                                class="font-bold !opacity-100">{{ $HOLIDAY->name }}</span>",
+                            harap hubungi
+                            pihak terkait
+                            jika ada jam kerja di hari ini :)
+                        </p>
+                    </div>
+                </div>
+            @elseif ($DAY_OFF)
+                <div class="w-full flex gap-2 text-ocean-800 mb-3">
+                    <div
+                        class="relative text-center flex flex-col justify-center gap-1 w-full p-4 min-h-24 rounded bg-gradient-ocean-soft">
+                        <p class="font-bold text-base xs:text-2xl md:text-3xl">Libur Kantor</p>
+                        <p class=" text-xs xs:text-base font-">Kantormu menetapkan hari ini
+                            sebagai hari libur kerja, harap hubungi pihak terkait jika ada jam kerja di hari ini
+                            :)
+                        </p>
+                    </div>
+                </div>
+            @else
+                <div class="w-full flex gap-2 text-ocean-800 mb-3">
+                    <div :class="distance.range <= officeRadius ? 'bg-gradient-ocean-soft' : 'bg-gradient-danger-soft'"
+                        class="relative flex flex-col justify-center gap-1 w-full p-4 min-h-24 rounded">
+                        <i class="bi bi-compass-fill absolute right-2 top-2 text-2xl sm:text-4xl opacity-70"></i>
+                        <p class="font-light text-base xs:text-lg">Jarakmu</p>
+                        <p class="font-bold text-xl xs:text-2xl sm:text-3xl"
+                            x-text="distance.range == 0 ? 'Menghitung' : formatDistance(distance.range)">
+                        </p>
+                        <p class="font-light text-base xs:text-lg">Dari kantor</p>
+                    </div>
+                </div>
+                <div class="mb-4 flex items-center gap-3 text-gray-500">
+                    <i class="bi bi-info-circle"></i>
+                    <span class="text-sm leading-tight">Harap dipersiapkan karena<span class="font-bold"> kamera akan
+                            aktif</span> untuk melakukan clock in.</span>
+                </div>
+                <div class="flex gap-3">
+                    <div
+                        class="relative flex flex-col justify-center gap-1 w-1/2 p-4 min-h-24 rounded bg-gradient-success-soft">
+                        <i class="bi bi-box-arrow-in-right absolute right-2 top-2 text-2xl sm:text-4xl opacity-70"></i>
+                        <p class="font-light text-base xs:text-lg">Clock In</p>
+                        <p class="font-bold text-xl xs:text-2xl sm:text-3xl">
+                            {{ $today->clock_in ? $today->clock_in : '-' }}
+                        </p>
+                        <p class="font-light text-base xs:text-lg">dari
+                            {{ \Carbon\Carbon::parse($office->clock_in)->isoFormat('HH:mm') }}</p>
+                    </div>
+                    <div
+                        class="relative flex flex-col justify-center gap-1 w-1/2 p-4 min-h-24 rounded bg-gradient-warning-soft">
+                        <i class="bi bi-box-arrow-right absolute right-2 top-2 text-2xl sm:text-4xl opacity-70"></i>
+                        <p class="font-light text-base xs:text-lg">Clock Out</p>
+                        <p class="font-bold text-xl xs:text-2xl sm:text-3xl">
+                            {{ $today->clock_out ? $today->clock_out : '-' }}
+                        </p>
+                        <p class="font-light text-base xs:text-lg">dari
+                            {{ \Carbon\Carbon::parse($office->clock_out)->isoFormat('HH:mm') }}</p>
+                    </div>
+                </div>
+            @endif
+
         </div>
         <div class="mb-5 flex flex-wrap gap-2">
-            <button @click="openDrawer({title: 'Verifikasi Kehadiran', 'section': 'checkin'})"
-                class="btn btn-outline-success flex-grow min-w-52 py-3">Check In</button>
-            <button @click="openDrawer({title: 'Verifikasi Checkout', 'section': 'checkout'})"
-                class="btn btn-outline-ocean flex-grow min-w-52 py-3">Check Out</button>
-            <button @click="openDrawer({title: 'Pengajuan Izin', 'section': 'absence'})"
-                class="btn btn-outline-warning flex-grow min-w-52 py-3">Izin</button>
+            @if (!$HOLIDAY && !$DAY_OFF)
+                @if (!$today->clock_in)
+                    <button
+                        :class="distance.range >= officeRadius ? 'pointer-events-none opacity-35' :
+                            'pointer-events-auto opacity-100'"
+                        @click="openDrawer({title: 'Verifikasi Kehadiran', 'section': 'checkin'})"
+                        class="btn btn-outline-success flex-grow min-w-52 py-3">Clock In</button>
+                @endif
+                @if ($today->clock_in && !$today->clock_out)
+                    <button @click="openDrawer({title: 'Verifikasi Checkout', 'section': 'checkout'})"
+                        class="btn btn-outline-ocean flex-grow min-w-52 py-3">Clock
+                        Out</button>
+                @endif
+
+                @if (!$today->clock_in)
+                    <button @click="openDrawer({title: 'Pengajuan Izin', 'section': 'absence'})"
+                        class="btn btn-outline-warning flex-grow min-w-52 py-3">Izin</button>
+                @endif
+
+                @if ($today->clock_in && $today->clock_out)
+                    <div class="mb-4 flex items-center gap-3 text-gray-500">
+                        <i class="bi bi-check-circle"></i>
+                        <div>
+                            <p class="text-base sm:text-lg text-ocean-900/80 font-bold">Sudah selesai untuk hari ini.
+                            </p>
+                            <span class="text-sm leading-tight">Terima kasih untuk partisipasinya hari ini, selalu
+                                semangat
+                                dan
+                                sampai jumpa di hari kerja berikutnya!
+                                :)</span>
+                        </div>
+                    </div>
+                @endif
+            @endif
         </div>
     </div>
     {{-- Drawer --}}
     <!-- drawer component -->
-    <div id="drawer-attendance"
+    <div wire:ignore id="drawer-attendance"
         class="fixed bottom-0 !left-1/2 max-w-3xl !-translate-x-1/2 z-50 w-full p-4 overflow-y-auto transition-transform bg-white translate-y-full"
         tabindex="-1" aria-labelledby="drawer-bottom-label" aria-hidden="true">
         <h5 id="drawer-bottom-label"
@@ -79,7 +145,9 @@
             <i class="bi bi-x-lg"></i>
             <span class="sr-only">Close menu</span>
         </button>
-        <div x-show="drawer.section === 'checkin'">
+        <form
+            @submit.prevent="await $wire.clock_employee_in(JSON.stringify(distance.position)), $dispatch('set_drawer',{title: 'Verifikasi Kehadiran', 'section': 'checkedin'}), stopVideostream(), closeDrawer(2000)"
+            x-show="drawer.section === 'checkin'">
             <p class="mb-6 text-base sm:text-xl text-gray-500 text-center">Verifikasi Biometrik Wajah</p>
             <p class="mb-6 text-xs sm:text-base text-gray-500 text-center">Arahkan wajah di posisi dalam box untuk
                 memudahkan pemindaian</p>
@@ -104,10 +172,10 @@
                     </div>
                 </div>
             </div>
-            <p @click="$dispatch('set_drawer',{title: 'Verifikasi Kehadiran', 'section': 'checkedin'}), stopVideostream()"
-                class="mb-6 text-xs sm:text-base text-gray-500 text-center"> Lanjutkan tanpa menggunakan verifikasi
-                biometik? <span class="font-bold underline hover-opacity-down text-ocean-500">ya, lanjutkan</span></p>
-        </div>
+            <p class="mb-6 text-xs sm:text-base text-gray-500 text-center"> Lanjutkan tanpa menggunakan verifikasi
+                biometik? <button type="submit" class="font-bold underline hover-opacity-down text-ocean-500">ya,
+                    lanjutkan</button></p>
+        </form>
         <div x-show="drawer.section === 'checkedin'">
             <p class="mb-6 text-base sm:text-xl text-gray-500 text-center">Verifikasi Berhasil</p>
             <div class="mx-auto rounded relative w-fit mb-4">
@@ -116,19 +184,19 @@
             <p class="mb-6 text-xs sm:text-base text-gray-500 text-center"> Otomatis melanjutkan dalam <span
                     class="font-bold underline hover-opacity-down text-ocean-500">2 detik</span></p>
         </div>
-        <div x-show="drawer.section === 'checkout'">
-            <p class="mb-6 text-base sm:text-xl text-gray-500 text-center">Ingin checkout sekarang?</p>
+        <form
+            @submit.prevent="await $wire.clock_employee_out(JSON.stringify(distance.position)), $dispatch('set_drawer',{title: 'Verifikasi Checkout', 'section': 'checkedout'}), closeDrawer(2000)"
+            x-show="drawer.section === 'checkout'">
+            <p class="mb-6 text-base sm:text-xl text-gray-500 text-center">Ingin clock out sekarang?</p>
             <p class="mb-6 text-xs sm:text-base text-gray-500 text-center">Pastikan kamu sudah selesai untuk hari ini
                 karena jika melanjutkan tidak dapat dikembalikan</p>
             <div class="mx-auto rounded relative w-fit my-12">
                 <i class="bi bi-question-circle-fill text-ocean-600 text-6xl"></i>
             </div>
-            <button @click="$dispatch('set_drawer',{title: 'Verifikasi Checkout', 'section': 'checkedout'})"
-                type="button" class="btn btn-ocean py-3 w-full">Ya, Checkout sekarang</button>
-
-        </div>
+            <button type="submit" class="btn btn-ocean py-3 w-full">Ya, Clock out sekarang</button>
+        </form>
         <div x-show="drawer.section === 'checkedout'">
-            <p class="mb-6 text-base sm:text-xl text-gray-500 text-center">Checkout Berhasil</p>
+            <p class="mb-6 text-base sm:text-xl text-gray-500 text-center">Clock out Berhasil</p>
             <div class="mx-auto rounded relative w-fit mb-4">
                 <i class="bi bi-check-circle-fill text-ocean-600 text-6xl"></i>
             </div>
@@ -139,21 +207,21 @@
             <p class="mb-6 text-base text-gray-500 text-center">Harap diisi sesuai dengan keadaan yang sebenarnya yaa
                 <i class="bi bi-emoji-smile-fill ml-1"></i>
             </p>
-            <form @submit.prevent="$dispatch('set_drawer',{title: 'Pengajuan Izin', 'section': 'absenced'})"
+            <form
+                @submit.prevent="await $wire.clock_employee_absence(), $dispatch('set_drawer',{title: 'Pengajuan Izin', 'section': 'absenced'})"
                 class="flex flex-col gap-3">
-                <select id="countries"
+                <select wire:model="absence_reason"
                     class="font-semibold bg-gray-50 border border-gray-300 text-gray-600 text-sm rounded-lg focus:ring-ocean-500 focus:border-ocean-500 block w-full p-2.5">
                     <option class="font-semibold" value="">IZIN KARENA.. (PILIH)</option>
-                    <option class="font-semibold" value="sick">SAKIT</option>
+                    <option class="font-semibold" value="sakit">SAKIT</option>
                     <option class="font-semibold" value="acara">ACARA</option>
                     <option class="font-semibold" value="others">LAINNYA</option>
                 </select>
                 <div>
                     <label for="message"
                         class="block mb-2 text-sm font-medium text-gray-600 dark:text-white">Tinggalkan pesan</label>
-                    <textarea id="message" rows="4"
-                        class="block p-2.5 w-full text-sm text-gray-600 bg-gray-50 rounded-lg border border-gray-300 focus:ring-ocean-500 focus:border-ocean-500"
-                        placeholder="Leave a comment..."></textarea>
+                    <textarea wire:model="absence_note" id="message" rows="4"
+                        class="block p-2.5 w-full text-sm text-gray-600 bg-gray-50 rounded-lg border border-gray-300 focus:ring-ocean-500 focus:border-ocean-500"></textarea>
                 </div>
                 <button type="submit" class="btn btn-ocean py-3">Kirimkan</button>
             </form>
@@ -171,8 +239,8 @@
 
 @push('scripts')
     <script>
-        let office = [-6.255456838933905, 106.61991532354212];
-        let officeRadius = 300;
+        let office = [{{ $office->lat }}, {{ $office->lon }}];
+        let officeRadius = {{ $office->radius }};
         let autoSnap = true
         let drawerSection = ''
         var videoStream = document.querySelector('#verify-camera');

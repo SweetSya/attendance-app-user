@@ -5,6 +5,11 @@ use App\Livewire\Auth\Attendance;
 use App\Livewire\Auth\History;
 use App\Livewire\Auth\Home;
 use App\Livewire\Auth\Settings;
+use App\Livewire\Auth\Settings\Email as SettingsEmail;
+use App\Livewire\Auth\Settings\Password;
+use App\Livewire\Auth\Settings\PersonalData;
+use App\Livewire\Auth\Settings\Pin;
+use App\Livewire\Auth\Settings\DeviceUuid;
 use App\Livewire\Authentication\ForgotPassword;
 use App\Livewire\Authentication\Login;
 use App\Livewire\Authentication\RecoverPassword;
@@ -28,6 +33,12 @@ Route::group(['middleware' => 'refresh_device_uuid'], function () {
         Route::get('/attendance', Attendance::class)->name('attendance');
         Route::get('/settings', Settings::class)->name('settings');
         Route::get('/history', History::class)->name('history');
+
+        Route::get('/settings/email', SettingsEmail::class)->name('settings');
+        Route::get('/settings/personal-data', PersonalData::class)->name('settings');
+        Route::get('/settings/pin', Pin::class)->name('settings');
+        Route::get('/settings/password', Password::class)->name('settings');
+        Route::get('/settings/device-uuid', DeviceUuid::class)->name('settings');
 
         Route::get('/device-uuid', function () {
             return Cookie::get(env('APP_DEVICE_UUID_COOKIES_NAME'));
