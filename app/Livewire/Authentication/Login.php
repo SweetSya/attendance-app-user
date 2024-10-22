@@ -24,6 +24,7 @@ class Login extends Component
             'renew-session',
         );
         if ($response->ok()) {
+            session()->flash('logged_in');
             return redirect('/home');
         }
 
@@ -34,6 +35,12 @@ class Login extends Component
         if ($response->ok()) {
             $response_body = json_decode($response->body());
             $this->email_by_device = $response_body->email;
+        }
+        if (session()->has('error')) {
+            $this->dispatch('notify', type: 'error', message: session()->get('error'));
+        }
+        if (session()->has('logged_out')) {
+            $this->dispatch('notify', type: 'success', message: session()->get('logged_out'));
         }
     }
     public function render()
@@ -46,9 +53,12 @@ class Login extends Component
 
     public function login()
     {
-        if ($this->AUTH_login($this)) {
+        $login = $this->AUTH_login($this);
+        if ($login->status == 200) {
+            session()->flash('welcome');
             return redirect('/home');
         };
+        session()->flash('error', $login->data->message);
         return redirect('/');
     }
 }

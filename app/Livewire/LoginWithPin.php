@@ -23,6 +23,9 @@ class LoginWithPin extends Component
             $response_body = json_decode($response->body());
             $this->email_by_device = $response_body->email;
         }
+        if (session()->has('error')) {
+            $this->dispatch('notify', type: 'error', message: session()->get('error'));
+        }
     }
     public function render()
     {
@@ -34,9 +37,12 @@ class LoginWithPin extends Component
 
     public function login()
     {
-        if ($this->AUTH_loginWithPin($this)) {
+        $response = $this->AUTH_loginWithPin($this);
+        if ($response->status == 200) {
+            session()->flash('welcome');
             return redirect('/home');
         };
-        return redirect('/');
+        session()->flash('error', $response->data->message);
+        return redirect('/pin');
     }
 }

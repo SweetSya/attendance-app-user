@@ -1,16 +1,17 @@
-<div class="px-2 py-7">
-    <div class="mx-3">
+<div class="py-7">
+    <div>
         <div class="relative">
-            <a href="/settings" class="absolute"><i class="bi bi-chevron-left"></i></a>
+            <a href="/settings" class="absolute left-5 top-1"><i class="bi bi-chevron-left"></i></a>
         </div>
         <h5 id="drawer-right-label" class="text-center mb-5 text-xl sm:text-2xl font-semibold text-gray-500">
             UUID Perangkat
         </h5>
     </div>
-    <div class="px-7">
+    <div class="px-5">
         <div class="mb-6 text-center">
             <div>
-                <p class="mb-6 text-base text-gray-500">UUID perangkat digunakan untuk identifikasi perangkat yang
+                <p class="mb-6 text-xs md:text-base text-gray-500">UUID perangkat digunakan untuk identifikasi perangkat
+                    yang
                     digunakan. Hal ini digunakan untuk login menggunakan pin, push notifikasi, dan lainnya.</p>
             </div>
             <div>

@@ -22,7 +22,7 @@ class Attendance extends Component
     }
     public function refresh()
     {
-        $data = $this->API_getJSON('view/attendance');
+        $data = $this->API_getJSON('view/attendance')->data;
         $this->employee = $data->employee;
         $this->today = $data->today;
         if (!$this->today) {
@@ -51,33 +51,42 @@ class Attendance extends Component
     }
     public function clock_employee_in($position)
     {
-        $response = $this->API_post('view/attendance/clock-in', [
+        $response = $this->API_postJSON('view/attendance/clock-in', [
             'position' => $position,
         ]);
-        if (!$response->ok()) {
-            dd($response);
+        if ($response->status != 200) {
+            $this->dispatch('clear_after_error');
+            $this->dispatch('notify', type: 'error', message: $response->data->message);
         }
+        $this->dispatch('set_drawer', title: 'Verifikasi Kehadiran', section: 'checkedin');
+        $this->dispatch('clear_after_done');
         $this->refresh();
     }
     public function clock_employee_out($position)
     {
-        $response = $this->API_post('view/attendance/clock-out', [
+        $response = $this->API_postJSON('view/attendance/clock-out', [
             'position' => $position,
         ]);
-        if (!$response->ok()) {
-            dd($response);
+        if ($response->status != 200) {
+            $this->dispatch('clear_after_error');
+            $this->dispatch('notify', type: 'error', message: $response->data->message);
         }
+        $this->dispatch('set_drawer', title: 'Verifikasi Clock Out', section: 'checkedout');
+        $this->dispatch('clear_after_done');
         $this->refresh();
     }
     public function clock_employee_absence()
     {
-        $response = $this->API_post('view/attendance/absence', [
+        $response = $this->API_postJSON('view/attendance/absence', [
             'reason' => $this->absence_reason,
             'note' => $this->absence_note,
         ]);
-        if (!$response->ok()) {
-            dd($response);
+        if ($response->status != 200) {
+            $this->dispatch('clear_after_error');
+            $this->dispatch('notify', type: 'error', message: $response->data->message);
         }
+        $this->dispatch('set_drawer', title: 'Pengajuan Izin', section: 'absenced');
+        $this->dispatch('clear_after_done');
         $this->refresh();
     }
 }

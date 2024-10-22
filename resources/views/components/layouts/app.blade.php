@@ -11,6 +11,8 @@
 
     <link rel="manifest" href="/manifest.json" />
 
+    {{-- Notfys --}}
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/notyf@3/notyf.min.css">
     {{-- LeafletJS --}}
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
         integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
@@ -95,17 +97,62 @@
             </div>
         </div>
     </main>
+    {{-- Notfy --}}
+    <script src="https://cdn.jsdelivr.net/npm/notyf@3/notyf.min.js"></script>
     {{-- Flowbite --}}
     <script src="{{ asset('assets/js/flowbite.min.js') }}"></script>
+    {{-- Layouting --}}
     <script src="{{ asset('assets/js/layout.js') }}"></script>
     <script src="{{ asset('assets/js/media-device.js') }}"></script>
     <script src="{{ asset('assets/js/alpine-extend.js') }}"></script>
+    {{-- Toastr --}}
+    <script src="{{ asset('assets/vendor/toastrjs/toastr.min.js') }}"></script>
     {{-- LeafletJS --}}
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
         integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
     @stack('scripts')
     <script>
+        const sendNotfy = new Notyf({
+            duration: 3000,
+            position: {
+                x: 'center',
+                y: 'bottom',
+            },
+            types: [{
+                type: 'info',
+                className: 'bg-ocean-600',
+                icon: false
+            }, {
+                type: 'default',
+                className: 'bg-gray-600',
+                icon: false
+            }]
+        });
         initFlowbite()
+        document.addEventListener('livewire:init', () => {
+            Livewire.on('notify', (payload) => {
+                switch (payload.type) {
+                    case 'success':
+                        sendNotfy.success(payload.message);
+                        break;
+                    case 'error':
+                        sendNotfy.error(payload.message)
+                        break;
+                    case 'info':
+                        sendNotfy.open({
+                            type: 'info',
+                            message: payload.message
+                        });
+                        break;
+                    default:
+                        sendNotfy.open({
+                            type: 'default',
+                            message: 'Something went wrong'
+                        });
+                        break;
+                }
+            });
+        });
     </script>
 </body>
 

@@ -14,7 +14,7 @@
                 </div>
             </li>
         </a>
-        <a href="settings/personal-data">
+        <a href="settings/personal-data" class="settings-soon">
             <li class="py-4 px-7 hover-ocean-300">
                 <div class="font-semibold text-gray-700">
                     <i class="bi bi-person-vcard text-ocean-500 mr-4"></i>Data Diri

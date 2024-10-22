@@ -19,7 +19,17 @@ class Home extends Component
 
     public function boot()
     {
-        $data = $this->API_getJSON('view/home');
+        $this->refresh();
+        if (session()->has('welcome')) {
+            $this->dispatch('notify', type: 'success', message: 'Selamat datang kembali, ' . $this->employee->full_name);
+        }
+        if (session()->has('logged_in')) {
+            $this->dispatch('notify', type: 'success', message: 'Sudah autentikasi menggunakan akun ' . $this->employee->full_name);
+        }
+    }
+    public function refresh()
+    {
+        $data = $this->API_getJSON('view/home')->data;
         $this->employee = $data->employee;
         $this->today = $data->today;
         if (!$this->today) {

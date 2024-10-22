@@ -12,11 +12,12 @@ class AuthenticateController extends Controller
     public function logout(Request $request)
     {
         $checked = $request->has('wipe_session') ? true : false;
-        if ($this->AUTH_logout($checked)) {
+        $response = $this->AUTH_logout($checked);
+        if ($response->status == 200) {
             $request->session()->invalidate();
             // Forget authentication token cookie
+            session()->flash('logged_out', 'Berhasil logout, selamat melanjutkan aktivitas!');
             $cookie = Cookie::forget($this->COOKIES_getSessionName());
-
             return redirect('/')->withCookie($cookie);
         }
     }

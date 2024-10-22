@@ -24,13 +24,19 @@ trait HasApiHelper
     }
     public function API_getJSON($target_url, $data = [])
     {
-    $response = $this->API_get($target_url, $data);
-        return json_decode($response->getBody());
+        $response = $this->API_get($target_url, $data);
+        return (object) array(
+            'status' => $response->status(),
+            'data' => json_decode($response->body())
+        );
     }
     public function API_postJSON($target_url, $data = [])
     {
         $response = $this->API_post($target_url, $data);
-        return json_decode($response->getBody());
+        return (object) array(
+            'status' => $response->status(),
+            'data' => json_decode($response->body())
+        );
     }
     public function API_delete() {}
 }

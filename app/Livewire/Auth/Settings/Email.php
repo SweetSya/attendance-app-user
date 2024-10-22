@@ -17,7 +17,7 @@ class Email extends Component
     }
     public function refresh()
     {
-        $data = $this->API_getJSON('view/settings/email');
+        $data = $this->API_getJSON('view/settings/email')->data;
         $this->email = $data->email;
         $this->original = $data;
     }
@@ -35,6 +35,7 @@ class Email extends Component
         if (!$response->ok()) {
             dd($response);
         }
+        $this->dispatch('notify', type: 'success', message: 'Perubahan berhasil disimpan');
         $this->refresh();
     }
 }

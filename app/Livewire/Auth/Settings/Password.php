@@ -37,6 +37,7 @@ class Password extends Component
         if (!$response->ok()) {
             dd(json_decode($response->body()));
         }
+        $this->dispatch('notify', type: 'success', message: 'Perubahan berhasil disimpan');
         $this->refresh();
     }
 }

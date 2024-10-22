@@ -19,7 +19,7 @@ class PersonalData extends Component
     }
     public function refresh()
     {
-        $data = $this->API_getJSON('view/settings/personal-data');
+        $data = $this->API_getJSON('view/settings/personal-data')->data;
         $this->image = $data->image;
         $this->full_name = $data->full_name;
         $this->phone = $data->phone;

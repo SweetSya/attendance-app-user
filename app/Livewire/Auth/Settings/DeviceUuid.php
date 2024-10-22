@@ -17,7 +17,7 @@ class DeviceUuid extends Component
     }
     public function refresh()
     {
-        $data = $this->API_getJSON('view/settings/device-uuid');
+        $data = $this->API_getJSON('view/settings/device-uuid')->data;
         $this->device_uuid = $data->device_uuid;
         $this->original = $data;
     }

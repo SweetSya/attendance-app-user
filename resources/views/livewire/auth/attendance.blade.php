@@ -104,7 +104,7 @@
                         class="btn btn-outline-success flex-grow min-w-52 py-3">Clock In</button>
                 @endif
                 @if ($today->clock_in && !$today->clock_out)
-                    <button @click="openDrawer({title: 'Verifikasi Checkout', 'section': 'checkout'})"
+                    <button @click="openDrawer({title: 'Verifikasi Clock Out', 'section': 'checkout'})"
                         class="btn btn-outline-ocean flex-grow min-w-52 py-3">Clock
                         Out</button>
                 @endif
@@ -145,8 +145,7 @@
             <i class="bi bi-x-lg"></i>
             <span class="sr-only">Close menu</span>
         </button>
-        <form
-            @submit.prevent="await $wire.clock_employee_in(JSON.stringify(distance.position)), $dispatch('set_drawer',{title: 'Verifikasi Kehadiran', 'section': 'checkedin'}), stopVideostream(), closeDrawer(2000)"
+        <form @submit.prevent="await $wire.clock_employee_in(JSON.stringify(distance.position)), stopVideostream()"
             x-show="drawer.section === 'checkin'">
             <p class="mb-6 text-base sm:text-xl text-gray-500 text-center">Verifikasi Biometrik Wajah</p>
             <p class="mb-6 text-xs sm:text-base text-gray-500 text-center">Arahkan wajah di posisi dalam box untuk
@@ -184,8 +183,7 @@
             <p class="mb-6 text-xs sm:text-base text-gray-500 text-center"> Otomatis melanjutkan dalam <span
                     class="font-bold underline hover-opacity-down text-ocean-500">2 detik</span></p>
         </div>
-        <form
-            @submit.prevent="await $wire.clock_employee_out(JSON.stringify(distance.position)), $dispatch('set_drawer',{title: 'Verifikasi Checkout', 'section': 'checkedout'}), closeDrawer(2000)"
+        <form @submit.prevent="await $wire.clock_employee_out(JSON.stringify(distance.position))"
             x-show="drawer.section === 'checkout'">
             <p class="mb-6 text-base sm:text-xl text-gray-500 text-center">Ingin clock out sekarang?</p>
             <p class="mb-6 text-xs sm:text-base text-gray-500 text-center">Pastikan kamu sudah selesai untuk hari ini
@@ -207,9 +205,7 @@
             <p class="mb-6 text-base text-gray-500 text-center">Harap diisi sesuai dengan keadaan yang sebenarnya yaa
                 <i class="bi bi-emoji-smile-fill ml-1"></i>
             </p>
-            <form
-                @submit.prevent="await $wire.clock_employee_absence(), $dispatch('set_drawer',{title: 'Pengajuan Izin', 'section': 'absenced'})"
-                class="flex flex-col gap-3">
+            <form @submit.prevent="await $wire.clock_employee_absence()" class="flex flex-col gap-3">
                 <select wire:model="absence_reason"
                     class="font-semibold bg-gray-50 border border-gray-300 text-gray-600 text-sm rounded-lg focus:ring-ocean-500 focus:border-ocean-500 block w-full p-2.5">
                     <option class="font-semibold" value="">IZIN KARENA.. (PILIH)</option>
@@ -220,7 +216,7 @@
                 <div>
                     <label for="message"
                         class="block mb-2 text-sm font-medium text-gray-600 dark:text-white">Tinggalkan pesan</label>
-                    <textarea wire:model="absence_note" id="message" rows="4"
+                    <textarea wire:model="absence_note" id="message" rows="4" required
                         class="block p-2.5 w-full text-sm text-gray-600 bg-gray-50 rounded-lg border border-gray-300 focus:ring-ocean-500 focus:border-ocean-500"></textarea>
                 </div>
                 <button type="submit" class="btn btn-ocean py-3">Kirimkan</button>
@@ -248,6 +244,15 @@
 
         /* Setting up the constraint */
         var facingMode = "user"; // Can be 'user' or 'environment' to access back or front camera
+
+        document.addEventListener('livewire:init', () => {
+            Livewire.on('clear_after_error', () => {
+                closeDrawer();
+            });
+            Livewire.on('clear_after_done', () => {
+                closeDrawer(2000);
+            });
+        });
     </script>
     <script src="{{ asset('assets/js/map.js') }}"></script>
     <script src="{{ asset('assets/js/attendance.js') }}"></script>

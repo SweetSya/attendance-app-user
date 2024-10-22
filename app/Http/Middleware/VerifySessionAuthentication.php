@@ -23,8 +23,13 @@ class VerifySessionAuthentication
     {
         // Check if token are present and valid on parent server's session,
         // if it is the update the session's expired at
-        if (!$this->AUTH_check()) {
-            return redirect('/');
+        $response = $this->AUTH_check();
+        if ($response->status != 200) {
+            $request->session()->invalidate();
+            // Forget authentication token cookie
+            $cookie = Cookie::forget($this->COOKIES_getSessionName());
+            session()->flash('error', $response->data->message);
+            return redirect('/')->withCookie($cookie);
         }
         return $next($request);
     }

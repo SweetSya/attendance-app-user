@@ -17,7 +17,7 @@ class Pin extends Component
     }
     public function refresh()
     {
-        $data = $this->API_getJSON('view/settings/pin');
+        $data = $this->API_getJSON('view/settings/pin')->data;
         $this->pin = $data->pin;
         $this->original = $data;
     }
@@ -34,6 +34,7 @@ class Pin extends Component
         if (!$response->ok()) {
             dd($response);
         }
+        $this->dispatch('notify', type: 'success', message: 'Perubahan berhasil disimpan');
         $this->refresh();
     }
 }

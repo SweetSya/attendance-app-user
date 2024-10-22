@@ -15,6 +15,7 @@
     /* html::-webkit-scrollbar {
         width: 0px;
       } */
+    /* Toastr */
 }
 
 @layer components {
@@ -73,10 +74,10 @@
         @apply bg-white text-ocean-950;
     }
     .btn-ocean {
-        @apply bg-gradient-to-r from-ocean-700 to-ocean-500 border-ocean-600 text-white;
+        @apply bg-gradient-to-r from-ocean-600 border-2 border-transparent to-ocean-500 text-white;
     }
     .btn-ocean:hover {
-        @apply opacity-90;
+        @apply from-transparent to-transparent border-ocean-600 text-ocean-600;
     }
     .btn-outline-ocean {
         @apply bg-transparent border-2 border-ocean-600 text-ocean-600;
@@ -85,10 +86,22 @@
         @apply bg-gradient-to-r from-ocean-700 to-ocean-500 border-ocean-600 text-white;
     }
     .btn-cinnabar {
-        @apply bg-gradient-to-r from-cinnabar-600 to-cinnabar-500 border-cinnabar-600 text-white;
+        @apply bg-gradient-to-r from-cinnabar-500 border-2 border-transparent to-cinnabar-400 text-white;
     }
     .btn-cinnabar:hover {
-        @apply bg-transparent;
+        @apply from-transparent to-transparent border-cinnabar-500 text-cinnabar-600;
+    }
+    .btn-success {
+        @apply bg-gradient-to-r from-lime-600 border-2 border-transparent to-lime-500 text-white;
+    }
+    .btn-success:hover {
+        @apply from-transparent to-transparent border-lime-600 text-lime-700;
+    }
+    .btn-warning {
+        @apply bg-gradient-to-r from-yellow-500 border-2 border-transparent to-yellow-400 text-white;
+    }
+    .btn-warning:hover {
+        @apply from-transparent to-transparent border-yellow-500 text-yellow-600;
     }
     .btn-outline-success {
         @apply bg-transparent border-2 border-lime-400 text-black/50;

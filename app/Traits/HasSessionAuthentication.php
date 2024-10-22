@@ -21,11 +21,17 @@ trait HasSessionAuthentication
                 ]
             );
             if (!$response->ok()) {
-                return redirect('/');
+                return (object) array(
+                    'status' => $response->status(),
+                    'data' => json_decode($response->body())
+                );
             }
             $response_body = json_decode($response->body());
             $this->_setCookie($response_body->auth_access_token, $response_body->expired_at);
-            return true;
+            return (object) array(
+                'status' => $response->status(),
+                'data' => json_decode($response->body())
+            );
         } catch (\Throwable $th) {
             return false;
         }
@@ -41,11 +47,17 @@ trait HasSessionAuthentication
                 ]
             );
             if (!$response->ok()) {
-                return redirect('/');
+                return (object) array(
+                    'status' => $response->status(),
+                    'data' => json_decode($response->body())
+                );
             }
             $response_body = json_decode($response->body());
             $this->_setCookie($response_body->auth_access_token, $response_body->expired_at);
-            return true;
+            return (object) array(
+                'status' => $response->status(),
+                'data' => json_decode($response->body())
+            );
         } catch (\Throwable $th) {
             dd($th);
             return false;
@@ -60,10 +72,10 @@ trait HasSessionAuthentication
                     'wipe' => $wipe
                 ]
             );
-            if ($response->ok()) {
-                return true;
-            }
-            return false;
+            return (object) array(
+                'status' => $response->status(),
+                'data' => json_decode($response->body())
+            );
         } catch (\Throwable $th) {
             return false;
         }
@@ -75,11 +87,17 @@ trait HasSessionAuthentication
                 'renew-session',
             );
             if (!$response->ok()) {
-                return false;
+                return (object) array(
+                    'status' => $response->status(),
+                    'data' => json_decode($response->body())
+                );
             }
             $response_body = json_decode($response->body());
             $this->_checkCookie($response_body->auth_access_token);
-            return true;
+            return (object) array(
+                'status' => $response->status(),
+                'data' => json_decode($response->body())
+            );
         } catch (\Throwable $th) {
             return false;
         }

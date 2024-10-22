@@ -174,15 +174,19 @@
                         <div class="flex items-center justify-between">
                             <div class="rounded flex gap-3 sm:gap-7 px-1">
                                 <div class="w-1/2 text-center mx-auto">
-                                    <p class="opacity-70 text-xs sm:text-base text-nowrap font-light">Clock In</p>
+                                    <p class="opacity-70 text-xs sm:text-base text-nowrap font-light text-nowrap">Clock
+                                        In</p>
                                     <p class="font-bold text-xs sm:text-base">
-                                        {{ \Carbon\Carbon::parse($attendance->clock_in)->isoFormat('HH:mm:ss') }}</p>
+                                        {{ $attendance->clock_in ? \Carbon\Carbon::parse($attendance->clock_in)->isoFormat('HH:mm:ss') : '-' }}
+                                    </p>
                                 </div>
                                 <div class="w-[1px] border"></div>
                                 <div class="w-1/2 text-center mx-auto">
-                                    <p class="opacity-70 text-xs sm:text-base text-nowrap font-light">Clock Out</p>
+                                    <p class="opacity-70 text-xs sm:text-base text-nowrap font-light text-nowrap">Clock
+                                        Out</p>
                                     <p class="font-bold text-xs sm:text-base">
-                                        {{ \Carbon\Carbon::parse($attendance->clock_out)->isoFormat('HH:mm:ss') }}</p>
+                                        {{ $attendance->clock_out ? \Carbon\Carbon::parse($attendance->clock_out)->isoFormat('HH:mm:ss') : '-' }}
+                                    </p>
                                 </div>
                             </div>
                             <div class="text-right">
