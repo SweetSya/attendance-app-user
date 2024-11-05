@@ -55,8 +55,8 @@
                     <button type="button" @click=" $wire.password = '', $wire.re_password = ''"
                         class="btn btn-border-warning bg-gradient-warning-soft flex-grow py-2 mr-3"> <i
                             class="bi bi-backspace-reverse-fill"></i></button>
-                    <button type="submit" class="btn btn-border-success bg-gradient-success-soft flex-grow py-2 px-10"> <i
-                            class="bi bi-check mr-2"></i>/button>
+                    <button type="submit" class="btn btn-border-success bg-gradient-success-soft flex-grow py-2 px-10">
+                        <i class="bi bi-check mr-2"></i>/button>
                 </div>
 
             </form>

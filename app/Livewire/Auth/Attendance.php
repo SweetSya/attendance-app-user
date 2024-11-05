@@ -13,7 +13,7 @@ class Attendance extends Component
     use HasApiHelper;
     public $title = "Absensi";
 
-    public $DAY_OFF, $HOLIDAY;
+    public $DAY_OFF, $HOLIDAY, $VACATION;
     public $employee, $office, $company, $today, $total_attend, $total_this_month, $attendances;
     public $absence_reason, $absence_note;
     public function boot()
@@ -34,9 +34,13 @@ class Attendance extends Component
         $this->company = $data->company;
         // Check if today is day off
         $this->DAY_OFF = false;
+        $this->VACATION = false;
         $this->HOLIDAY = false;
         if (!in_array(Carbon::now()->dayOfWeek(), $this->office->work_day)) {
             $this->DAY_OFF = true;
+        }
+        if ($this->employee->status == 'vacation') {
+            $this->VACATION = true;
         }
         if ($data->holiday) {
             $this->HOLIDAY = $data->holiday;
@@ -57,6 +61,7 @@ class Attendance extends Component
         if ($response->status != 200) {
             $this->dispatch('clear_after_error');
             $this->dispatch('notify', type: 'error', message: $response->data->message);
+            return;
         }
         $this->dispatch('set_drawer', title: 'Verifikasi Kehadiran', section: 'checkedin');
         $this->dispatch('clear_after_done');
@@ -70,6 +75,7 @@ class Attendance extends Component
         if ($response->status != 200) {
             $this->dispatch('clear_after_error');
             $this->dispatch('notify', type: 'error', message: $response->data->message);
+            return;
         }
         $this->dispatch('set_drawer', title: 'Verifikasi Clock Out', section: 'checkedout');
         $this->dispatch('clear_after_done');
@@ -84,6 +90,7 @@ class Attendance extends Component
         if ($response->status != 200) {
             $this->dispatch('clear_after_error');
             $this->dispatch('notify', type: 'error', message: $response->data->message);
+            return;
         }
         $this->dispatch('set_drawer', title: 'Pengajuan Izin', section: 'absenced');
         $this->dispatch('clear_after_done');

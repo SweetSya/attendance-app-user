@@ -16,6 +16,8 @@
     {{-- LeafletJS --}}
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
         integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+    {{-- SwiperJS --}}
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
 
 </head>
 
@@ -96,11 +98,34 @@
                 </form>
             </div>
         </div>
+        {{-- <div wire:ignore id="drawer-attendance"
+            class="fixed bottom-0 !left-1/2 max-w-3xl !-translate-x-1/2 z-50 w-full p-4 overflow-y-auto transition-transform bg-white translate-y-full"
+            tabindex="-1" aria-labelledby="drawer-bottom-label" aria-hidden="true">
+            <h5 id="drawer-bottom-label"
+                class="inline-flex items-center mb-4 text-base font-semibold text-gray-500 dark:text-gray-400">
+                <i class="bi bi-question-circle-fill mr-3"></i><span>Terjadi Kesalahan</span>
+            </h5>
+            <button data-drawer-hide="drawer-attendance" aria-controls="drawer-attendance" type="button"
+                class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 absolute top-2.5 end-2.5 inline-flex items-center justify-center dark:hover:bg-gray-600 dark:hover:text-white">
+                <i class="bi bi-x-lg"></i>
+                <span class="sr-only">Close menu</span>
+            </button>
+            <div>
+                <p class="mb-6 text-base sm:text-xl text-gray-500 text-center" x-text="title"></p>
+                <div class="mx-auto rounded relative w-fit mb-4">
+                    <i class="bi bi-check-circle-fill text-ocean-600 text-6xl"></i>
+                </div>
+                <p class="mb-6 text-xs sm:text-base text-gray-500 text-center" x-text="title"> Otomatis melanjutkan dalam <span
+                        class="font-bold underline hover-opacity-down text-ocean-500">2 detik</span></p>
+            </div>
+        </div> --}}
     </main>
     {{-- Notfy --}}
     <script src="https://cdn.jsdelivr.net/npm/notyf@3/notyf.min.js"></script>
     {{-- Flowbite --}}
     <script src="{{ asset('assets/js/flowbite.min.js') }}"></script>
+    {{-- SwiperJS --}}
+    <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
     {{-- Layouting --}}
     <script src="{{ asset('assets/js/layout.js') }}"></script>
     <script src="{{ asset('assets/js/media-device.js') }}"></script>
@@ -131,26 +156,33 @@
         initFlowbite()
         document.addEventListener('livewire:init', () => {
             Livewire.on('notify', (payload) => {
+                let notification
                 switch (payload.type) {
                     case 'success':
-                        sendNotfy.success(payload.message);
+                        notification = sendNotfy.success(payload.message);
                         break;
                     case 'error':
-                        sendNotfy.error(payload.message)
+                        notification = sendNotfy.error(payload.message)
                         break;
                     case 'info':
-                        sendNotfy.open({
+                        notification = sendNotfy.open({
                             type: 'info',
                             message: payload.message
                         });
                         break;
                     default:
-                        sendNotfy.open({
+                        notification = sendNotfy.open({
                             type: 'default',
                             message: 'Something went wrong'
                         });
                         break;
                 }
+                notification.on('click', ({
+                    target,
+                    event
+                }) => {
+                    sendNotfy.dismiss(notification);
+                })
             });
         });
     </script>

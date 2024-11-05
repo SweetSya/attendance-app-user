@@ -50,7 +50,16 @@
                 </div>
                 <div class="my-2 tracking-wide-all">
                     <div class="bg-ocean-700/40 rounded flex justify-around py-4 px-1 sm:py-6">
-                        @if ($HOLIDAY)
+                        {{-- If its Vacation --}}
+                        @if ($VACATION)
+                            <div class="w-2/3 text-center mx-auto">
+                                <p class="font-bold text-base xs:text-2xl md:text-3xl">Cuti</p>
+                                <p class=" text-xs xs:text-base font-light">Kamu tidak perlu mengecek aplikasi selama
+                                    masa cuti. Selamat menikmati hari cutimu :)
+                                </p>
+                            </div>
+                            {{-- If its Holiday --}}
+                        @elseif ($HOLIDAY)
                             <div class="w-2/3 text-center mx-auto">
                                 <p class="font-bold text-base xs:text-2xl md:text-3xl">Libur Bersama</p>
                                 <p class=" text-xs xs:text-base font-light">Kantormu menetapkan hari ini
@@ -60,6 +69,7 @@
                                     jika ada jam kerja di hari ini :)
                                 </p>
                             </div>
+                            {{-- If its day off of work --}}
                         @elseif ($DAY_OFF)
                             <div class="w-2/3 text-center mx-auto">
                                 <p class="font-bold text-base xs:text-2xl md:text-3xl">Libur Kantor</p>
@@ -68,18 +78,28 @@
                                     :)
                                 </p>
                             </div>
+                            {{-- If its working day --}}
                         @else
-                            <div class="w-1/2 text-center mx-auto">
-                                <p class="opacity-70 text-base xs:text-xl md:text-2xl font-light">Clock In</p>
-                                <p class="font-bold text-base xs:text-2xl md:text-3xl">
-                                    {{ $today->clock_in ? $today->clock_in : '-' }}</p>
-                            </div>
-                            <div class="w-[1px] border"></div>
-                            <div class="w-1/2 text-center mx-auto">
-                                <p class="opacity-70 text-base xs:text-xl md:text-2xl font-light">Clock Out</p>
-                                <p class="font-bold text-base xs:text-2xl md:text-3xl">
-                                    {{ $today->clock_out ? $today->clock_out : '-' }}</p>
-                            </div>
+                            {{-- If its attendance type are not kosong or sesuai, related to database, this is for checking if the employee are sick, absence or other --}}
+                            @if (!in_array($today->type->name, ['kosong', 'sesuai']))
+                                <div class="w-full text-center mx-auto">
+                                    <p class="opacity-70 text-base xs:text-xl md:text-2xl font-light">Tidak Hadir</p>
+                                    <p class="font-bold text-base xs:text-2xl md:text-3xl">
+                                        {{ ucfirst($today->type->name) }}</p>
+                                </div>
+                            @else
+                                <div class="w-1/2 text-center mx-auto">
+                                    <p class="opacity-70 text-base xs:text-xl md:text-2xl font-light">Clock In</p>
+                                    <p class="font-bold text-base xs:text-2xl md:text-3xl">
+                                        {{ $today->clock_in ? $today->clock_in : '-' }}</p>
+                                </div>
+                                <div class="w-[1px] border"></div>
+                                <div class="w-1/2 text-center mx-auto">
+                                    <p class="opacity-70 text-base xs:text-xl md:text-2xl font-light">Clock Out</p>
+                                    <p class="font-bold text-base xs:text-2xl md:text-3xl">
+                                        {{ $today->clock_out ? $today->clock_out : '-' }}</p>
+                                </div>
+                            @endif
                         @endif
                     </div>
                 </div>
@@ -147,11 +167,43 @@
                 dipertahankan besok
                 ya</span>
         </div> --}}
-        <div class="mb-5 flex items-center gap-3 text-gray-500">
+        <div class="mb-3 flex items-center gap-3 text-gray-500">
             <i class="bi bi-info-circle"></i>
             <span class="text-sm leading-tight">Gunakan <span class="italic font-bold">handphone & jaringan data</span>
                 untuk
                 meningkatkan akurasi posisi.</span>
+        </div>
+        <div class="flex justify-between text-ocean-950/80 mb-2">
+            <p class="font-bold text-base sm:text-xl">Aksi Lainnya</p>
+            {{-- <a href="/history" class="font-light text-base sm:text-xl hover-opacity-down">Lihat semua</a> --}}
+        </div>
+        <div id="swiper-actions" class="swiper mb-2">
+            <div class="swiper-wrapper mr-2">
+                <a href="/vacation"
+                    class="swiper-slide p-4 text-sm text-ocean-800 border border-ocean-300 shadow rounded bg-gradient-ocean-soft h-20 text-center cursor-pointer hover:opacity-70">
+                    <i class="bi bi-airplane-fill text-xl sm:text-2xl opacity-70"></i>
+                    <p class="font-light text-xs xs:text-base">Ajukan Cuti</p>
+                </a>
+                <div
+                    class="swiper-slide p-4 text-sm text-ocean-800 border border-ocean-300 shadow rounded bg-gradient-ocean-soft h-20 text-center opacity-50 pointer-events-none">
+                    <i class="bi bi-info-circle-fill text-xl sm:text-2xl opacity-70"></i>
+                    <p class="font-light text-xs xs:text-base">Soon</p>
+                </div>
+                <div
+                    class="swiper-slide p-4 text-sm text-ocean-800 border border-ocean-300 shadow rounded bg-gradient-ocean-soft h-20 text-center opacity-50 pointer-events-none">
+                    <i class="bi bi-info-circle-fill text-xl sm:text-2xl opacity-70"></i>
+                    <p class="font-light text-xs xs:text-base">Soon</p>
+                </div>
+                <div
+                    class="swiper-slide p-4 text-sm text-ocean-800 border border-ocean-300 shadow rounded bg-gradient-ocean-soft h-20 text-center opacity-50 pointer-events-none">
+                    <i class="bi bi-info-circle-fill text-xl sm:text-2xl opacity-70"></i>
+                    <p class="font-light text-xs xs:text-base">Soon</p>
+                </div>
+            </div>
+        </div>
+        <div class="flex justify-between text-ocean-950/80 mb-2">
+            <p class="font-bold text-base sm:text-xl">Histori Kehadiran</p>
+            {{-- <a href="/history" class="font-light text-base sm:text-xl hover-opacity-down">Lihat semua</a> --}}
         </div>
         <div class="relative mb-5 p-4 text-white rounded bg-gradient-ocean">
             <div class="flex flex-col justify-center gap-1">
@@ -163,31 +215,39 @@
             </div>
         </div>
         <div class="relative mb-5">
-            <div class="flex justify-between text-ocean-950 mb-2">
-                <p class="font-bold text-base sm:text-xl">Histori Kehadiran</p>
-                {{-- <a href="/history" class="font-light text-base sm:text-xl hover-opacity-down">Lihat semua</a> --}}
-            </div>
             <div class="flex flex-col gap-3">
                 @foreach ($attendances as $attendance)
                     <div class="p-4 text-sm text-ocean-800 border border-ocean-300 rounded bg-gradient-ocean-soft">
                         <span class="sr-only">Info</span>
                         <div class="flex items-center justify-between">
                             <div class="rounded flex gap-3 sm:gap-7 px-1">
-                                <div class="w-1/2 text-center mx-auto">
-                                    <p class="opacity-70 text-xs sm:text-base text-nowrap font-light text-nowrap">Clock
-                                        In</p>
-                                    <p class="font-bold text-xs sm:text-base">
-                                        {{ $attendance->clock_in ? \Carbon\Carbon::parse($attendance->clock_in)->isoFormat('HH:mm:ss') : '-' }}
-                                    </p>
-                                </div>
-                                <div class="w-[1px] border"></div>
-                                <div class="w-1/2 text-center mx-auto">
-                                    <p class="opacity-70 text-xs sm:text-base text-nowrap font-light text-nowrap">Clock
-                                        Out</p>
-                                    <p class="font-bold text-xs sm:text-base">
-                                        {{ $attendance->clock_out ? \Carbon\Carbon::parse($attendance->clock_out)->isoFormat('HH:mm:ss') : '-' }}
-                                    </p>
-                                </div>
+                                {{-- If absence --}}
+                                @if (!in_array($attendance->type->name, ['kosong', 'sesuai']))
+                                    <div class="w-full text-center mx-auto">
+                                        <p class="opacity-70 text-xs sm:text-base text-nowrap font-light">Tidak Hadir
+                                        </p>
+                                        <p class="font-bold text-xs sm:text-base">
+                                            {{ ucfirst($attendance->type->name) }}
+                                        </p>
+                                    </div>
+                                @else
+                                    {{-- If present --}}
+                                    <div class="w-1/2 text-center mx-auto">
+                                        <p class="opacity-70 text-xs sm:text-base text-nowrap font-light">Clock
+                                            In</p>
+                                        <p class="font-bold text-xs sm:text-base">
+                                            {{ $attendance->clock_in ? \Carbon\Carbon::parse($attendance->clock_in)->isoFormat('HH:mm:ss') : '-' }}
+                                        </p>
+                                    </div>
+                                    <div class="w-[1px] border"></div>
+                                    <div class="w-1/2 text-center mx-auto">
+                                        <p class="opacity-70 text-xs sm:text-base text-nowrap font-light">Clock
+                                            Out</p>
+                                        <p class="font-bold text-xs sm:text-base">
+                                            {{ $attendance->clock_out ? \Carbon\Carbon::parse($attendance->clock_out)->isoFormat('HH:mm:ss') : '-' }}
+                                        </p>
+                                    </div>
+                                @endif
                             </div>
                             <div class="text-right">
                                 <p class="text-xl sm:text-3xl font-bold">
@@ -206,6 +266,18 @@
 
 @push('scripts')
     <script>
+        var swiper = new Swiper("#swiper-actions", {
+            slidesPerView: 2,
+            spaceBetween: 15,
+            breakpoints: {
+                640: {
+                    slidesPerView: 3,
+                },
+                768: {
+                    slidesPerView: 4,
+                },
+            },
+        });
         let office = [{{ $office->lat }}, {{ $office->lon }}];
         let officeRadius = {{ $office->radius }};
         let autoSnap = true

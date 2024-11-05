@@ -22,7 +22,7 @@
                     x-show="$wire.email != $wire.original.email">
                     <button type="button" @click="$wire.email = $wire.original.email"
                         class="btn btn-cinnabar flex-grow py-2"> <i class="bi bi-back"></i></button>
-                    <button type="submit" class="btn btn-ocean flex-grow py-2 px-10"> <i
+                    <button type="submit" class="btn btn-ocean flex-grow py-2 "> <i
                             class="bi bi-check"></i></button>
                 </div>
 

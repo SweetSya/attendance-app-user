@@ -27,7 +27,17 @@
             </div>
         </div>
         <div class="w-full flex flex-col gap-2 text-ocean-800 mb-5">
-            @if ($HOLIDAY)
+            @if ($VACATION)
+                <div class="w-full flex gap-2 text-ocean-800 mb-3">
+                    <div
+                        class="relative text-center flex flex-col justify-center gap-1 w-full p-4 min-h-24 rounded bg-gradient-ocean-soft">
+                        <p class="font-bold text-base xs:text-2xl md:text-3xl">Cuti</p>
+                        <p class=" text-xs xs:text-base font-">Kamu tidak perlu mengecek aplikasi selama
+                            masa cuti. Selamat menikmati hari cutimu :)
+                        </p>
+                    </div>
+                </div>
+            @elseif ($HOLIDAY)
                 <div class="w-full flex gap-2 text-ocean-800 mb-3">
                     <div
                         class="relative text-center flex flex-col justify-center gap-1 w-full p-4 min-h-24 rounded bg-gradient-ocean-soft">
@@ -53,49 +63,66 @@
                     </div>
                 </div>
             @else
-                <div class="w-full flex gap-2 text-ocean-800 mb-3">
-                    <div :class="distance.range <= officeRadius ? 'bg-gradient-ocean-soft' : 'bg-gradient-danger-soft'"
-                        class="relative flex flex-col justify-center gap-1 w-full p-4 min-h-24 rounded">
-                        <i class="bi bi-compass-fill absolute right-2 top-2 text-2xl sm:text-4xl opacity-70"></i>
-                        <p class="font-light text-base xs:text-lg">Jarakmu</p>
-                        <p class="font-bold text-xl xs:text-2xl sm:text-3xl"
-                            x-text="distance.range == 0 ? 'Menghitung' : formatDistance(distance.range)">
-                        </p>
-                        <p class="font-light text-base xs:text-lg">Dari kantor</p>
+                {{-- If absence --}}
+                @if (!in_array($today->type->name, ['kosong', 'sesuai']))
+                    <div class="w-full flex gap-2 text-ocean-800 mb-3">
+                        <div
+                            class="relative text-center flex flex-col justify-center gap-1 w-full p-4 min-h-24 rounded bg-gradient-warning-soft">
+                            <p class="font-bold text-base xs:text-2xl md:text-3xl">Tidak Hadir</p>
+                            <p class=" text-xs xs:text-base font-">Kamu telah menetapkan hari ini tidak dapat hadir
+                                dikarenakan <span class="font-bold">"{{ ucfirst($today->type->name) }}"</span>. Semoga
+                                dapat bertemu di hari kerja
+                                berikutnya :)
+                            </p>
+                        </div>
                     </div>
-                </div>
-                <div class="mb-4 flex items-center gap-3 text-gray-500">
-                    <i class="bi bi-info-circle"></i>
-                    <span class="text-sm leading-tight">Harap dipersiapkan karena<span class="font-bold"> kamera akan
-                            aktif</span> untuk melakukan clock in.</span>
-                </div>
-                <div class="flex gap-3">
-                    <div
-                        class="relative flex flex-col justify-center gap-1 w-1/2 p-4 min-h-24 rounded bg-gradient-success-soft">
-                        <i class="bi bi-box-arrow-in-right absolute right-2 top-2 text-2xl sm:text-4xl opacity-70"></i>
-                        <p class="font-light text-base xs:text-lg">Clock In</p>
-                        <p class="font-bold text-xl xs:text-2xl sm:text-3xl">
-                            {{ $today->clock_in ? $today->clock_in : '-' }}
-                        </p>
-                        <p class="font-light text-base xs:text-lg">dari
-                            {{ \Carbon\Carbon::parse($office->clock_in)->isoFormat('HH:mm') }}</p>
+                @else
+                    <div class="w-full flex gap-2 text-ocean-800 mb-3">
+                        <div :class="distance.range <= officeRadius ? 'bg-gradient-ocean-soft' : 'bg-gradient-danger-soft'"
+                            class="relative flex flex-col justify-center gap-1 w-full p-4 min-h-24 rounded">
+                            <i class="bi bi-compass-fill absolute right-2 top-2 text-2xl sm:text-4xl opacity-70"></i>
+                            <p class="font-light text-base xs:text-lg">Jarakmu</p>
+                            <p class="font-bold text-xl xs:text-2xl sm:text-3xl"
+                                x-text="distance.range == 0 ? 'Menghitung' : formatDistance(distance.range)">
+                            </p>
+                            <p class="font-light text-base xs:text-lg">Dari kantor</p>
+                        </div>
                     </div>
-                    <div
-                        class="relative flex flex-col justify-center gap-1 w-1/2 p-4 min-h-24 rounded bg-gradient-warning-soft">
-                        <i class="bi bi-box-arrow-right absolute right-2 top-2 text-2xl sm:text-4xl opacity-70"></i>
-                        <p class="font-light text-base xs:text-lg">Clock Out</p>
-                        <p class="font-bold text-xl xs:text-2xl sm:text-3xl">
-                            {{ $today->clock_out ? $today->clock_out : '-' }}
-                        </p>
-                        <p class="font-light text-base xs:text-lg">dari
-                            {{ \Carbon\Carbon::parse($office->clock_out)->isoFormat('HH:mm') }}</p>
+                    <div class="mb-4 flex items-center gap-3 text-gray-500">
+                        <i class="bi bi-info-circle"></i>
+                        <span class="text-sm leading-tight">Harap dipersiapkan karena<span class="font-bold"> kamera
+                                akan
+                                aktif</span> untuk melakukan clock in.</span>
                     </div>
-                </div>
+                    <div class="flex gap-3">
+                        <div
+                            class="relative flex flex-col justify-center gap-1 w-1/2 p-4 min-h-24 rounded bg-gradient-success-soft">
+                            <i
+                                class="bi bi-box-arrow-in-right absolute right-2 top-2 text-2xl sm:text-4xl opacity-70"></i>
+                            <p class="font-light text-base xs:text-lg">Clock In</p>
+                            <p class="font-bold text-xl xs:text-2xl sm:text-3xl">
+                                {{ $today->clock_in ? $today->clock_in : '-' }}
+                            </p>
+                            <p class="font-light text-base xs:text-lg">dari
+                                {{ \Carbon\Carbon::parse($office->clock_in)->isoFormat('HH:mm') }}</p>
+                        </div>
+                        <div
+                            class="relative flex flex-col justify-center gap-1 w-1/2 p-4 min-h-24 rounded bg-gradient-warning-soft">
+                            <i class="bi bi-box-arrow-right absolute right-2 top-2 text-2xl sm:text-4xl opacity-70"></i>
+                            <p class="font-light text-base xs:text-lg">Clock Out</p>
+                            <p class="font-bold text-xl xs:text-2xl sm:text-3xl">
+                                {{ $today->clock_out ? $today->clock_out : '-' }}
+                            </p>
+                            <p class="font-light text-base xs:text-lg">dari
+                                {{ \Carbon\Carbon::parse($office->clock_out)->isoFormat('HH:mm') }}</p>
+                        </div>
+                    </div>
+                @endif
             @endif
 
         </div>
         <div class="mb-5 flex flex-wrap gap-2">
-            @if (!$HOLIDAY && !$DAY_OFF)
+            @if (!$HOLIDAY && !$DAY_OFF && !$VACATION)
                 @if (!$today->clock_in)
                     <button
                         :class="distance.range >= officeRadius ? 'pointer-events-none opacity-35' :

@@ -4,6 +4,7 @@ use App\Http\Controllers\AuthenticateController;
 use App\Livewire\Auth\Attendance;
 use App\Livewire\Auth\History;
 use App\Livewire\Auth\Home;
+use App\Livewire\Auth\Others\Vacation;
 use App\Livewire\Auth\Settings;
 use App\Livewire\Auth\Settings\Email as SettingsEmail;
 use App\Livewire\Auth\Settings\Password;
@@ -33,6 +34,7 @@ Route::group(['middleware' => 'refresh_device_uuid'], function () {
         Route::get('/attendance', Attendance::class)->name('attendance');
         Route::get('/settings', Settings::class)->name('settings');
         Route::get('/history', History::class)->name('history');
+        Route::get('/vacation', Vacation::class)->name('vacation');
 
         Route::get('/settings/email', SettingsEmail::class)->name('settings');
         Route::get('/settings/personal-data', PersonalData::class)->name('settings');
