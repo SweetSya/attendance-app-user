@@ -16,22 +16,22 @@
             </div>
             <form @submit.prevent="$wire.change_data()">
                 <div class="mb-2 text-left">
-                    <label for="full_name" class="text-base text-ocean-400 font-semibold">Nama Lengkap</label>
+                    <label for="full_name" class="text-base text-ocean-600 font-semibold">Nama Lengkap</label>
                     <input wire:model="full_name" type="text" id="full_name"
                         class="block p-2.5 mb-3 mt-2 w-full text-sm text-gray-600 bg-gray-50 rounded-lg border border-gray-300 focus:ring-ocean-500 focus:border-ocean-500">
                 </div>
                 <div class="mb-2 text-left">
-                    <label for="phone" class="text-base text-ocean-400 font-semibold">No. Telp</label>
+                    <label for="phone" class="text-base text-ocean-600 font-semibold">No. Telp</label>
                     <input wire:model="phone" type="text" id="phone"
                         class="block p-2.5 mb-3 mt-2 w-full text-sm text-gray-600 bg-gray-50 rounded-lg border border-gray-300 focus:ring-ocean-500 focus:border-ocean-500">
                 </div>
                 <div class="mb-2 text-left">
-                    <label for="address" class="text-base text-ocean-400 font-semibold">Alamat Lengkap</label>
+                    <label for="address" class="text-base text-ocean-600 font-semibold">Alamat Lengkap</label>
                     <textarea cols="30" rows="10" wire:model="address" id="address"
                         class="block p-2.5 mb-3 mt-2 w-full text-sm text-gray-600 bg-gray-50 rounded-lg border border-gray-300 focus:ring-ocean-500 focus:border-ocean-500"></textarea>
                 </div>
                 <div class="mb-2 text-left">
-                    <label for="village_id" class="text-base text-ocean-400 font-semibold">Desa</label>
+                    <label for="village_id" class="text-base text-ocean-600 font-semibold">Desa</label>
                     <input wire:model="village_id" for="text" id="village_id"
                         class="block p-2.5 mb-3 mt-2 w-full text-sm text-gray-600 bg-gray-50 rounded-lg border border-gray-300 focus:ring-ocean-500 focus:border-ocean-500">
                 </div>

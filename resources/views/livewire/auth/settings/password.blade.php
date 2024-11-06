@@ -16,7 +16,7 @@
             <form @submit.prevent="$wire.change_password()">
                 {{-- <div x-data="{ open: false }" class="relative z-0 w-full group">
                     <div class="mb-2 text-left">
-                        <label for="old_password" class="text-base text-ocean-400 font-semibold">Password Lama</label>
+                        <label for="old_password" class="text-base text-ocean-600 font-semibold">Password Lama</label>
                         <input wire:model="old_password" :type="open ? 'text' : 'password'" id="old_password" required
                             placeholder="Password lama"
                             class="block p-2.5 mb-3 mt-1 w-full text-sm text-gray-600 bg-gray-50 rounded-lg border border-gray-300 focus:ring-ocean-500 focus:border-ocean-500">
@@ -26,7 +26,7 @@
                 </div> --}}
                 <div x-data="{ open: false }" class="relative z-0 w-full group">
                     <div class="mb-4 text-left">
-                        {{-- <label for="password" class="text-base text-ocean-400 font-semibold">Password Baru</label> --}}
+                        {{-- <label for="password" class="text-base text-ocean-600 font-semibold">Password Baru</label> --}}
                         <input wire:model="password" :type="open ? 'text' : 'password'" id="password" required
                             placeholder="Password baru"
                             class="block p-2.5 mb-3 mt-1 w-full text-sm text-gray-600 bg-gray-50 rounded-lg border border-gray-300 focus:ring-ocean-500 focus:border-ocean-500">
