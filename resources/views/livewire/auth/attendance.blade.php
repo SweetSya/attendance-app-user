@@ -1,5 +1,7 @@
-<div id="data-wrapper" x-data="{ distance: { range: 0, refresh_at: '', position: [0, 0] }, drawer: { title: '', section: '' } }"
+<div id="data-wrapper" x-data="{ distance: { range: 0, refresh_at: '', position: [0, 0] }, drawer: { title: '', section: '' }, face: { scanning: false, last: '' } }"
     @set_drawer.window.camel="drawer = $event.detail, drawerSection = $event.detail.section"
+    @start_check_face.window.camel="await $wire.clock_employee_face(JSON.stringify($event.detail.face), JSON.stringify(distance.position))"
+    @set_face_scanning.window.camel="$event.detail.scanning ? (face.scanning = true, face.last = '') : (face.scanning = false, face.last = getBase64Face(), stopVideostream())"
     @set_distance.window.camel="distance = $event.detail" class="text-all-wide">
     <div wire:ignore class="h-screen">
         <div class="fixed w-full max-w-3xl h-screen">
@@ -177,9 +179,28 @@
             <p class="mb-6 text-base sm:text-xl text-gray-500 text-center">Verifikasi Biometrik Wajah</p>
             <p class="mb-6 text-xs sm:text-base text-gray-500 text-center">Arahkan wajah di posisi dalam box untuk
                 memudahkan pemindaian</p>
-            <div class="mx-auto rounded border relative w-fit mb-4">
-                <video muted autoplay id="verify-camera" class="max-h-96 rounded" src=""></video>
-                <div class="absolute w-36 h-36 sm:w-52 sm:h-52 left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
+            <div class="mx-auto rounded border relative h-auto max-w-96 mb-4 overflow-hidden ">
+                <video x-show="face.scanning" muted autoplay id="verify-camera"
+                    class="h-full w-full rounded object-cover" src="">
+                </video>
+                <div x-transition x-show="!face.scanning">
+                    <img :src="face.last" class="h-full w-full rounded object-cover blur-sm" alt="">
+                    <div
+                        class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-white rounded px-4 py-4">
+                        <div class="text-center mb-2">
+                            <p class="text-xs sm:text-base text-gray-600 text-center mb-2">Verifikasi biometrik <span
+                                    class="text-ocean-500 font-bold">Gagal</span>
+                            </p>
+                            <i class="bi bi-exclamation-circle-fill text-2xl md:text-4xl text-ocean-800"></i>
+                        </div>
+                        <div class="text-center">
+                            <button @click=" await prepareCheckedIn()" type="button"
+                                class="underline text-ocean-500 font-semibold hover:no-underline">Ulangi</button>
+                        </div>
+                    </div>
+                </div>
+                <div x-show="face.scanning"
+                    class="absolute w-36 h-36 sm:w-52 sm:h-52 left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
                     <div class="h-1/2 flex justify-between items-start">
                         <div class="w-8 h-8 sm:w-16 sm:h-16 border-t-4 border-l-4 border-white shadow-inner">
 
@@ -198,9 +219,12 @@
                     </div>
                 </div>
             </div>
-            <p class="mb-6 text-xs sm:text-base text-gray-500 text-center"> Lanjutkan tanpa menggunakan verifikasi
+            <p x-transition x-show="!face.scanning" class="mb-6 text-xs sm:text-base text-gray-500 text-center">
+                Lanjutkan tanpa
+                menggunakan verifikasi
                 biometik? <button type="submit" class="font-bold underline hover-opacity-down text-ocean-500">ya,
                     lanjutkan</button></p>
+            <canvas id="canvas" width="640" height="480" style="display: none;"></canvas>
         </form>
         <div x-show="drawer.section === 'checkedin'">
             <p class="mb-6 text-base sm:text-xl text-gray-500 text-center">Verifikasi Berhasil</p>
@@ -283,4 +307,24 @@
     </script>
     <script src="{{ asset('assets/js/map.js') }}"></script>
     <script src="{{ asset('assets/js/attendance.js') }}"></script>
+    <script>
+        document.addEventListener('livewire:init', () => {
+            // Livewire.on('retry_face_recog', (payload) => {
+            //     if (!isVideoStreamActive()) {
+
+            //     }
+            //     base64 = getBase64Face()
+            //     dispatchEvent(
+            //         new CustomEvent("start_check_face", {
+            //             detail: {
+            //                 face: base64
+            //             },
+            //         })
+            //     );
+            // });
+            Livewire.on('stop_face_recog', (payload) => {
+                stopVideostream()
+            });
+        });
+    </script>
 @endpush

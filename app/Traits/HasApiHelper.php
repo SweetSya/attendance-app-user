@@ -18,7 +18,7 @@ trait HasApiHelper
     }
     public function API_post($target_url, $data = [])
     {
-        $response = Http::withHeaders($this->API_getHeader())
+        $response = Http::asJson()->withHeaders($this->API_getHeader())
             ->post($this->API_getURL($target_url), $data);
         return $response;
     }

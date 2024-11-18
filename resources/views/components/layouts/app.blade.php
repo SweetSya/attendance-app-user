@@ -10,7 +10,7 @@
     @vite('resources/css/app.css')
 
     <link rel="manifest" href="/manifest.json" />
-
+    {{-- <link rel="stylesheet" href="{{ asset('build\assets\app-Dqu-JKAo.css') }}"> --}}
     {{-- Notfys --}}
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/notyf@3/notyf.min.css">
     {{-- LeafletJS --}}
@@ -120,6 +120,7 @@
             </div>
         </div> --}}
     </main>
+    {{-- <script src="{{ asset('build\assets\app-DdQ1e7RN.js') }}"></script> --}}
     {{-- Notfy --}}
     <script src="https://cdn.jsdelivr.net/npm/notyf@3/notyf.min.js"></script>
     {{-- Flowbite --}}

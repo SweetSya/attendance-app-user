@@ -3,6 +3,12 @@ const geopt = {
     timeout: 5000,
     maximumAge: 0,
 };
+const getBase64Face = () => {
+    const context = canvas.getContext("2d");
+    context.drawImage(videoStream, 0, 0, canvas.width, canvas.height);
+    const base64Image = canvas.toDataURL("image/png");
+    return base64Image;
+};
 const refreshLocation = () => {
     navigator.geolocation.getCurrentPosition(
         (e) => {
@@ -113,18 +119,40 @@ const startVideostream = async () => {
     /* Stream it to video element */
     if (media.ok) {
         videoStream.srcObject = media.target;
+        return "";
     } else {
         console.log(media.message);
+        return "";
     }
 };
-const openDrawer = async (option) => {
+const prepareCheckedIn = async () => {
+    await startVideostream();
+    dispatchEvent(
+        new CustomEvent("set_face_scanning", {
+            detail: {
+                scanning: true,
+            },
+        })
+    );
+    setTimeout(() => {
+        base64 = getBase64Face();
+        dispatchEvent(
+            new CustomEvent("start_check_face", {
+                detail: {
+                    face: base64,
+                },
+            })
+        );
+    }, 150);
+};
+const openDrawer = (option) => {
     dispatchEvent(
         new CustomEvent("set_drawer", {
             detail: option,
         })
     );
     if (drawerSection === "checkin") {
-        startVideostream();
+        prepareCheckedIn();
     }
     attendanceDrawer.show();
 };

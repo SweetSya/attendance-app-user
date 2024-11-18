@@ -53,6 +53,25 @@ class Attendance extends Component
                 'title' => $this->title
             ]);
     }
+    public function clock_employee_face($base64_image, $position)
+    {
+        $response = $this->API_postJSON('view/attendance/clock-face', [
+            'face' => $base64_image,
+            'position' => $position,
+        ]);
+        if ($response->status != 200) {
+            $this->dispatch('notify', type: 'error', message: $response->data->message);
+            $this->dispatch('set_face_scanning', scanning: false);
+            return false;
+        }
+        $this->dispatch('notify', type: 'success', message: $response->data->message);
+        $this->dispatch('stop_face_recog');
+        $this->dispatch('set_drawer', title: 'Verifikasi Kehadiran', section: 'checkedin');
+        $this->dispatch('clear_after_done');
+        $this->dispatch('set_face_scanning', scanning: false);
+        $this->refresh();
+        return true;
+    }
     public function clock_employee_in($position)
     {
         $response = $this->API_postJSON('view/attendance/clock-in', [
@@ -63,6 +82,7 @@ class Attendance extends Component
             $this->dispatch('notify', type: 'error', message: $response->data->message);
             return;
         }
+        $this->dispatch('stop_face_recog');
         $this->dispatch('set_drawer', title: 'Verifikasi Kehadiran', section: 'checkedin');
         $this->dispatch('clear_after_done');
         $this->refresh();
