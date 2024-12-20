@@ -2,12 +2,81 @@
 
 namespace App\Livewire\Auth\Settings;
 
+use App\Traits\HasApiHelper;
+use Illuminate\Support\Facades\Cookie;
 use Livewire\Component;
 
 class PushNotification extends Component
 {
+    use HasApiHelper;
+    public $title = 'Pengaturan - Push Notifikasi';
+    public $data, $total, $sub, $registered;
+
+    public function boot()
+    {
+        $this->refresh();
+    }
+    public function refresh()
+    {
+        $response = $this->API_getJSON(
+            'view/settings/push-notification',
+            [
+                'device_uuid' => Cookie::get($this->COOKIES_getDeviceUUIDSessionName())
+            ]
+        )->data;
+        $this->data = $response->subscriptions ?? [];
+        $this->registered = $response->registered ?? false;
+        $this->total = count($this->data);
+    }
+
     public function render()
     {
-        return view('livewire.auth.settings.push-notification');
+        return view('livewire.auth.settings.push-notification')->layout('components.layouts.app', [
+            'title' => $this->title
+        ]);
+    }
+
+    public function save_subscription()
+    {
+        $response = $this->API_postJSON('view/settings/push-notification/save-subscription', [
+            'subscription' => json_encode($this->sub),
+            'device_uuid' => Cookie::get($this->COOKIES_getDeviceUUIDSessionName())
+        ]);
+        if ($response->status != 200) {
+            $this->dispatch('notify', type: 'error', message: $response->data->message);
+            return;
+        }
+        $this->dispatch('notify', type: 'success', message: $response->data->message);
+        $this->refresh();
+    }
+    public function delete_subscription($id)
+    {
+        $response = $this->API_postJSON(
+            'view/settings/push-notification/delete-subscription',
+            [
+                'id' => $id
+            ]
+        );
+        if ($response->status != 200) {
+            $this->dispatch('notify', type: 'error', message: $response->data->message);
+            return;
+        }
+        $this->dispatch('notify', type: 'success', message: $response->data->message);
+        $this->refresh();
+    }
+    public function test_push_notification($id)
+    {
+        $response = $this->API_postJSON(
+            'view/settings/push-notification/test',
+            [
+                'id' => $id
+            ]
+        );
+        if ($response->status != 200) {
+            $this->dispatch('notify', type: 'error', message: $response->data->message);
+            return;
+        }
+        $this->dispatch('notify', type: 'success', message: $response->data->message);
+        $this->refresh();
     }
 }

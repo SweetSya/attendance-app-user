@@ -23,10 +23,8 @@
                 </div>
                 <div style="display: none;" class="text-right" x-transition x-show="$wire.pin != $wire.original.pin">
                     <button type="button" @click="$wire.pin = $wire.original.pin"
-                        class="btn btn-border-warning bg-gradient-warning-soft flex-grow py-2 mr-3"> <i
-                            class="bi bi-backspace-reverse-fill"></i></button>
-                    <button type="submit" class="btn btn-border-success bg-gradient-success-soft flex-grow py-2 px-10">
-                        <i class="bi bi-check mr-2"></i></button>
+                        class="btn btn-cinnabar flex-grow py-2"> <i class="bi bi-back"></i></button>
+                    <button type="submit" class="btn btn-ocean flex-grow py-2 "> <i class="bi bi-check"></i></button>
                 </div>
             </form>
         </div>

@@ -9,7 +9,7 @@ class Email extends Component
 {
     use HasApiHelper;
     public $title = 'Pengaturan - Email';
-    public $email;
+    public $email, $verified_at;
     public $original;
     public function boot()
     {
@@ -19,6 +19,7 @@ class Email extends Component
     {
         $data = $this->API_getJSON('view/settings/email')->data;
         $this->email = $data->email;
+        $this->verified_at = $data->verified_at;
         $this->original = $data;
     }
     public function render()
@@ -29,13 +30,27 @@ class Email extends Component
     }
     public function change_email()
     {
-        $response = $this->API_post('view/settings/email/change', [
+        $response = $this->API_postJSON('view/settings/email/change', [
             'email' => $this->email,
         ]);
-        if (!$response->ok()) {
-            dd($response);
+        if ($response->status != 200) {
+            $this->dispatch('notify', type: 'error', message: $response->data->message);
+            return;
         }
-        $this->dispatch('notify', type: 'success', message: 'Perubahan berhasil disimpan');
+        $this->dispatch('notify', type: 'success', message: $response->data->message);
+        $this->refresh();
+    }
+    public function send_verification_email()
+    {
+        $response = $this->API_postJSON('send-email-verification', [
+            'email' => $this->email,
+            'host' => env('APP_URL')
+        ]);
+        if ($response->status != 200) {
+            $this->dispatch('notify', type: 'error', message: $response->data->message);
+            return;
+        }
+        $this->dispatch('notify', type: 'success', message: $response->data->message);
         $this->refresh();
     }
 }

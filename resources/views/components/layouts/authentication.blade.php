@@ -25,6 +25,8 @@
     {{-- Flowbite --}}
     <script src="{{ asset('build/assets/app-DdQ1e7RN.js') }}"></script>
     <script src="{{ asset('assets/js/flowbite.min.js') }}"></script>
+    {{-- Lottie --}}
+    <script src="https://unpkg.com/@dotlottie/player-component@2.7.12/dist/dotlottie-player.mjs" type="module"></script>
     <script>
         const sendNotfy = new Notyf({
             duration: 3000,

@@ -11,6 +11,7 @@ use App\Livewire\Auth\Settings\Password;
 use App\Livewire\Auth\Settings\PersonalData;
 use App\Livewire\Auth\Settings\Pin;
 use App\Livewire\Auth\Settings\DeviceUuid;
+use App\Livewire\Auth\Settings\PushNotification;
 use App\Livewire\Authentication\ForgotPassword;
 use App\Livewire\Authentication\Login;
 use App\Livewire\Authentication\RecoverPassword;
@@ -27,7 +28,8 @@ Route::group(['middleware' => 'refresh_device_uuid'], function () {
     });
 
     Route::get('/forgot-password', ForgotPassword::class);
-    Route::get('/recovery', RecoverPassword::class);
+    Route::get('/recovery-password', RecoverPassword::class);
+    Route::get('/verify-email', [AuthenticateController::class, 'verify_email']);
 
     Route::group(['middleware' => 'verify_auth_session'], function () {
         Route::get('/home', Home::class)->name('home');
@@ -41,6 +43,7 @@ Route::group(['middleware' => 'refresh_device_uuid'], function () {
         Route::get('/settings/pin', Pin::class)->name('settings');
         Route::get('/settings/password', Password::class)->name('settings');
         Route::get('/settings/device-uuid', DeviceUuid::class)->name('settings');
+        Route::get('/settings/push-notification', PushNotification::class)->name('settings');
 
         Route::get('/device-uuid', function () {
             return Cookie::get(env('APP_DEVICE_UUID_COOKIES_NAME'));

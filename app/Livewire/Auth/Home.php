@@ -26,6 +26,12 @@ class Home extends Component
         if (session()->has('logged_in')) {
             $this->dispatch('notify', type: 'success', message: 'Sudah autentikasi menggunakan akun ' . $this->employee->full_name);
         }
+        if (session()->has('error')) {
+            $this->dispatch('notify', type: 'error', message: session()->get('error'));
+        }
+        if (session()->has('success')) {
+            $this->dispatch('notify', type: 'success', message: session()->get('success'));
+        }
     }
     public function refresh()
     {

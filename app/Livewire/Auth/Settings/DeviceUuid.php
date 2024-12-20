@@ -3,6 +3,7 @@
 namespace App\Livewire\Auth\Settings;
 
 use App\Traits\HasApiHelper;
+use Illuminate\Support\Facades\Cookie;
 use Livewire\Component;
 
 class DeviceUuid extends Component
@@ -17,9 +18,7 @@ class DeviceUuid extends Component
     }
     public function refresh()
     {
-        $data = $this->API_getJSON('view/settings/device-uuid')->data;
-        $this->device_uuid = $data->device_uuid;
-        $this->original = $data;
+        $this->device_uuid = Cookie::get(env('APP_DEVICE_UUID_COOKIES_NAME'));
     }
     public function render()
     {

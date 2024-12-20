@@ -2,13 +2,13 @@
     <div class="mb-14 sm:mb-28">
         <img height="10" src="{{ asset('logo.svg') }}" alt="">
     </div>
-    <form class="mb-6">
+    <form class="mb-6" wire:submit="change_password">
         <div class="mb-7 sm:mb-14">
             <h1 class="text-3xl md:text-4xl font-bold text-white pb-1">Pulihkan Akun</h1>
             <p class="font-light text-white/90">Masukkan password baru yang dapat kamu ingat dengan baik</p>
         </div>
         <div x-data="{ open: false }" class="relative z-0 w-full mb-8 group">
-            <input :type="open ? 'text' : 'password'" name="floating_password" id="new-password"
+            <input wire:model="password" :type="open ? 'text' : 'password'" name="floating_password" id="new-password"
                 class="bg-glass peer rounded-md block py-2.5 pl-3 pr-9 w-full text-sm text-white bg-transparent border border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-white focus:outline-none focus:ring-0 focus:border-white"
                 placeholder="" required />
             <i @click="open = ! open" :class="open ? 'bi-eye' : 'bi-eye-slash'"
@@ -18,7 +18,7 @@
                 baru</label>
         </div>
         <div class="relative z-0 w-full mb-8 group">
-            <input type="password" name="floating_password" id="renew-password"
+            <input wire:model="re_password" type="password" name="floating_password" id="renew-password"
                 class="bg-glass peer rounded-md block py-2.5 pl-3 pr-9 w-full text-sm text-white bg-transparent border border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-white focus:outline-none focus:ring-0 focus:border-white"
                 placeholder="" required />
             <label for="renew-password"
@@ -26,10 +26,15 @@
                 password baru</label>
         </div>
         <div>
-            <button type="submit" class="btn btn-ocean font-semibold w-full">Simpan</button>
+            <button type="submit" wire:loading.class="pointer-events-none opacity-80"
+                class="btn btn-ocean font-semibold w-full">
+                <div wire:loading.class="hidden">Simpan</div>
+                <div class="hidden" wire:loading.class.remove="hidden">Loading..</div>
+            </button>
         </div>
     </form>
     <p class="text-white/90 text-center">
-        Valid hingga : <span class="font-bold">20 Jaunari 2025, 15:50</span>
+        Valid hingga : <span
+            class="font-bold">{{ \Carbon\Carbon::parse($data->valid_until)->isoFormat('DD MMMM YYYY, HH:mm:ss') }}</span>
     </p>
 </div>

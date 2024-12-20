@@ -138,6 +138,9 @@
         integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
     @stack('scripts')
     <script>
+        navigator.serviceWorker.register("/sw.js", {
+            scope: "/",
+        });
         const sendNotfy = new Notyf({
             duration: 3000,
             position: {
@@ -157,6 +160,7 @@
         initFlowbite()
         document.addEventListener('livewire:init', () => {
             Livewire.on('notify', (payload) => {
+                sendNotfy.dismissAll()
                 let notification
                 switch (payload.type) {
                     case 'success':

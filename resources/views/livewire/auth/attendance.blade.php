@@ -1,6 +1,6 @@
-<div id="data-wrapper" x-data="{ distance: { range: 0, refresh_at: '', position: [0, 0] }, drawer: { title: '', section: '' }, face: { scanning: false, last: '' } }"
+<div id="data-wrapper" x-data="{ distance: { range: 0, refresh_at: '', position: [0, 0] }, drawer: { title: '', section: '' }, face: { scanning: false, last: '', height: '' } }"
     @set_drawer.window.camel="drawer = $event.detail, drawerSection = $event.detail.section"
-    @start_check_face.window.camel="await $wire.clock_employee_face(JSON.stringify($event.detail.face), JSON.stringify(distance.position))"
+    @start_check_face.window.camel="face.height = document.querySelector('#verify-camera').clientHeight ,await $wire.clock_employee_face(JSON.stringify($event.detail.face), JSON.stringify(distance.position))"
     @set_face_scanning.window.camel="$event.detail.scanning ? (face.scanning = true, face.last = '') : (face.scanning = false, face.last = getBase64Face(), stopVideostream())"
     @set_distance.window.camel="distance = $event.detail" class="text-all-wide">
     <div wire:ignore class="h-screen">
@@ -184,7 +184,8 @@
                     class="h-full w-full rounded object-cover" src="">
                 </video>
                 <div x-transition x-show="!face.scanning">
-                    <img :src="face.last" class="h-full w-full rounded object-cover blur-sm" alt="">
+                    <img :src="face.last" :height="face.height"
+                        class="h-full w-full rounded object-cover blur-sm" alt="">
                     <div
                         class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-white rounded px-4 py-4">
                         <div class="text-center mb-2">

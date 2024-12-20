@@ -30,7 +30,11 @@
             <label for="remember-me" class="ms-2 text-sm font-light text-white">Ingat pada perangkat</label>
         </div>
         <div>
-            <button type="submit" class="btn btn-ocean font-semibold w-full">Masuk</button>
+            <button type="submit" wire:loading.class="pointer-events-none opacity-80"
+                class="btn btn-ocean font-semibold w-full">
+                <div wire:loading.class="hidden">Masuk  </div>
+                <div class="hidden" wire:loading.class.remove="hidden">Loading..</div>
+            </button>
         </div>
     </form>
     @if ($email_by_device)
@@ -39,7 +43,7 @@
                 class="font-bold underline hover-opacity-up">Klik
                 disini</a></p>
     @endif
-    <p class="text-white font-light">Lupa password? <a href="/home"
+    <p class="text-white font-light">Lupa password? <a href="/forgot-password"
             class="font-bold underline hover-opacity-up">Pulihkan
             disini</a></p>
 </div>

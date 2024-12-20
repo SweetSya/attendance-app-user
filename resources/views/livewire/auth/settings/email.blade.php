@@ -22,20 +22,48 @@
                     x-show="$wire.email != $wire.original.email">
                     <button type="button" @click="$wire.email = $wire.original.email"
                         class="btn btn-cinnabar flex-grow py-2"> <i class="bi bi-back"></i></button>
-                    <button type="submit" class="btn btn-ocean flex-grow py-2 "> <i
-                            class="bi bi-check"></i></button>
+                    <button type="submit" class="btn btn-ocean flex-grow py-2 "> <i class="bi bi-check"></i></button>
                 </div>
 
             </form>
         </div>
-        {{-- <div class="flex items-center gap-4">
-            <i class="bi bi-patch-check-fill text-ocean-600 text-3xl"></i>
-            <div>
-                <p class="text-base text-gray-500">Sudah <span class="font-bold">terverifikasi</span>
-                    pada
-                    tanggal 10 Juni 2024, Pukul
-                    20:21:11.</p>
+        @if ($verified_at)
+            <div class="flex items-center gap-3">
+                <div class="w-full">
+                    <div class="flex justify-between">
+                        <p class="text-base text-gray-500"><span class="font-bold">Status Verifikasi :</span></p>
+                        <p class="text-base text-gray-500"><span class="text-green-500 font-bold">Sudah
+                                Terverifikasi</span>
+                    </div>
+                    <br>
+                    <div class="flex justify-between">
+                        <p class="text-base text-gray-500"><span class="font-bold">Waktu :</span></p>
+                        <p class="text-base text-gray-500">
+                            <span
+                                class="pr-2">{{ \Carbon\Carbon::parse($verified_at)->isoFormat('DD MMMM YYYY, HH:mm:ss') }}</span>
+                        </p>
+                    </div>
+                </div>
             </div>
-        </div> --}}
+        @else
+            <div class="flex items-center gap-3">
+                <form @submit.prevent="$wire.send_verification_email()" class="w-full">
+                    <div class="flex justify-between">
+                        <p class="text-base text-gray-500"><span class="font-bold">Status Verifikasi :</span></p>
+                        <p class="text-base text-gray-500"><span class="text-red-500 font-bold">Belum
+                                Diverifikasi</span>
+                    </div>
+                    <br>
+                    <div class="flex justify-end">
+                        <button type="submit" class="btn btn-outline-ocean py-2"
+                            wire:loading.class="pointer-events-none opacity-80">
+                            <div wire:loading.class="hidden"><i class="bi bi-send mr-2"></i>Kirimkan
+                                email verifikasi</div>
+                            <div class="hidden" wire:loading.class.remove="hidden">Loading..</div>
+                        </button>
+                    </div>
+                </form>
+            </div>
+        @endif
     </div>
 </div>

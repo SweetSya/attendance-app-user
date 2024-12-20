@@ -39,8 +39,8 @@ class Login extends Component
         if (session()->has('error')) {
             $this->dispatch('notify', type: 'error', message: session()->get('error'));
         }
-        if (session()->has('logged_out')) {
-            $this->dispatch('notify', type: 'success', message: session()->get('logged_out'));
+        if (session()->has('success')) {
+            $this->dispatch('notify', type: 'success', message: session()->get('success'));
         }
     }
     public function render()

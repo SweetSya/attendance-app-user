@@ -62,7 +62,7 @@
                 </div>
             </li>
         </a>
-        <a href="/settings/push-notification" class="settings-soon">
+        <a href="/settings/push-notification">
             <li class="py-4 px-7 hover-ocean-300">
                 <div class="font-semibold text-gray-700">
                     <i class="bi bi-bell text-ocean-500 mr-4"></i>Push Notifikasi
