@@ -18,7 +18,7 @@ class RefreshDeviceUUID
      */
     public function handle(Request $request, Closure $next): Response
     {
-        $device = Cookie::get($this->COOKIES_getDeviceUUIDSessionName(), '');
+        $device = Cookie::get($this->COOKIES_getDeviceUUIDSessionName());
         if (!$device) {
             Cookie::queue($this->COOKIES_getDeviceUUIDSessionName(), Str::uuid(), Carbon::now()->addMonths(6)->getTimestampMs());
         } else {
@@ -27,8 +27,9 @@ class RefreshDeviceUUID
         return $next($request);
     }
 
-    public function COOKIES_getDeviceUUIDSessionName()
+    public function COOKIES_getDeviceUUIDSessionName(): string
     {
-        return env('APP_DEVICE_UUID_COOKIES_NAME');
+        $key = env('APP_DEVICE_UUID_COOKIES_NAME', 'device_uuid');
+        return $key;
     }
 }

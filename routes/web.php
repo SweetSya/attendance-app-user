@@ -38,12 +38,12 @@ Route::group(['middleware' => 'refresh_device_uuid'], function () {
         Route::get('/history', History::class)->name('history');
         Route::get('/vacation', Vacation::class)->name('vacation');
 
-        Route::get('/settings/email', SettingsEmail::class)->name('settings');
-        Route::get('/settings/personal-data', PersonalData::class)->name('settings');
-        Route::get('/settings/pin', Pin::class)->name('settings');
-        Route::get('/settings/password', Password::class)->name('settings');
-        Route::get('/settings/device-uuid', DeviceUuid::class)->name('settings');
-        Route::get('/settings/push-notification', PushNotification::class)->name('settings');
+        Route::get('/settings/email', SettingsEmail::class)->name('settings_email');
+        Route::get('/settings/personal-data', PersonalData::class)->name('settings_personal_data');
+        Route::get('/settings/pin', Pin::class)->name('settings_pin');
+        Route::get('/settings/password', Password::class)->name('settings_password');
+        Route::get('/settings/device-uuid', DeviceUuid::class)->name('settings_device_uuid');
+        Route::get('/settings/push-notification', PushNotification::class)->name('settings_push_notification');
 
         Route::get('/device-uuid', function () {
             return Cookie::get(env('APP_DEVICE_UUID_COOKIES_NAME'));
