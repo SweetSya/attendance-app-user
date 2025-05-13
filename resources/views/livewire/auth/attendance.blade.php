@@ -181,7 +181,7 @@
                 memudahkan pemindaian</p>
             <div class="mx-auto rounded border relative h-auto max-w-96 mb-4 overflow-hidden ">
                 <video x-show="face.scanning" muted autoplay id="verify-camera"
-                    class="h-full w-full rounded object-cover" src="">
+                    class="h-full -scale-x-[1] w-full rounded object-cover" src="">
                 </video>
                 <div x-transition x-show="!face.scanning">
                     <img :src="face.last" :height="face.height"

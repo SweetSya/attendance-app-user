@@ -10,6 +10,8 @@
     @vite('resources/css/app.css')
 
     <link rel="manifest" href="/manifest.json" />
+    {{-- Loading --}}
+    <link rel="stylesheet" href="{{ asset('assets\css\loading.css') }}">
     {{-- <link rel="stylesheet" href="{{ asset('build\assets\app-Dqu-JKAo.css') }}"> --}}
     {{-- Notfys --}}
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/notyf@3/notyf.min.css">
@@ -27,7 +29,7 @@
     $route = Route::currentRouteName();
     ?>
 
-    <main class="w-full bg-no-repeat bg-cover bg-[rgba(0,0,0,.5)] bg-blend-darken bg-center bg-fixed">
+    <main class="w-full bg-no-repeat bg-cover bg-black/50 bg-blend-darken bg-center bg-fixed">
         {{-- Drawer hamburger --}}
         <div class="min-h-screen max-w-3xl container mx-auto border-x bg-white">
 
@@ -49,7 +51,7 @@
                         <i
                             class="bi {{ $route == 'attendance' ? 'bi-fingerprint' : 'bi-fingerprint' }} text-xl {{ $route == 'attendance' ? 'text-ocean-600' : 'text-gray-500 group-hover:text-ocean-600' }}"></i>
                         <span
-                            class="text-xs xs:text-sm {{ $route == 'attendance' ? 'text-ocean-600' : 'text-gray-500 group-hover:text-ocean-600' }}">Absensi</span>
+                            class="text-xs xs:text-sm {{ $route == 'attendance' ? 'text-ocean-600' : 'text-gray-500 group-hover:text-ocean-600' }}">Presensi</span>
                     </a>
                     <a href="/settings"
                         class="inline-flex flex-col items-center justify-center px-5 hover:bg-gray-50 group">
@@ -98,6 +100,17 @@
                 </form>
             </div>
         </div>
+        {{-- Screen Laoding --}}
+        <div
+            class="loading flex fixed z-[500] top-0 left-1/2 -translate-x-1/2 w-screen h-screen max-w-3xl bg-white/50 backdrop-blur-[2px] justify-center items-center flex-col">
+            <div class="loader"></div>
+            <p class="mt-4 text-ocean-600">Memuat..</p>
+            <p class=" text-ocean-600">Harap tunggu sesaat</p>
+
+            <p class="absolute bottom-2 text-gray-600">Teralalu lama? <button
+                    class="refresh-when-loading text-ocean-600 underline">refresh
+                    disini</button></p>
+        </div>
         {{-- <div wire:ignore id="drawer-attendance"
             class="fixed bottom-0 !left-1/2 max-w-3xl !-translate-x-1/2 z-50 w-full p-4 overflow-y-auto transition-transform bg-white translate-y-full"
             tabindex="-1" aria-labelledby="drawer-bottom-label" aria-hidden="true">
@@ -136,7 +149,6 @@
     {{-- LeafletJS --}}
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
         integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
-    @stack('scripts')
     <script>
         navigator.serviceWorker.register("/sw.js", {
             scope: "/",
@@ -157,8 +169,26 @@
                 icon: false
             }]
         });
+        // Loading Handler
+        const loadingWrapper = document.querySelector('.loading')
+        document.querySelector('.refresh-when-loading').addEventListener('click', () => {
+            location.reload();
+        })
+        const toogleLoadingState = (state = true) => {
+            if (state) {
+                loadingWrapper.classList.remove('hidden');
+                loadingWrapper.classList.add('flex');
+            } else {
+                loadingWrapper.classList.remove('flex');
+                loadingWrapper.classList.add('hidden');
+            }
+        }
         initFlowbite()
+        document.addEventListener('DOMContentLoaded', function() {
+            toogleLoadingState(false)
+        });
         document.addEventListener('livewire:init', () => {
+
             Livewire.on('notify', (payload) => {
                 sendNotfy.dismissAll()
                 let notification
@@ -191,6 +221,7 @@
             });
         });
     </script>
+    @stack('scripts')
 </body>
 
 </html>

@@ -22,8 +22,8 @@ class DeviceUuid extends Component
     }
     public function render()
     {
-        return view('livewire.auth.settings.device-uuid', [
+        return view('livewire.auth.settings.device-uuid')->layout('components.layouts.app', [
             'title' => $this->title
-        ]);
+    ]);;
     }
 }

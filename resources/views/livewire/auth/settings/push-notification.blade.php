@@ -6,7 +6,7 @@
             <!-- Modal content -->
             <div class="relative bg-white rounded-lg shadow dark:bg-gray-700">
                 <!-- Modal header -->
-                <div class="flex items-center justify-between p-4 md:p-5 border-b rounded-t dark:border-gray-600">
+                <div class="flex items-center justify-between p-4 md:p-5 border-b rounded-t border-gray-600">
                     <h3 class="text-lg font-semibold text-gray-600 dark:text-white">
                         Membuka blokir Notifikasi
                     </h3>
@@ -223,6 +223,7 @@
 
 @push('scripts')
     <script>
+        const PUSH_PUBLIC_KEY = "{{ env('VAPID_PUBLIC_KEY') }}";
         // Function to request notification permission
         function requestNotificationAccess() {
             // Check if the Notifications API is supported
@@ -246,6 +247,21 @@
                 console.error("Error requesting notification permission:", error);
             });
         }
+
+        function urlBase64ToUint8Array(base64String) {
+            const padding = '='.repeat((4 - base64String.length % 4) % 4);
+            const base64 = (base64String + padding)
+                .replace(/\-/g, '+')
+                .replace(/_/g, '/');
+
+            const rawData = window.atob(base64);
+            const outputArray = new Uint8Array(rawData.length);
+
+            for (var i = 0; i < rawData.length; ++i) {
+                outputArray[i] = rawData.charCodeAt(i);
+            }
+            return outputArray;
+        }
         const pushNotificationPermission = async () => {
             return new Promise((resolve, reject) => {
                 Notification.requestPermission().then((permission) => {
@@ -254,7 +270,9 @@
                             .then(function(serviceWorkerRegistration) {
                                 return serviceWorkerRegistration.pushManager.subscribe({
                                     userVisibleOnly: true,
-                                    applicationServerKey: "BDm_nO-MC8P7OnVO0Ie3t0_kXMIflCBlrMWk5TtF1Xi-VA6YZWMJnI_-iyw3mEzdLiRlqsUE7Wd_1glK5vXuEbY",
+                                    applicationServerKey: urlBase64ToUint8Array(
+                                        PUSH_PUBLIC_KEY
+                                    )
                                 });
                             })
                             .then(function(subscription) {

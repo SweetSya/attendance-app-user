@@ -30,8 +30,8 @@
         </a>
     </ul>
     <ul class="w-full flex flex-col border-b-4">
-        <li class="px-4 mt-3 mx-2 font-normal text-gray-500">Absensi & Keamanan</li>
-        <a href="/settings/biometric-face" class="settings-soon">
+        <li class="px-4 mt-3 mx-2 font-normal text-gray-500">Presensi & Keamanan</li>
+        <a href="/settings/biometric-face">
             <li class="border-b py-4 px-7 hover-ocean-300">
                 <div class="font-semibold text-gray-700">
                     <i class="bi bi-person-bounding-box text-ocean-500 mr-4"></i>Biometrik Wajah
@@ -55,6 +55,13 @@
     </ul>
     <ul class="w-full flex flex-col border-b-4">
         <li class="px-4 mt-3 mx-2 font-normal text-gray-500">Perangkat</li>
+        <a href="/settings/device-permission">
+            <li class="border-b py-4 px-7 hover-ocean-300">
+                <div class="font-semibold text-gray-700">
+                    <i class="bi bi-phone text-ocean-500 mr-4"></i>Izin Perangkat
+                </div>
+            </li>
+        </a>
         <a href="/settings/device-uuid">
             <li class="border-b py-4 px-7 hover-ocean-300">
                 <div class="font-semibold text-gray-700">

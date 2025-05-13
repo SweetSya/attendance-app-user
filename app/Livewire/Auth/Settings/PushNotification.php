@@ -4,7 +4,12 @@ namespace App\Livewire\Auth\Settings;
 
 use App\Traits\HasApiHelper;
 use Illuminate\Support\Facades\Cookie;
+use Illuminate\Support\Facades\Log;
 use Livewire\Component;
+use Minishlink\WebPush\Subscription;
+use Minishlink\WebPush\VAPID;
+use Minishlink\WebPush\WebPush;
+
 
 class PushNotification extends Component
 {
@@ -75,6 +80,33 @@ class PushNotification extends Component
         if ($response->status != 200) {
             $this->dispatch('notify', type: 'error', message: $response->data->message);
             return;
+        }
+        $pushNotif = $response->data->pushData;
+        $auth = [
+            'VAPID' => [
+                'subject' => env("VAPID_EMAIL", "herrysans12@gmail.com"), // can be a mailto: or your website address
+                'publicKey' => env("VAPID_PUBLIC_KEY"), // (recommended) uncompressed public key P-256 encoded in Base64-URL
+                'privateKey' => env("VAPID_PRIVATE_KEY"), // (recommended) in fact the secret multiplier of the private key encoded in Base64-URL
+            ],
+        ];
+        $webpush = new WebPush($auth);
+        $webpush->setReuseVAPIDHeaders(true);
+        foreach ($pushNotif as $x => $notif) {
+            $report = $webpush->sendOneNotification(
+                // Decode twice, i still dont know why
+                Subscription::create(json_decode(json_decode($notif->subscription, true), true)),
+                json_encode([
+                    'title' => 'Uji Push Notifikasi',
+                    'body' => 'Hai, [' . $response->data->employee->full_name . ']. Jika kamu dapat melihat notifikasi ini, artinya push notifikasi telah berjalan pada perangkat ini.',
+                    'url' => '/',
+                    'icon' => $response->data->employee->office->company->image
+                ]),
+                ['TTL' => 5000]
+            );
+
+            if (!$report->isSuccess()) {
+                Log::error($report->getReason());
+            }
         }
         $this->dispatch('notify', type: 'success', message: $response->data->message);
         $this->refresh();

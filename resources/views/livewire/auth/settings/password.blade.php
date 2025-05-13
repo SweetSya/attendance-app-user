@@ -51,8 +51,8 @@
                             sama</span>, harap dicek kembali.</span>
                 </div>
                 <div style="display: none;" class="text-right" x-transition
-                    x-show="$wire.password != '' && $wire.re_password != '' && $wire.password == $wire.re_password">
-                    <button type="button" @click=" $wire.password = '', $wire.re_password = ''"
+                x-show="$wire.password != '' && $wire.re_password != '' && $wire.password == $wire.re_password">
+                <button type="button" @click=" $wire.password = '', $wire.re_password = ''"
                         class="btn btn-cinnabar flex-grow py-2"> <i class="bi bi-back"></i></button>
                     <button type="submit" class="btn btn-ocean flex-grow py-2 "> <i class="bi bi-check"></i></button>
                 </div>
