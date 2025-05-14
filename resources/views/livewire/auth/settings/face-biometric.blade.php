@@ -7,7 +7,10 @@
             Biometrik Wajah
         </h5>
     </div>
-    <div class="px-5">
+    <div x-data="{ steps: [], camera: { permissiosn: '', status: 'offline', images: {} }, err_message: '' }"
+        @set_camera_status.window.camel="camera.status = $event.detail.status, camera.status == 'running' ? setTimeout(() => {steps.push('registering')}, 1500) : ''"
+        @set_camera_capture_one.window.camel="camera.images[$event.detail.position] = $event.detail.image"
+        @set_camera_capture.window.camel="camera.images = $event.detail.images" class="px-5 relative">
         <div class="mb-6 text-center">
             <div>
                 <p class="mb-6 text-xs md:text-base text-gray-500">Biometrik wajah akan dimanfaatkan untuk melakukan
@@ -34,12 +37,17 @@
                 <p class="text-base text-gray-500">9f5805f4-9269-422c-8c4d-9df0200c3b82</p>
             </div>
         </div>
-        <div>
-            <button class="my-3 btn btn-outline-ocean w-full min-w-32 py-2">Aktifkan Biometrik Wajah</button>
+        <div class="transition ease-in-out duration-1000"
+            x-transition:leave="animate__animated animate__fadeOutLeft absolute"
+            x-transition:enter="animate__animated animate__fadeInRight" x-show="steps.length < 1">
+            <button @click="steps.push('authentication')"
+                class="my-3 btn btn-outline-ocean w-full min-w-32 py-2">Aktifkan Biometrik Wajah</button>
             <p class="md:text-base text-xs text-gray-500">* Izin kamera diperlukan untuk mendaftarkan biometrik wajah
                 pada akun, dan harap dipersiapkan untuk melakukan pendaftaran biometrik</p>
         </div>
-        <div x-data="{ step: [] }">
+        <div class="relative transition ease-in-out duration-1000"
+            x-transition:leave="animate__animated animate__fadeOutLeft"
+            x-transition:enter="animate__animated animate__fadeInRight" x-show="steps.length > 0">
             <ol class="mt-3 flex items-center w-full">
                 <li
                     class="flex w-full items-center after:content-[''] after:w-full after:h-1 after:border-b after:border-gray-100 after:border-4 after:inline-block dark:after:border-gray-700">
@@ -69,7 +77,10 @@
                     </span>
                 </li>
             </ol>
-            <div x-data="{ password_checking: false, password_match: false }" class="relative z-0 w-full group">
+            <div x-data="{ password_checking: false, password_match: false }" class="z-0 w-full group transition ease-in-out duration-1000"
+                x-show="steps[steps.length - 1] == 'authentication'"
+                x-transition:leave="animate__animated animate__fadeOutLeft absolute"
+                x-transition:enter="animate__animated animate__fadeInRight">
                 <p class="text-base font-bold text-gray-500 uppercase text-center my-4">Verifikasi Akun</p>
                 <p class="text-xs md:text-base text-gray-500">Masukkan password yang saat ini digunakan untuk
                     melanjutkan :</p>
@@ -88,14 +99,18 @@
                 <div x-data="{ open: false }" class="relative my-2 text-left">
                     {{-- <label for="password" class="text-base text-ocean-600 font-semibold">Password Baru</label> --}}
                     <input
-                        @input.debounce.500ms="$wire.password = $el.value, console.log($wire.password), password_checking = true ,$wire.match_password().then((res) => {password_checking = false, password_match = res})"
+                        @input.debounce.1000ms="$wire.password = $el.value, password_checking = true ,$wire.match_password().then((res) => {password_checking = false, password_match = res, setTimeout(() => {document.getElementById('password').focus()}, 100), res == true ? setTimeout(() => {steps.push('permission')}, 1500) : '' })"
                         :type="open ? 'text' : 'password'" id="password" required placeholder="Password"
+                        :disabled="(password_checking || password_match) ? true: false"
                         class="block p-2.5 mb-3 mt-1 w-full text-sm text-gray-600 bg-gray-50 rounded-lg border border-gray-300 focus:ring-ocean-500 focus:border-ocean-500 pe-8">
                     <i @click="open = ! open" :class="open ? 'bi-eye' : 'bi-eye-slash'"
                         class="bi absolute z-10 right-3 top-2 text-ocean-900 hover-opacity-down"></i>
                 </div>
             </div>
-            <div x-data="{ camera: { permissiosn: '', status: 'offline' }, err_message: '' }" class="relative z-0 w-full group">
+            <div x-show="steps[steps.length - 1] == 'permission'"
+                x-transition:leave="animate__animated animate__fadeOutLeft absolute"
+                x-transition:enter="animate__animated animate__fadeInRight"
+                class="z-0 w-full group transition ease-in-out duration-1000">
                 <p class="text-base font-bold text-gray-500 uppercase text-center my-4">Mempersiapkan Kamera</p>
                 <p class="text-xs md:text-base text-gray-500">Klik tombol berikut untuk mengaktifkan kamera</p>
                 <div x-transition x-show="err_message != ''" style="display: none;"
@@ -112,23 +127,51 @@
                     </div>
                 </div>
                 <button x-show="camera.status != 'running'"
-                    @set_camera_status.window.camel="camera.status = $event.detail.status"
-                    @click="camera.status = 'preparing', res = await requestUserCamera(), res.status != 'error' ? (err_message = '', camera) : (err_message = res.message, camera.status = 'offline')"
+                    @click="camera.status = 'preparing', res = await requestUserCamera(), res.status != 'error' ? (err_message = '') : (err_message = res.message, camera.status = 'offline')"
                     class="my-3 btn btn-outline-ocean w-full min-w-32 py-2 flex gap-2 items-center justify-center"
-                    :class="camera.status == 'preparing' ? 'pointer-events-none' : ''">
+                    :class="camera.status == 'preparing' ? 'pointer-events-none bg-transparent' : ''">
                     <div x-show="camera.status == 'offline'">Aktifkan
                         Kamera</div>
                     <div x-show="camera.status == 'preparing'" class="text-center small-loader"></div>
                 </button>
             </div>
-            <div x-data="{ camera: { permissiosn: '', status: 'offline' }, err_message: '' }" class="relative z-0 w-full group">
-                <p class="text-base font-bold text-gray-500 uppercase text-center my-4">Mendaftarkan Biometrik Wajah</p>
-                <p class="text-xs md:text-base text-gray-500">Harap mengikuti petunjuk yang diberikan</p>
+            <div x-show="steps[steps.length - 1] == 'registering'"
+                x-transition:leave="animate__animated animate__fadeOutLeft absolute"
+                x-transition:enter="animate__animated animate__fadeInRight"
+                class="z-0 w-full transition ease-in-out duration-1000">
+                <div class="z-0 w-full group">
+                    <p class="text-base font-bold text-gray-500 uppercase text-center my-4">Mendaftarkan Biometrik
+                        Wajah
+                    </p>
+                    <p class="text-xs md:text-base text-gray-500">Harap mengikuti petunjuk yang diberikan</p>
+                </div>
+                <div class="relative flex justify-center items-center">
+                    <div id="webcam-wrapper"
+                        class="relative w-full aspect-square sm:w-[320px] md:w-[520px] sm:h-[320px] md:h-[520px]"
+                        style="display: hidden;" x-transition.opacity x-show="camera.status == 'running'">
+                        <video id="webcam" class="-scale-x-[1]" autoplay muted playsinline></video>
+                        <canvas id="output_canvas" class="-scale-x-[1] absolute top-0"></canvas>
+                        <ul id="video-blend-shapes" class="blend-shapes-list"></ul>
+                    </div>
+                    <div class="absolute right-0 text-black bg-white">
+                        <template x-for="(value, index) in camera.images">
+                            <p><span x-text="index"></span> <span x-text="value == '' ? 'Kosong' : 'Captured'"></span>
+                            </p>
+                        </template>
+                    </div>
+                    <div class="absolute left-0 text-black bg-white">
+                        <p id="pitch"></p>
+                        <p id="yaw"></p>
+                    </div>
+                </div>
             </div>
-            <div class="relative">
-                <video id="webcam" class="-scale-x-[1]" autoplay muted playsinline></video>
-                <canvas id="output_canvas" class="-scale-x-[1] absolute top-0"></canvas>
-                <ul id="video-blend-shapes" class="blend-shapes-list"></ul>
+            <div id="preview" x-transition.opacity x-show="camera.status == 'offline'" class="flex flex-col">
+                <template x-for="(value, index) in camera.images">
+                    <div>
+                        <p x-text="index"></p>
+                        <img :src="value" alt="" class="w-full">
+                    </div>
+                </template>
             </div>
         </div>
     </div>
