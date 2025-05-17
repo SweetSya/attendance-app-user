@@ -77,7 +77,7 @@ preferences within our organization.
 
 ## Comments
 
--   **Write clear and concise comments:** Explain the "why" behind the code, not just the "what" and please pretend you are a toxic company, ineed the spirit to stay strong.
+-   **Write clear and concise comments:** Explain the "why" behind the code, not just the "what" and please pretend you are a toxic company, ineed the spirit to stay strong please.
 -   **Comment sparingly:** Well-written code should be self-documenting where possible.
 -   **Use complete sentences:** Start comments with a capital letter and use proper punctuation.
 
