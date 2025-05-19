@@ -25,13 +25,9 @@ const resizeCapturer = () => {
 let capturedFrame = {
     "netral-netral": "",
     "top-netral": "",
-    "top-right": "",
-    "netral-right": "",
-    "bottom-right": "",
     "bottom-netral": "",
-    "bottom-left": "",
+    "netral-right": "",
     "netral-left": "",
-    "top-left": "",
 };
 
 dispatchEvent(
@@ -63,7 +59,14 @@ createFaceLandmarker();
 
 let lastVideoTime = -1;
 let results = undefined;
-
+let initialFace = {
+    pitch: null,
+    yaw: null,
+};
+let calibrateInitialFace = false;
+function setCalibrateInitialFace(state) {
+    calibrateInitialFace = state;
+}
 function captureFrame(videoElement) {
     const canvas = document.createElement("canvas");
     canvas.width = videoElement.videoWidth;
@@ -75,7 +78,6 @@ function captureFrame(videoElement) {
     // This is base64 string: "data:image/png;base64,AAAA..."
     return canvas.toDataURL("image/png");
 }
-
 async function predictWebcam() {
     resizeCapturer();
     if (runningMode === "IMAGE") {
@@ -106,7 +108,27 @@ async function predictWebcam() {
             // Normalize offsets by face width
             const yaw = (noseTip.x - noseCenterX) / faceWidth;
             const pitch = (chin.y - noseTip.y) / faceWidth;
-
+            // If user wanna calibrate
+            if (calibrateInitialFace) {
+                initialFace.pitch = pitch;
+                initialFace.yaw = yaw;
+                capturedFrame = {
+                    "netral-netral": "",
+                    "top-netral": "",
+                    "bottom-netral": "",
+                    "netral-right": "",
+                    "netral-left": "",
+                };
+                dispatchEvent(
+                    new CustomEvent("set_camera_capture", {
+                        detail: {
+                            images: capturedFrame,
+                        },
+                    })
+                );
+                calibrateInitialFace = false;
+                sendNotfy.success("Kalibrasi kamera berhasil");
+            }
             let direction = {
                 x: "",
                 y: "",
@@ -116,35 +138,37 @@ async function predictWebcam() {
             // console.log(`PITCH: ${pitch.toFixed(4)}`);
             // console.log(`YAW: ${yaw.toFixed(4)}`);
             // Check direction Y
-            if (pitch > 0.49) {
+            if (pitch - initialFace.pitch > 0.11) {
                 direction.y = "top";
-            } else if (pitch < 0.4) {
+            } else if (pitch - initialFace.pitch < -0.11) {
                 direction.y = "bottom";
             } else {
                 direction.y = "netral";
             }
             // Check direction X
-            if (yaw > 0.21) {
+            if (yaw - initialFace.yaw > 0.21) {
                 direction.x = "left";
-            } else if (yaw < -0.31) {
+            } else if (yaw - initialFace.yaw < -0.21) {
                 direction.x = "right";
             } else {
                 direction.x = "netral";
             }
-            let currentDirection = `${direction.y}-${direction.x}`;
-            // Capture for each frame
-            if (capturedFrame[currentDirection] == "") {
-                capturedFrame[currentDirection] = captureFrame(video);
-                dispatchEvent(
-                    new CustomEvent("set_camera_capture_one", {
-                        detail: {
-                            position: currentDirection,
-                            image: capturedFrame[currentDirection],
-                        },
-                    })
-                );
-                console.log(`Menghadap: ${currentDirection}`);
-                console.log("======================================");
+            if (initialFace.pitch || initialFace.yaw) {
+                let currentDirection = `${direction.y}-${direction.x}`;
+                // Capture for each frame
+                if (capturedFrame[currentDirection] == "") {
+                    capturedFrame[currentDirection] = captureFrame(video);
+                    dispatchEvent(
+                        new CustomEvent("set_camera_capture_one", {
+                            detail: {
+                                position: currentDirection,
+                                image: capturedFrame[currentDirection],
+                            },
+                        })
+                    );
+                    console.log(`Menghadap: ${currentDirection}`);
+                    console.log("======================================");
+                }
             }
         }
 
@@ -250,14 +274,17 @@ async function requestUserCamera() {
         capturedFrame = {
             "netral-netral": "",
             "top-netral": "",
-            "top-right": "",
-            "netral-right": "",
-            "bottom-right": "",
             "bottom-netral": "",
-            "bottom-left": "",
+            "netral-right": "",
             "netral-left": "",
-            "top-left": "",
         };
+        dispatchEvent(
+            new CustomEvent("set_camera_capture", {
+                detail: {
+                    images: capturedFrame,
+                },
+            })
+        );
         wasBlinking = false;
         video.srcObject = stream;
         webcamRunning = true;
@@ -291,5 +318,5 @@ async function requestUserCamera() {
 }
 
 window.requestUserCamera = requestUserCamera;
-
+window.setCalibrateInitialFace = setCalibrateInitialFace;
 window.captureFrame = captureFrame;

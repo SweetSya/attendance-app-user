@@ -31,7 +31,7 @@
 
     <main class="w-full bg-no-repeat bg-cover bg-black/50 bg-blend-darken bg-center bg-fixed">
         {{-- Drawer hamburger --}}
-        <div class="min-h-screen max-w-3xl container mx-auto border-x bg-white">
+        <div class="min-h-screen max-w-3xl container mx-auto border-x bg-white overflow-hidden">
 
             <div class="pb-10">
                 {{ $slot }}

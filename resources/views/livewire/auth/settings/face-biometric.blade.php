@@ -7,7 +7,7 @@
             Biometrik Wajah
         </h5>
     </div>
-    <div x-data="{ steps: [], camera: { permissiosn: '', status: 'offline', images: {} }, err_message: '' }"
+    <div x-data="{ steps: ['authentication', 'permission'], camera: { permissiosn: '', status: 'offline', images: {} }, calibrated: false, err_message: '' }"
         @set_camera_status.window.camel="camera.status = $event.detail.status, camera.status == 'running' ? setTimeout(() => {steps.push('registering')}, 1500) : ''"
         @set_camera_capture_one.window.camel="camera.images[$event.detail.position] = $event.detail.image"
         @set_camera_capture.window.camel="camera.images = $event.detail.images" class="px-5 relative">
@@ -49,30 +49,32 @@
             x-transition:leave="animate__animated animate__fadeOutLeft"
             x-transition:enter="animate__animated animate__fadeInRight" x-show="steps.length > 0">
             <ol class="mt-3 flex items-center w-full">
-                <li
-                    class="flex w-full items-center after:content-[''] after:w-full after:h-1 after:border-b after:border-gray-100 after:border-4 after:inline-block dark:after:border-gray-700">
-                    <span
-                        class="flex items-center justify-center w-10 h-10 bg-gray-100 rounded-full lg:h-12 lg:w-12 dark:bg-gray-700 shrink-0">
-                        <i class="bi bi-key-fill text-gray-600"></i>
+                <li :class="steps.length > 1 ? 'after:border-ocean-500' : 'after:border-gray-100 '"
+                    class="border-ocean-500 flex w-full items-center after:content-[''] after:w-full after:h-1 after:border-b  after:border-4 after:inline-block">
+                    <span :class="steps.length >= 1 ? 'bg-ocean-500' : 'bg-gray-100'"
+                        class="flex items-center justify-center w-10 h-10 rounded-full lg:h-12 lg:w-12 shrink-0">
+                        <i class="bi bi-key-fill" :class="steps.length >= 1 ? 'text-white' : 'text-gray-500'"></i>
                     </span>
                 </li>
-                <li
-                    class="flex w-full items-center after:content-[''] after:w-full after:h-1 after:border-b after:border-gray-100 after:border-4 after:inline-block dark:after:border-gray-700">
-                    <span
-                        class="flex items-center justify-center w-10 h-10 bg-gray-100 rounded-full lg:h-12 lg:w-12 dark:bg-gray-700 shrink-0">
-                        <i class="bi bi-camera-video-fill text-gray-600"></i>
+                <li :class="steps.length > 2 ? 'after:border-ocean-500' : 'after:border-gray-100'"
+                    class="flex w-full items-center after:content-[''] after:w-full after:h-1 after:border-b  after:border-4 after:inline-block">
+                    <span :class="steps.length >= 2 ? 'bg-ocean-500' : 'bg-gray-100'"
+                        class="flex items-center justify-center w-10 h-10 bg-gray-100 rounded-full lg:h-12 lg:w-12 shrink-0">
+                        <i class="bi bi-camera-video-fill text-gray-500"
+                            :class="steps.length >= 2 ? 'text-white' : 'text-gray-500'"></i>
                     </span>
                 </li>
-                <li
-                    class="flex w-full items-center after:content-[''] after:w-full after:h-1 after:border-b after:border-gray-100 after:border-4 after:inline-block dark:after:border-gray-700">
-                    <span
-                        class="flex items-center justify-center w-10 h-10 bg-gray-100 rounded-full lg:h-12 lg:w-12 dark:bg-gray-700 shrink-0">
-                        <i class="bi bi-person-bounding-box text-gray-600"></i>
+                <li :class="steps.length > 3 ? 'after:border-ocean-500' : 'after:border-gray-100'"
+                    class="flex w-full items-center after:content-[''] after:w-full after:h-1 after:border-b  after:border-4 after:inline-block">
+                    <span :class="steps.length >= 3 ? 'bg-ocean-500' : 'bg-gray-100'"
+                        class="flex items-center justify-center w-10 h-10 bg-gray-100 rounded-full lg:h-12 lg:w-12 shrink-0">
+                        <i class="bi bi-person-bounding-box text-gray-500"
+                            :class="steps.length >= 3 ? 'text-white' : 'text-gray-500'"></i>
                     </span>
                 </li>
                 <li class="flex items-center">
                     <span
-                        class="flex items-center justify-center w-10 h-10 bg-gray-100 rounded-full lg:h-12 lg:w-12 dark:bg-gray-700 shrink-0">
+                        class="flex items-center justify-center w-10 h-10 bg-gray-100 rounded-full lg:h-12 lg:w-12 shrink-0">
                         <i class="bi bi-check-circle-fill text-gray-600"></i>
                     </span>
                 </li>
@@ -100,8 +102,8 @@
                     {{-- <label for="password" class="text-base text-ocean-600 font-semibold">Password Baru</label> --}}
                     <input
                         @input.debounce.1000ms="$wire.password = $el.value, password_checking = true ,$wire.match_password().then((res) => {password_checking = false, password_match = res, setTimeout(() => {document.getElementById('password').focus()}, 100), res == true ? setTimeout(() => {steps.push('permission')}, 1500) : '' })"
-                        :type="open ? 'text' : 'password'" id="password" required placeholder="Password"
-                        :disabled="(password_checking || password_match) ? true: false"
+                        :type="open ? 'text' : 'password'" autocomplete="new-password" id="password" required
+                        placeholder="Password" :disabled="(password_checking || password_match) ? true: false"
                         class="block p-2.5 mb-3 mt-1 w-full text-sm text-gray-600 bg-gray-50 rounded-lg border border-gray-300 focus:ring-ocean-500 focus:border-ocean-500 pe-8">
                     <i @click="open = ! open" :class="open ? 'bi-eye' : 'bi-eye-slash'"
                         class="bi absolute z-10 right-3 top-2 text-ocean-900 hover-opacity-down"></i>
@@ -145,23 +147,39 @@
                     </p>
                     <p class="text-xs md:text-base text-gray-500">Harap mengikuti petunjuk yang diberikan</p>
                 </div>
-                <div class="relative flex justify-center items-center">
-                    <div id="webcam-wrapper"
-                        class="relative w-full aspect-square sm:w-[320px] md:w-[520px] sm:h-[320px] md:h-[520px]"
-                        style="display: hidden;" x-transition.opacity x-show="camera.status == 'running'">
-                        <video id="webcam" class="-scale-x-[1]" autoplay muted playsinline></video>
-                        <canvas id="output_canvas" class="-scale-x-[1] absolute top-0"></canvas>
-                        <ul id="video-blend-shapes" class="blend-shapes-list"></ul>
-                    </div>
-                    <div class="absolute right-0 text-black bg-white">
-                        <template x-for="(value, index) in camera.images">
-                            <p><span x-text="index"></span> <span x-text="value == '' ? 'Kosong' : 'Captured'"></span>
-                            </p>
-                        </template>
-                    </div>
-                    <div class="absolute left-0 text-black bg-white">
-                        <p id="pitch"></p>
-                        <p id="yaw"></p>
+                <div class="relative flex justify-center items-center h-fit">
+                    <div id="webcam-wrapper" class="relative w-full md:w-[520px] h-fit" style="display: hidden;"
+                        x-transition.opacity x-show="camera.status == 'running'">
+                        <video :class="!calibrated ? 'brightness-[.25] blur-sm' : ''" id="webcam"
+                            class="-scale-x-[1]" autoplay muted playsinline></video>
+                        <canvas :class="!calibrated ? 'brightness-[.25] blur-sm' : ''" id="output_canvas"
+                            class="-scale-x-[1] absolute top-0"></canvas>
+                        <p x-show="!calibrated"
+                            class="absolute flex gap-2 left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 btn btn-outline-ocean text-xs pointer-events-none text-white border-white">
+                            <span class="mt-1">
+                                <i class="bi bi-exclamation-circle"></i>
+                            </span>
+                            <span class="flex-grow">Harap lakukan
+                                kalibrasi
+                                terlebih dahulu,
+                                dengan menekan tombol pada kanan bawah</span>
+                        </p>
+                        <button type="button" @click="setCalibrateInitialFace(true), calibrated = true"
+                            class="absolute bottom-1 right-1 bg-white btn btn-outline-ocean text-xs">
+                            Kalibrasi
+                        </button>
+                        <div
+                            class="absolute top-1 left-1 text-white bg-black/50 border-2 border-ocean-600 rounded-sm p-1 text-xs">
+                            <p><i class="bi bi-arrows-expand"></i> <span id="pitch">-</span></p>
+                            <p><i class="bi bi-arrows-expand-vertical"></i> <span id="yaw">-</span></p>
+                        </div>
+                        <div x-show="calibrated"
+                            class="absolute bottom-1 left-1 text-white bg-black/50 border-2 border-ocean-600 rounded-sm p-1 text-xs">
+                            <template x-for="(value, index) in camera.images">
+                                <p><span x-text="index"></span> <span x-text="value == '' ? '-' : 'Captured'"></span>
+                                </p>
+                            </template>
+                        </div>
                     </div>
                 </div>
             </div>
