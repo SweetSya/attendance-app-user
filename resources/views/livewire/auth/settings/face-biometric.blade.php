@@ -7,10 +7,23 @@
             Biometrik Wajah
         </h5>
     </div>
-    <div x-data="{ steps: ['authentication', 'permission'], camera: { permissiosn: '', status: 'offline', images: {} }, calibrated: false, err_message: '' }"
+    <div x-data="{
+        steps: ['authentication', 'permission'],
+        camera: { permissiosn: '', status: 'offline', images: {} },
+        labelMap: {
+            'netral-netral': 'Tengah',
+            'top-netral': 'Atas',
+            'bottom-netral': 'Bawah',
+            'netral-right': 'Kanan',
+            'netral-left': 'Kiri'
+        },
+        calibrated: false,
+        err_message: ''
+    }"
         @set_camera_status.window.camel="camera.status = $event.detail.status, camera.status == 'running' ? setTimeout(() => {steps.push('registering')}, 1500) : ''"
         @set_camera_capture_one.window.camel="camera.images[$event.detail.position] = $event.detail.image"
-        @set_camera_capture.window.camel="camera.images = $event.detail.images" class="px-5 relative">
+        @set_camera_capture.window.camel="camera.images = {}, camera.images = $event.detail.images"
+        class="px-5 relative">
         <div class="mb-6 text-center">
             <div>
                 <p class="mb-6 text-xs md:text-base text-gray-500">Biometrik wajah akan dimanfaatkan untuk melakukan
@@ -166,20 +179,28 @@
                         </p>
                         <button type="button" @click="setCalibrateInitialFace(true), calibrated = true"
                             class="absolute bottom-1 right-1 bg-white btn btn-outline-ocean text-xs">
-                            Kalibrasi
+                            Kalibrasi <i class="bi bi-arrow-repeat"></i>
                         </button>
                         <div
                             class="absolute top-1 left-1 text-white bg-black/50 border-2 border-ocean-600 rounded-sm p-1 text-xs">
                             <p><i class="bi bi-arrows-expand"></i> <span id="pitch">-</span></p>
                             <p><i class="bi bi-arrows-expand-vertical"></i> <span id="yaw">-</span></p>
                         </div>
-                        <div x-show="calibrated"
+                        <div x-show="calibrated && !Object.values(camera.images).every(v => v !== '')"
                             class="absolute bottom-1 left-1 text-white bg-black/50 border-2 border-ocean-600 rounded-sm p-1 text-xs">
                             <template x-for="(value, index) in camera.images">
-                                <p><span x-text="index"></span> <span x-text="value == '' ? '-' : 'Captured'"></span>
+                                <p><span x-text="labelMap[index] ?? index"></span> <i class="bi"
+                                        :class="value == '' ? 'bi-question text-cinnabar-300' : 'bi-check text-green-300'"></i>
                                 </p>
                             </template>
                         </div>
+                        <p x-show="calibrated && Object.values(camera.images).every(v => v !== '')"
+                            class="absolute bottom-1 left-1 text-white bg-black/50 border-2 border-ocean-600 rounded-sm p-1 text-xs">
+                            <span class="mt-1">
+                                <i class="bi bi-exclamation-circle"></i>
+                            </span>
+                            <span class="flex-grow">Kedipkan mata untuk melanjutkan.</span>
+                        </p>
                     </div>
                 </div>
             </div>

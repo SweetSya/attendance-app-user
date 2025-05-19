@@ -135,8 +135,7 @@ async function predictWebcam() {
             };
             elemPitch.innerHTML = pitch.toFixed(4);
             elemYaw.innerHTML = yaw.toFixed(4);
-            // console.log(`PITCH: ${pitch.toFixed(4)}`);
-            // console.log(`YAW: ${yaw.toFixed(4)}`);
+
             // Check direction Y
             if (pitch - initialFace.pitch > 0.11) {
                 direction.y = "top";
@@ -158,11 +157,11 @@ async function predictWebcam() {
                 // Capture for each frame
                 if (capturedFrame[currentDirection] == "") {
                     capturedFrame[currentDirection] = captureFrame(video);
+                    console.log(capturedFrame);
                     dispatchEvent(
-                        new CustomEvent("set_camera_capture_one", {
+                        new CustomEvent("set_camera_capture", {
                             detail: {
-                                position: currentDirection,
-                                image: capturedFrame[currentDirection],
+                                images: capturedFrame,
                             },
                         })
                     );
