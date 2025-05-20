@@ -106,6 +106,12 @@
     .btn-cinnabar:hover {
         @apply from-transparent to-transparent border-cinnabar-500 text-cinnabar-600;
     }
+    .btn-outline-cinnabar {
+        @apply bg-transparent border-2 border-cinnabar-400 text-cinnabar-400;
+    }
+    .btn-outline-cinnabar:hover {
+        @apply bg-gradient-to-r from-cinnabar-600 to-cinnabar-500 border-cinnabar-400 text-white;
+    }
     .btn-success {
         @apply bg-gradient-to-r from-lime-600 border-2 border-transparent to-lime-500 text-white;
     }

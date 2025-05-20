@@ -30,6 +30,10 @@ class Password extends Component
     }
     public function change_password()
     {
+        if ($this->password != $this->re_password) {
+            $this->dispatch('notify', type: 'error', message: 'Konfirmasi password tidak sesuai');
+            return;
+        }
         $response = $this->API_post('view/settings/password/change', [
             // 'old_password' => $this->old_password,
             'password' => $this->password,

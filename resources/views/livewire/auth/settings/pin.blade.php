@@ -22,9 +22,15 @@
                         class="bi absolute z-10 right-3 top-2 text-ocean-900 hover-opacity-down"></i>
                 </div>
                 <div style="display: none;" class="text-right" x-transition x-show="$wire.pin != $wire.original.pin">
-                    <button type="button" @click="$wire.pin = $wire.original.pin"
-                        class="btn btn-cinnabar flex-grow py-2"> <i class="bi bi-back"></i></button>
-                    <button type="submit" class="btn btn-ocean flex-grow py-2 "> <i class="bi bi-check"></i></button>
+                    <button wire:loading.remove type="button" @click="$wire.pin = $wire.original.pin"
+                        class="btn btn-outline-cinnabar flex-grow py-2"> <i class="bi bi-back"></i> Kembalikan</button>
+                    <button type="submit" class="btn btn-outline-ocean flex-grow py-2 ">
+                        <div wire:loading.class="hidden">
+                            <i class="bi bi-check"></i>
+                            Simpan perubahan
+                        </div>
+                        <div class="hidden text-center small-loader" wire:loading.class.remove="hidden"></div>
+                    </button>
                 </div>
             </form>
         </div>

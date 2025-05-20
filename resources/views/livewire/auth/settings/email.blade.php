@@ -20,20 +20,25 @@
 
                 <div style="display: none;" class="text-right" x-transition
                     x-show="$wire.email != $wire.original.email">
-                    <button type="button" @click="$wire.email = $wire.original.email"
-                        class="btn btn-cinnabar flex-grow py-2"> <i class="bi bi-back"></i></button>
-                    <button type="submit" class="btn btn-ocean flex-grow py-2 "> <i class="bi bi-check"></i></button>
+                    <button wire:loading.remove type="button" @click="$wire.email = $wire.original.email"
+                        class="btn btn-outline-cinnabar flex-grow py-2"> <i class="bi bi-back"></i> Kembalikan</button>
+                    <button type="submit" class="btn btn-outline-ocean flex-grow py-2 ">
+                        <div wire:loading.class="hidden">
+                            <i class="bi bi-check"></i>
+                            Simpan perubahan
+                        </div>
+                        <div class="hidden text-center small-loader" wire:loading.class.remove="hidden"></div>
+                    </button>
                 </div>
-
             </form>
         </div>
         @if ($verified_at)
             <div class="flex items-center gap-3">
                 <div class="w-full">
                     <div class="flex justify-between">
-                        <p class="text-base text-gray-500"><span class="font-bold">Status Verifikasi :</span></p>
+                        <p class="text-base text-gray-500"><span class="font-bold">Status :</span></p>
                         <p class="text-base text-gray-500"><span class="text-green-500 font-bold">Sudah
-                                Terverifikasi</span>
+                                verifikasi</span>
                     </div>
                     <br>
                     <div class="flex justify-between">
@@ -49,9 +54,9 @@
             <div class="flex items-center gap-3">
                 <form @submit.prevent="$wire.send_verification_email()" class="w-full">
                     <div class="flex justify-between">
-                        <p class="text-base text-gray-500"><span class="font-bold">Status Verifikasi :</span></p>
+                        <p class="text-base text-gray-500"><span class="font-bold">Status :</span></p>
                         <p class="text-base text-gray-500"><span class="text-red-500 font-bold">Belum
-                                Diverifikasi</span>
+                                verifikasi</span>
                     </div>
                     <br>
                     <div class="flex justify-end">
@@ -59,7 +64,7 @@
                             wire:loading.class="pointer-events-none opacity-80">
                             <div wire:loading.class="hidden"><i class="bi bi-send mr-2"></i>Kirimkan
                                 email verifikasi</div>
-                            <div class="hidden" wire:loading.class.remove="hidden">Loading..</div>
+                            <div class="hidden text-center small-loader" wire:loading.class.remove="hidden"></div>
                         </button>
                     </div>
                 </form>

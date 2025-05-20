@@ -10,18 +10,21 @@ class FaceBiometric extends Component
 {
     use HasApiHelper;
     public $title = 'Pengaturan - Biometrik Wajah';
+    public $face_recognition_status = 0;
+    public $employee_name = '';
+    public $employee_id = '';
     public $password = '';
-    private $current_password = '$2y$10$ka25Q/rPht/kA78.l4LYTusHYeoTCIGWlJMEzRwTCJxiWA7QO/Fam';
+    public $password_check_state = false;
     public function boot()
     {
         $this->refresh();
     }
     public function refresh()
     {
-        // $data = $this->API_getJSON('view/settings/email')->data;
-        // $this->email = $data->email;
-        // $this->verified_at = $data->verified_at;
-        // $this->original = $data;
+        $data = $this->API_getJSON('view/settings/biometric-face')->data;
+        $this->face_recognition_status = $data->state;
+        $this->employee_id = $data->emp_id;
+        $this->employee_name = $data->emp_name;
     }
     public function render()
     {
@@ -31,9 +34,13 @@ class FaceBiometric extends Component
     }
     public function match_password()
     {
-        if (Hash::check($this->password, $this->current_password)) {
-            return true;
+        $response = $this->API_post('view/settings/biometric-face/check-password', [
+            // 'old_password' => $this->old_password,
+            'password' => $this->password,
+        ]);
+        if (!$response->ok()) {
+            return false;
         }
-        return false;
+        return true;
     }
 }

@@ -155,13 +155,20 @@
                 @if (!$registered)
                     <button type="submit" class="btn btn-outline-ocean py-2"
                         wire:loading.class="pointer-events-none opacity-80">
-                        <div><i class="bi bi-checkmark mr-2"></i>Aktifkan Sekarang</div>
+                        <div wire:loading.class="hidden">
+                            <i class="bi bi-checkmark mr-2"></i>Aktifkan Sekarang
+                        </div>
+                        <div class="hidden text-center small-loader" wire:loading.class.remove="hidden"></div>
                     </button>
                 @else
                     <button @click=" await $wire.test_push_notification(JSON.stringify('{{ $registered->id }}')) "
                         type="button" class="btn btn-outline-ocean py-2"
                         wire:loading.class="pointer-events-none opacity-80">
-                        <div><i class="bi bi-checkmark mr-2"></i>Test Notifikasi</div>
+                        <div wire:loading.class="hidden">
+                            <i class="bi bi-checkmark mr-2"></i>
+                            Test notifikasi
+                        </div>
+                        <div class="hidden text-center small-loader" wire:loading.class.remove="hidden"></div>
                     </button>
                 @endif
             </form>
@@ -210,7 +217,11 @@
                                     class="px-6 py-4 font-medium text-gray-600 whitespace-nowrap dark:text-white">
                                     <button wire:loading.class="pointer-events-none opacity-80" type="button"
                                         @click=" await $wire.delete_subscription(JSON.stringify('{{ $item->id }}')) "
-                                        class="font-medium text-red-600 dark:text-red-500 hover:underline">Hapus</button>
+                                        class="font-medium text-red-600 dark:text-red-500 hover:underline">
+                                        <div wire:loading.remove>Hapus</div>
+                                        <div class="hidden text-center small-loader"
+                                            wire:loading.class.remove="hidden"></div>
+                                    </button>
                                 </td>
                             </tr>
                         @endforeach
