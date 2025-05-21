@@ -155,19 +155,40 @@ async function predictWebcam() {
             if (initialFace.pitch || initialFace.yaw) {
                 let currentDirection = `${direction.y}-${direction.x}`;
                 // Capture for each frame
-                if (capturedFrame[currentDirection] == "") {
-                    capturedFrame[currentDirection] = captureFrame(video);
-                    console.log(capturedFrame);
-                    dispatchEvent(
-                        new CustomEvent("set_camera_capture", {
-                            detail: {
-                                images: capturedFrame,
-                            },
-                        })
-                    );
-                    console.log(`Menghadap: ${currentDirection}`);
-                    console.log("======================================");
+                if (currentDirection in capturedFrame) {
+                    if (
+                        capturedFrame[currentDirection] == "" &&
+                        !Object.values(capturedFrame).some(
+                            (v) => v === "hold" || v === "changing"
+                        )
+                    ) {
+                        capturedFrame[currentDirection] = "hold";
+                        sendNotfy.open({
+                            type: "info",
+                            message: `Pertahankan posisi ${currentDirection} selama 2 detik`,
+                        });
+                        setTimeout(() => {
+                            capturedFrame[currentDirection] = "capturing";
+                        }, 2000);
+                    }
                 }
+            }
+            if (Object.values(capturedFrame).some((v) => v === "capturing")) {
+                const directionKey = Object.entries(capturedFrame).find(
+                    ([k, v]) => v === "capturing"
+                )?.[0];
+                capturedFrame[directionKey] = captureFrame(video);
+                console.log(capturedFrame);
+                dispatchEvent(
+                    new CustomEvent("set_camera_capture", {
+                        detail: {
+                            images: capturedFrame,
+                        },
+                    })
+                );
+                sendNotfy.success("Berhasil menangkap muka");
+                console.log(`Menghadap: ${directionKey}`);
+                console.log("======================================");
             }
         }
 

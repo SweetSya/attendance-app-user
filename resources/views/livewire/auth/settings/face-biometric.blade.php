@@ -54,7 +54,8 @@
                 <p class="text-base text-gray-500" x-text="$wire.employee_id"></p>
             </div>
         </div>
-        <div style="display: none;" class="transition ease-in-out duration-1000" x-show="$wire.face_recognition_status == 0"
+        <div style="display: none;" class="transition ease-in-out duration-1000"
+            x-show="$wire.face_recognition_status == 0 && steps.length <= 0"
             x-transition:leave="animate__animated animate__fadeOutLeft absolute"
             x-transition:enter="animate__animated animate__fadeInRight" x-show="steps.length < 1">
             <button @click="steps.push('authentication')"
@@ -62,16 +63,20 @@
             <p class="md:text-base text-xs text-gray-500">* Izin kamera diperlukan untuk mendaftarkan biometrik wajah
                 pada akun, dan harap dipersiapkan untuk melakukan pendaftaran biometrik</p>
         </div>
-        <div style="display: none;" class="transition ease-in-out duration-1000" x-show="$wire.face_recognition_status == 1"
+        <div style="display: none;" class="transition ease-in-out duration-1000"
+            x-show="$wire.face_recognition_status == 1"
             x-transition:leave="animate__animated animate__fadeOutLeft absolute"
             x-transition:enter="animate__animated animate__fadeInRight" x-show="steps.length < 1">
-            <p class="text-base btn-cinnabar py-1 text-center ">Biometrik muka sedang dalam proses verifikasi selanjutnya,
+            <p class="text-base btn-cinnabar py-1 text-center ">Biometrik muka sedang dalam proses verifikasi
+                selanjutnya,
                 harap ditunggu atau konfirmasi pada pihak terkait</p>
         </div>
-        <div style="display: none;" class="transition ease-in-out duration-1000" x-show="$wire.face_recognition_status == 2"
+        <div style="display: none;" class="transition ease-in-out duration-1000"
+            x-show="$wire.face_recognition_status == 2"
             x-transition:leave="animate__animated animate__fadeOutLeft absolute"
             x-transition:enter="animate__animated animate__fadeInRight" x-show="steps.length < 1">
-            <p class="text-base btn-ocean py-1 text-white pointer-events-none text-center">Biometrik muka sudah didaftarkan pada akun ini</p>
+            <p class="text-base btn-ocean py-1 text-white pointer-events-none text-center">Biometrik muka sudah
+                didaftarkan pada akun ini</p>
         </div>
         <div class="relative transition ease-in-out duration-1000"
             x-transition:leave="animate__animated animate__fadeOutLeft"
@@ -112,7 +117,8 @@
                 x-transition:leave="animate__animated animate__fadeOutLeft absolute"
                 x-transition:enter="animate__animated animate__fadeInRight">
                 <p class="text-base font-bold text-gray-500 uppercase text-center my-4">Verifikasi Akun</p>
-                <p class="text-xs md:text-base text-gray-500 text-center">Masukkan password yang saat ini digunakan untuk
+                <p class="text-xs md:text-base text-gray-500 text-center">Masukkan password yang saat ini digunakan
+                    untuk
                     melanjutkan</p>
                 <div x-transition x-show="$wire.password != ''" :class="password_checking ? 'opacity-70' : ''"
                     style="display: none;" class="my-3 text-xs md:text-base flex justify-center w-full min-w-32 py-2">
@@ -142,7 +148,8 @@
                 x-transition:enter="animate__animated animate__fadeInRight"
                 class="z-0 w-full group transition ease-in-out duration-1000">
                 <p class="text-base font-bold text-gray-500 uppercase text-center my-4">Mempersiapkan Kamera</p>
-                <p class="text-xs md:text-base text-gray-500 text-center">Klik tombol berikut untuk mengaktifkan kamera</p>
+                <p class="text-xs md:text-base text-gray-500 text-center">Klik tombol berikut untuk mengaktifkan kamera
+                </p>
                 <div x-transition x-show="err_message != ''" style="display: none;"
                     class="my-3 text-xs md:text-base flex justify-center w-full min-w-32 py-2">
                     <span class="text-red-600" x-text="err_message"></span>
@@ -173,7 +180,8 @@
                     <p class="text-base font-bold text-gray-500 uppercase text-center my-4">Mendaftarkan Biometrik
                         Wajah
                     </p>
-                    <p class="text-xs md:text-base text-center text-gray-500 mb-3">Harap mengikuti petunjuk yang diberikan</p>
+                    <p class="text-xs md:text-base text-center text-gray-500 mb-3">Harap mengikuti petunjuk yang
+                        diberikan</p>
                 </div>
                 <div class="relative flex justify-center items-center h-fit">
                     <div id="webcam-wrapper" class="relative w-full md:w-[520px] h-fit" style="display: hidden;"
