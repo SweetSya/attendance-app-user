@@ -9,9 +9,9 @@
             </div>
         </div>
     </div>
-    <div class="relative min-h-64 -mt-32 z-20 mx-auto py-5 px-4 sm:px-12 -mr-[1px] bg-white">
+    <div class="relative min-h-64 -mt-32 -mb-10 z-20 mx-auto py-5 px-4 sm:px-12 bg-white">
         <div class="flex items-center justify-between mb-10 text-nowrap">
-            <p class="font-bold text-base sm:text-xl text-ocean-500">Absensi Kehadiran</p>
+            <p class="font-bold text-base sm:text-xl text-ocean-500">Kehadiran</p>
             <p class="font-light text-xs sm:text-base text-ocean-900/70">Selengkapnya <i
                     class="bi bi-chevron-double-down"></i></p>
         </div>
@@ -233,7 +233,7 @@
                 <i class="bi bi-check-circle-fill text-ocean-600 text-6xl"></i>
             </div>
             <p class="mb-6 text-xs sm:text-base text-gray-500 text-center"> Otomatis melanjutkan dalam <span
-                    class="font-bold underline hover-opacity-down text-ocean-500">2 detik</span></p>
+                    class="font-bold underline hover-opacity-down text-ocean-500">5 detik</span></p>
         </div>
         <form @submit.prevent="await $wire.clock_employee_out(JSON.stringify(distance.position))"
             x-show="drawer.section === 'checkout'">
@@ -251,7 +251,7 @@
                 <i class="bi bi-check-circle-fill text-ocean-600 text-6xl"></i>
             </div>
             <p class="mb-6 text-xs sm:text-base text-gray-500 text-center"> Otomatis melanjutkan dalam <span
-                    class="font-bold underline hover-opacity-down text-ocean-500">2 detik</span></p>
+                    class="font-bold underline hover-opacity-down text-ocean-500">5 detik</span></p>
         </div>
         <div x-show="drawer.section === 'absence'" class="pb-5">
             <p class="mb-6 text-base text-gray-500 text-center">Harap diisi sesuai dengan keadaan yang sebenarnya yaa
@@ -280,51 +280,46 @@
                 <i class="bi bi-check-circle-fill text-ocean-600 text-6xl"></i>
             </div>
             <p class="mb-6 text-xs sm:text-base text-gray-500 text-center"> Otomatis melanjutkan dalam <span
-                    class="font-bold underline hover-opacity-down text-ocean-500">2 detik</span></p>
+                    class="font-bold underline hover-opacity-down text-ocean-500">5 detik</span></p>
         </div>
     </div>
 </div>
 
 @push('scripts')
-    <script>
-        let office = [{{ $office->lat }}, {{ $office->lon }}];
-        let officeRadius = {{ $office->radius }};
-        let autoSnap = true
-        let drawerSection = ''
-        var videoStream = document.querySelector('#verify-camera');
-        videoStream.setAttribute('playsinline', '');
-
+    <script data-navigate-once>
+        if (typeof autoSnap == 'undefined') {
+            let office
+            let officeRadius
+            let autoSnap
+            let geopt
+            let targetDrawer
+            let attendanceDrawer
+            let drawerSection
+            let videostream
+        }
+        office = [{{ $office->lat }}, {{ $office->lon }}];
+        officeRadius = {{ $office->radius }};
+        autoSnap = true
+        geopt = {
+            enableHighAccuracy: true,
+            timeout: 5000,
+            maximumAge: 0,
+        };
         /* Setting up the constraint */
         var facingMode = "user"; // Can be 'user' or 'environment' to access back or front camera
-
+    </script>
+    <script data-navigate-once src="{{ asset('assets/js/attendance.js') }}"></script>
+    <script src="{{ asset('assets/js/attendance-initiate-dom.js') }}"></script>
+    <script>
         document.addEventListener('livewire:init', () => {
+            Livewire.on('stop_face_recog', (payload) => {
+                stopVideostream()
+            });
             Livewire.on('clear_after_error', () => {
                 closeDrawer();
             });
             Livewire.on('clear_after_done', () => {
-                closeDrawer(2000);
-            });
-        });
-    </script>
-    <script src="{{ asset('assets/js/map.js') }}"></script>
-    <script src="{{ asset('assets/js/attendance.js') }}"></script>
-    <script>
-        document.addEventListener('livewire:init', () => {
-            // Livewire.on('retry_face_recog', (payload) => {
-            //     if (!isVideoStreamActive()) {
-
-            //     }
-            //     base64 = getBase64Face()
-            //     dispatchEvent(
-            //         new CustomEvent("start_check_face", {
-            //             detail: {
-            //                 face: base64
-            //             },
-            //         })
-            //     );
-            // });
-            Livewire.on('stop_face_recog', (payload) => {
-                stopVideostream()
+                closeDrawer(5000);
             });
         });
     </script>

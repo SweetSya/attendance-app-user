@@ -265,31 +265,22 @@
 
 
 @push('scripts')
-    <script>
-        var swiper = new Swiper("#swiper-actions", {
-            slidesPerView: 2,
-            spaceBetween: 15,
-            breakpoints: {
-                640: {
-                    slidesPerView: 3,
-                },
-                768: {
-                    slidesPerView: 4,
-                },
-            },
-        });
-        let office = [{{ $office->lat }}, {{ $office->lon }}];
-        let officeRadius = {{ $office->radius }};
-        let autoSnap = true
-    </script>
-    <script src="{{ asset('assets/js/map.js') }}"></script>
-    <script>
-        const geopt = {
+    <script data-navigate-once>
+        if (typeof autoSnap == 'undefined') {
+            let office
+            let officeRadius
+            let autoSnap
+            let geopt
+        }
+        office = [{{ $office->lat }}, {{ $office->lon }}];
+        officeRadius = {{ $office->radius }};
+        autoSnap = true
+        geopt = {
             enableHighAccuracy: true,
             timeout: 5000,
             maximumAge: 0,
         };
-        const refreshLocation = () => {
+        const refreshLocationHome = () => {
             navigator.geolocation.getCurrentPosition((e) => {
                 latlong = [e.coords.latitude, e.coords.longitude]
                 if (userMarker != null) {
@@ -348,10 +339,9 @@
 
             }, geopt);
             setTimeout(() => {
-                refreshLocation()
+                refreshLocationHome()
             }, 1500)
         }
-        refreshLocation()
         const toggleMapInteractivity = (bool) => {
             if (bool) {
                 map._handlers.forEach(function(handler) {
@@ -371,6 +361,7 @@
                 autoSnap = true
             }
         }
-        toggleMapInteractivity(false)
     </script>
+
+    <script src="{{ asset('assets/js/home-initiate-dom.js') }}"></script>
 @endpush

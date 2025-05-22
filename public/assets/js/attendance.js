@@ -1,21 +1,18 @@
-const geopt = {
-    enableHighAccuracy: true,
-    timeout: 5000,
-    maximumAge: 0,
-};
 const getBase64Face = () => {
     const context = canvas.getContext("2d");
     context.drawImage(videoStream, 0, 0, canvas.width, canvas.height);
     const base64Image = canvas.toDataURL("image/png");
     return base64Image;
 };
-const refreshLocation = () => {
+const refreshLocationAttendace = () => {
     navigator.geolocation.getCurrentPosition(
         (e) => {
             latlong = [e.coords.latitude, e.coords.longitude];
-
             if (userMarker != null) {
                 map.removeLayer(userMarker);
+            }
+            if (officeIconMarker != null) {
+                map.removeLayer(officeIconMarker);
             }
             if (userPolyline != null) {
                 map.removeLayer(userPolyline);
@@ -24,6 +21,10 @@ const refreshLocation = () => {
             userMarker = L.marker(latlong, {
                 icon: userIcon,
             }).addTo(map);
+            officeIconMarker = L.marker(office, {
+                icon: officeIcon,
+            }).addTo(map);
+
             userPolyline = L.polyline([latlong, office], {
                 color: "#30beff ",
             }).addTo(map);
@@ -65,16 +66,9 @@ const refreshLocation = () => {
         geopt
     );
     setTimeout(() => {
-        refreshLocation();
+        refreshLocationAttendace();
     }, 1500);
 };
-refreshLocation();
-map._handlers.forEach(function (handler) {
-    handler.disable();
-});
-
-// set the drawer menu element
-const targetDrawer = document.getElementById("drawer-attendance");
 
 // options with default values
 const optionsDrawer = {
@@ -102,11 +96,6 @@ const instanceOptionsDrawer = {
     override: true,
 };
 
-const attendanceDrawer = new Drawer(
-    targetDrawer,
-    optionsDrawer,
-    instanceOptionsDrawer
-);
 const startVideostream = async () => {
     var constraints = {
         audio: false,
@@ -202,6 +191,6 @@ document.addEventListener("visibilitychange", () => {
     }
 });
 
-window.addEventListener("load", () => {
-    window.scrollTo(0, document.body.scrollHeight);
-});
+// window.addEventListener("load", () => {
+//     window.scrollTo(0, document.body.scrollHeight);
+// });
