@@ -9,7 +9,7 @@
             </div>
         </div>
     </div>
-    <div class="relative min-h-64 -mt-32 -mb-10 z-20 mx-auto py-5 px-4 sm:px-12 bg-white">
+    <div class="relative min-h-64 -mt-32 z-20 mx-auto py-5 px-4 sm:px-12 bg-white">
         <div class="flex items-center justify-between mb-10 text-nowrap">
             <p class="font-bold text-base sm:text-xl text-ocean-500">Kehadiran</p>
             <p class="font-light text-xs sm:text-base text-ocean-900/70">Selengkapnya <i

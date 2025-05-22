@@ -100,21 +100,21 @@
                     </button>
                 </form>
             </div>
-            @endpresist
+            @endpersist
         </div>
         {{-- Screen Laoding --}}
         @persist('loading')
-        <div
-            class="loading flex fixed z-[500] top-0 left-1/2 -translate-x-1/2 w-screen h-screen max-w-3xl bg-white/50 backdrop-blur-[2px] justify-center items-center flex-col">
-            <div class="loader"></div>
-            {{-- <p class="mt-4 text-ocean-600">Memuat..</p> --}}
-            {{-- <p class=" text-ocean-600">Harap tunggu sesaat</p>
+            <div
+                class="loading flex fixed z-[500] top-0 left-1/2 -translate-x-1/2 w-screen h-screen max-w-3xl bg-white/50 backdrop-blur-[2px] justify-center items-center flex-col">
+                <div class="loader"></div>
+                {{-- <p class="mt-4 text-ocean-600">Memuat..</p> --}}
+                {{-- <p class=" text-ocean-600">Harap tunggu sesaat</p>
 
             <p class="absolute bottom-2 text-gray-600">Teralalu lama? <button
                     class="refresh-when-loading text-ocean-600 underline">refresh
                     disini</button></p> --}}
-        </div>
-        @endpresist
+            </div>
+        @endpersist
         {{-- <div wire:ignore id="drawer-attendance"
             class="fixed bottom-0 !left-1/2 max-w-3xl !-translate-x-1/2 z-50 w-full p-4 overflow-y-auto transition-transform bg-white translate-y-full"
             tabindex="-1" aria-labelledby="drawer-bottom-label" aria-hidden="true">
