@@ -1,7 +1,7 @@
 <div class="py-7">
     <div>
         <div class="relative">
-            <a href="/settings" class="absolute left-5 top-1"><i class="bi bi-chevron-left"></i></a>
+            <a wire:navigate href="/settings" class="absolute left-5 top-1"><i class="bi bi-chevron-left"></i></a>
         </div>
         <h5 id="drawer-right-label" class="text-center mb-5 text-xl sm:text-2xl font-semibold text-gray-500">
             Data Diri

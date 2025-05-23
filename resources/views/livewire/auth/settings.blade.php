@@ -7,21 +7,21 @@
     </div>
     <ul class="w-full flex flex-col border-b-4">
         <li class="px-4 mt-3 mx-2 font-normal text-gray-500">Akun</li>
-        <a href="/settings/email">
+        <a wire:navigate href="/settings/email">
             <li class="border-b py-4 px-7 hover-ocean-300">
                 <div class="font-semibold text-gray-700">
                     <i class="bi bi-envelope text-ocean-500 mr-4"></i>Email
                 </div>
             </li>
         </a>
-        <a href="settings/personal-data" class="settings-soon">
+        <a wire:navigate href="settings/personal-data" class="settings-soon">
             <li class="py-4 px-7 hover-ocean-300">
                 <div class="font-semibold text-gray-700">
                     <i class="bi bi-person-vcard text-ocean-500 mr-4"></i>Data Diri
                 </div>
             </li>
         </a>
-        <a href="/settings/preferences" class="settings-soon">
+        <a wire:navigate href="/settings/preferences" class="settings-soon">
             <li class="py-4 px-7 hover-ocean-300">
                 <div class="font-semibold text-gray-700">
                     <i class="bi bi-pencil text-ocean-500 mr-4"></i>Preferensi
@@ -31,21 +31,21 @@
     </ul>
     <ul class="w-full flex flex-col border-b-4">
         <li class="px-4 mt-3 mx-2 font-normal text-gray-500">Presensi & Keamanan</li>
-        <a href="/settings/biometric-face">
+        <a wire:navigate href="/settings/biometric-face">
             <li class="border-b py-4 px-7 hover-ocean-300">
                 <div class="font-semibold text-gray-700">
                     <i class="bi bi-person-bounding-box text-ocean-500 mr-4"></i>Biometrik Wajah
                 </div>
             </li>
         </a>
-        <a href="/settings/pin">
+        <a wire:navigate href="/settings/pin">
             <li class="border-b py-4 px-7 hover-ocean-300">
                 <div class="font-semibold text-gray-700">
                     <i class="bi bi-align-start text-ocean-500 mr-4"></i>PIN
                 </div>
             </li>
         </a>
-        <a href="/settings/password">
+        <a wire:navigate href="/settings/password">
             <li class="py-4 px-7 hover-ocean-300">
                 <div class="font-semibold text-gray-700">
                     <i class="bi bi-lock text-ocean-500 mr-4"></i>Password
@@ -55,21 +55,21 @@
     </ul>
     <ul class="w-full flex flex-col border-b-4">
         <li class="px-4 mt-3 mx-2 font-normal text-gray-500">Perangkat</li>
-        <a href="/settings/device-permission">
+        <a wire:navigate href="/settings/device-permission">
             <li class="border-b py-4 px-7 hover-ocean-300">
                 <div class="font-semibold text-gray-700">
                     <i class="bi bi-phone text-ocean-500 mr-4"></i>Izin Perangkat
                 </div>
             </li>
         </a>
-        <a href="/settings/device-uuid">
+        <a wire:navigate href="/settings/device-uuid">
             <li class="border-b py-4 px-7 hover-ocean-300">
                 <div class="font-semibold text-gray-700">
                     <i class="bi bi-key text-ocean-500 mr-4"></i>UUID
                 </div>
             </li>
         </a>
-        <a href="/settings/push-notification">
+        <a wire:navigate href="/settings/push-notification">
             <li class="py-4 px-7 hover-ocean-300">
                 <div class="font-semibold text-gray-700">
                     <i class="bi bi-bell text-ocean-500 mr-4"></i>Push Notifikasi
@@ -79,14 +79,14 @@
     </ul>
     <ul class="w-full flex flex-col border-b-4">
         <li class="px-4 mt-3 mx-2 font-normal text-gray-500">Informasi</li>
-        <a href="/settings/faq" class="settings-soon">
+        <a wire:navigate href="/settings/faq" class="settings-soon">
             <li class="border-b py-4 px-7 hover-ocean-300">
                 <div class="font-semibold text-gray-700">
                     <i class="bi bi-question-circle text-ocean-500 mr-4"></i>FAQ
                 </div>
             </li>
         </a>
-        <a href="/settings/help-dev" class="settings-soon">
+        <a wire:navigate href="/settings/help-dev" class="settings-soon">
             <li class="py-4 px-7 hover-ocean-300">
                 <div class="font-semibold text-gray-700">
                     <i class="bi bi-person-workspace text-ocean-500 mr-4"></i>Bantuan Developer

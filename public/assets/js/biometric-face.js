@@ -2,16 +2,28 @@ import vision from "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.3"
 const { FaceLandmarker, FilesetResolver, DrawingUtils } = vision;
 
 let faceLandmarker;
-let runningMode = "IMAGE";
-let webcamRunning = false;
+let runningMode;
+let webcamRunning;
+let video;
+let elemPitch;
+let elemYaw;
+let videoWrapper;
+let canvasElement;
+let canvasCtx;
+let drawingUtils;
+let animationFrameFace = null;
 
-const video = document.getElementById("webcam");
-const elemPitch = document.getElementById("pitch");
-const elemYaw = document.getElementById("yaw");
-const videoWrapper = document.querySelector("#webcam-wrapper");
-const canvasElement = document.getElementById("output_canvas");
-const canvasCtx = canvasElement.getContext("2d");
-const drawingUtils = new DrawingUtils(canvasCtx);
+let capturedFrame;
+let firstLaunch;
+let lastVideoTime;
+let results;
+let initialFace;
+let calibrateInitialFace;
+let wasBlinking;
+
+const filesetResolver = await FilesetResolver.forVisionTasks(
+    "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.3/wasm"
+);
 
 const resizeCapturer = () => {
     const aspectRatio = video.videoHeight / video.videoWidth;
@@ -22,28 +34,8 @@ const resizeCapturer = () => {
     canvasElement.width = videoWrapper.clientWidth;
     canvasElement.height = videoWrapper.clientHeight;
 };
-let capturedFrame = {
-    "netral-netral": "",
-    "top-netral": "",
-    "bottom-netral": "",
-    "netral-right": "",
-    "netral-left": "",
-};
-
-dispatchEvent(
-    new CustomEvent("set_camera_capture", {
-        detail: {
-            images: capturedFrame,
-        },
-    })
-);
-
-let firstLaunch = true;
 
 async function createFaceLandmarker() {
-    const filesetResolver = await FilesetResolver.forVisionTasks(
-        "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.3/wasm"
-    );
     faceLandmarker = await FaceLandmarker.createFromOptions(filesetResolver, {
         baseOptions: {
             modelAssetPath:
@@ -55,15 +47,6 @@ async function createFaceLandmarker() {
         numFaces: 1,
     });
 }
-createFaceLandmarker();
-
-let lastVideoTime = -1;
-let results = undefined;
-let initialFace = {
-    pitch: null,
-    yaw: null,
-};
-let calibrateInitialFace = false;
 function setCalibrateInitialFace(state) {
     calibrateInitialFace = state;
 }
@@ -79,6 +62,7 @@ function captureFrame(videoElement) {
     return canvas.toDataURL("image/png");
 }
 async function predictWebcam() {
+    console.log("predict-webcam");
     resizeCapturer();
     if (runningMode === "IMAGE") {
         runningMode = "VIDEO";
@@ -154,8 +138,14 @@ async function predictWebcam() {
             }
             if (initialFace.pitch || initialFace.yaw) {
                 let currentDirection = `${direction.y}-${direction.x}`;
-                // Capture for each frame
+                if (currentDirection.includes(["buttom-right", "top-right"])) {
+                    currentDirection = "netral-right";
+                }
+                if (currentDirection.includes(["buttom-left", "top-left"])) {
+                    currentDirection = "netral-left";
+                }
                 if (currentDirection in capturedFrame) {
+                    // Capture for each frame
                     if (
                         capturedFrame[currentDirection] == "" &&
                         !Object.values(capturedFrame).some(
@@ -214,7 +204,7 @@ async function predictWebcam() {
     drawBlendShapes(results.faceBlendshapes);
 
     if (webcamRunning) {
-        window.requestAnimationFrame(predictWebcam);
+        animationFrameFace = window.requestAnimationFrame(predictWebcam);
         if (firstLaunch) {
             canvasElement.classList.remove("hidden");
             dispatchEvent(
@@ -228,7 +218,6 @@ async function predictWebcam() {
         }
     }
 }
-let wasBlinking = false;
 function drawBlendShapes(blendShapes) {
     if (!blendShapes.length) return;
 
@@ -336,7 +325,60 @@ async function requestUserCamera() {
         }
     }
 }
+const initBiometricFace = () => {
+    if (video) {
+        video.removeEventListener("loadeddata", predictWebcam);
+    }
+    runningMode = "IMAGE";
+    webcamRunning = false;
 
+    video = document.getElementById("webcam");
+    elemPitch = document.getElementById("pitch");
+    elemYaw = document.getElementById("yaw");
+    videoWrapper = document.querySelector("#webcam-wrapper");
+    canvasElement = document.getElementById("output_canvas");
+    canvasCtx = canvasElement.getContext("2d");
+    drawingUtils = new DrawingUtils(canvasCtx);
+    animationFrameFace = null;
+
+    capturedFrame = {
+        "netral-netral": "",
+        "top-netral": "",
+        "bottom-netral": "",
+        "netral-right": "",
+        "netral-left": "",
+    };
+
+    dispatchEvent(
+        new CustomEvent("set_camera_capture", {
+            detail: {
+                images: {},
+            },
+        })
+    );
+    firstLaunch = true;
+    lastVideoTime = -1;
+    results = undefined;
+    initialFace = {
+        pitch: null,
+        yaw: null,
+    };
+    calibrateInitialFace = false;
+    wasBlinking = false;
+
+    createFaceLandmarker();
+};
+
+const removeAnimationFrame = () => {
+    video.removeEventListener("loadeddata", predictWebcam);
+    cancelAnimationFrame(animationFrameFace);
+    animationFrameFace = null;
+    console.log("Animation Frame Removed");
+};
+
+window.removeAnimationFrame = removeAnimationFrame;
+window.initBiometricFace = initBiometricFace;
+window.createFaceLandmarker = createFaceLandmarker;
 window.requestUserCamera = requestUserCamera;
 window.setCalibrateInitialFace = setCalibrateInitialFace;
 window.captureFrame = captureFrame;

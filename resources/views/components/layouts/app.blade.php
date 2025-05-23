@@ -33,7 +33,7 @@
         {{-- Drawer hamburger --}}
         <div class="min-h-screen max-w-3xl container mx-auto border-x bg-white overflow-hidden">
 
-            <div class="pb-10">
+            <div id="main-page" class="pb-10 animate__animated">
                 {{ $slot }}
             </div>
 
@@ -71,43 +71,43 @@
             </div>
             {{-- End Footer --}}
             @persist('logout')
-            <div id="logout-confirmation"
-                class="fixed bottom-0 !left-1/2 max-w-3xl !-translate-x-1/2 z-50 w-full p-4 overflow-y-auto transition-transform bg-white translate-y-full"
-                tabindex="-1" aria-labelledby="drawer-bottom-label" aria-hidden="true">
-                <h5 id="drawer-bottom-label"
-                    class="inline-flex items-center mb-4 text-base font-semibold text-gray-500 dark:text-gray-400">
-                    <i class="bi bi-question-circle-fill mr-3"></i><span>Keluar</span>
-                </h5>
-                <button data-drawer-hide="logout-confirmation" aria-controls="logout-confirmation" type="button"
-                    class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 absolute top-2.5 end-2.5 inline-flex items-center justify-center dark:hover:bg-gray-600 dark:hover:text-white">
-                    <i class="bi bi-x-lg"></i>
-                    <span class="sr-only">Close menu</span>
-                </button>
-                <form class="mb-4" action="/logout" method="POST">
-                    @csrf
-                    <p class="mb-3 font-bold text-xl sm:text-2xl text-ocean-700">Ingin keluar?</p>
-                    <p class="mb-6 text-base sm:text-lg text-gray-500">Pastikan kamu sudah selesai ya, dan
-                        selamat beraktivitas :)</p>
-                    <div class="flex items-center mb-4">
-                        <input id="wipe-session" type="checkbox" name="wipe_session" value=""
-                            class="w-4 h-4 rounded bg-glass border-white focus:ring-0 accent-ocean-600">
-                        <label for="wipe-session" class="ms-2 text-base sm:text-lg font-medium text-ocean-600">Hapus
-                            seluruh ingatan pada
-                            perangkat</label>
-                    </div>
-                    <button type="submit" class="flex justify-center w-full btn btn-outline-ocean py-3">
-                        Ya, Keluar sekarang
+                <div id="logout-confirmation"
+                    class="fixed bottom-0 !left-1/2 max-w-3xl !-translate-x-1/2 z-50 w-full p-4 overflow-y-auto transition-transform bg-white translate-y-full"
+                    tabindex="-1" aria-labelledby="drawer-bottom-label" aria-hidden="true">
+                    <h5 id="drawer-bottom-label"
+                        class="inline-flex items-center mb-4 text-base font-semibold text-gray-500 dark:text-gray-400">
+                        <i class="bi bi-question-circle-fill mr-3"></i><span>Keluar</span>
+                    </h5>
+                    <button data-drawer-hide="logout-confirmation" aria-controls="logout-confirmation" type="button"
+                        class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 absolute top-2.5 end-2.5 inline-flex items-center justify-center dark:hover:bg-gray-600 dark:hover:text-white">
+                        <i class="bi bi-x-lg"></i>
+                        <span class="sr-only">Close menu</span>
                     </button>
-                </form>
-            </div>
+                    <form class="mb-4" action="/logout" method="POST">
+                        @csrf
+                        <p class="mb-3 font-bold text-xl sm:text-2xl text-ocean-700">Ingin keluar?</p>
+                        <p class="mb-6 text-base sm:text-lg text-gray-500">Pastikan kamu sudah selesai ya, dan
+                            selamat beraktivitas :)</p>
+                        <div class="flex items-center mb-4">
+                            <input id="wipe-session" type="checkbox" name="wipe_session" value=""
+                                class="w-4 h-4 rounded bg-glass border-white focus:ring-0 accent-ocean-600">
+                            <label for="wipe-session" class="ms-2 text-base sm:text-lg font-medium text-ocean-600">Hapus
+                                seluruh ingatan pada
+                                perangkat</label>
+                        </div>
+                        <button type="submit" class="flex justify-center w-full btn btn-outline-ocean py-3">
+                            Ya, Keluar sekarang
+                        </button>
+                    </form>
+                </div>
             @endpersist
         </div>
         {{-- Screen Laoding --}}
         @persist('loading')
             <div
-                class="loading flex fixed z-[500] top-0 left-1/2 -translate-x-1/2 w-screen h-screen max-w-3xl bg-white/50 backdrop-blur-[2px] justify-center items-center flex-col">
+                class="loading flex fixed z-[500] top-0 left-1/2 -translate-x-1/2 w-screen h-screen max-w-3xl justify-center items-center flex-col">
                 <div class="loader"></div>
-                {{-- <p class="mt-4 text-ocean-600">Memuat..</p> --}}
+                <p class="mt-4 text-ocean-600">Memuat..</p>
                 {{-- <p class=" text-ocean-600">Harap tunggu sesaat</p>
 
             <p class="absolute bottom-2 text-gray-600">Teralalu lama? <button
@@ -165,20 +165,45 @@
         // })
         const toogleLoadingState = (state = true) => {
             if (state) {
+                document.body.classList.add('pointer-events-none', 'overflow-hidden')
                 loadingWrapper.classList.remove('hidden');
                 loadingWrapper.classList.add('flex');
+
             } else {
+                document.body.classList.remove('pointer-events-none', 'overflow-hidden')
                 loadingWrapper.classList.remove('flex');
                 loadingWrapper.classList.add('hidden');
             }
         }
         document.addEventListener('livewire:navigate', (event) => {
+            const mainPage = document.getElementById('main-page');
+            if (mainPage) {
+                // Remove previous animation classes
+                mainPage.classList.remove('animate__fadeOut', 'animate__faster'); // or any previous class
+
+                // Force reflow (restart animation)
+                void mainPage.offsetWidth;
+
+                // Add desired animation
+                mainPage.classList.add('animate__fadeOut', 'animate__faster');
+            }
             toogleLoadingState(true)
         })
+        document.addEventListener('livewire:navigating', () => {})
         document.addEventListener('livewire:navigated', () => {
             console.log('navigated')
+            const mainPage = document.getElementById('main-page');
+            if (mainPage) {
+                // Remove previous animation classes
+                mainPage.classList.remove('animate__fadeIn', 'animate__faster'); // or any previous class
+
+                // Force reflow (restart animation)
+                void mainPage.offsetWidth;
+
+                // Add desired animation
+                mainPage.classList.add('animate__fadeIn', 'animate__faster');
+            }
             initFlowbite()
-            console.log('Flowbite Reinit')
             toogleLoadingState(false)
         })
         document.addEventListener('livewire:init', () => {

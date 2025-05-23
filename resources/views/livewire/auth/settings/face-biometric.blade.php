@@ -1,7 +1,7 @@
 <div class="py-7">
     <div>
         <div class="relative">
-            <a href="/settings" class="absolute left-5 top-1"><i class="bi bi-chevron-left"></i></a>
+            <a wire:navigate href="/settings" class="absolute left-5 top-1"><i class="bi bi-chevron-left"></i></a>
         </div>
         <h5 id="drawer-right-label" class="text-center mb-5 text-xl sm:text-2xl font-semibold text-gray-500">
             Biometrik Wajah
@@ -239,5 +239,28 @@
     </div>
 </div>
 @push('scripts')
-    <script type="module" src="{{ asset('assets\js\biometric-face.js') }}"></script>
+    <script data-navigate-once type="module" src="{{ asset('assets\js\biometric-face.js') }}"></script>
+    <script data-navigate-once>
+        document.addEventListener('livewire:navigated', () => {
+            if (window.location.pathname === '/settings/biometric-face') {
+                const inititateSettingsBiometric = () => {
+                    if (typeof initBiometricFace === 'function') {
+                        console.log('Biometic initialize')
+                        initBiometricFace();
+                    } else {
+                        setTimeout(() => {
+                            inititateSettingsBiometric()
+                        }, 1000);
+                    }
+                }
+                inititateSettingsBiometric()
+            }
+        });
+        document.addEventListener('livewire:navigate', () => {
+            console.log('NAVIGATING')
+            if (window.location.pathname === '/settings/biometric-face') {
+                removeAnimationFrame()
+            }
+        });
+    </script>
 @endpush
