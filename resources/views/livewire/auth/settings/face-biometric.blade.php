@@ -8,7 +8,7 @@
         </h5>
     </div>
     <div x-data="{
-        steps: [],
+        steps: ['authentication', 'permission'],
         camera: { permissiosn: '', status: 'offline', images: {} },
         camera_capturing: false,
         labelMap: {
@@ -18,11 +18,13 @@
             'netral-right': 'Kanan',
             'netral-left': 'Kiri'
         },
+        landmarker: false,
         calibrated: false,
         err_message: ''
     }"
         @set_camera_status.window.camel="camera.status = $event.detail.status, camera.status == 'running' ? setTimeout(() => {steps.push('registering')}, 1500) : ''"
         @set_camera_capturing.window.camel="camera_capturing = $event.detail.state"
+        @set_landmarker.window.camel="landmarker = $event.detail.state"
         @set_camera_capture.window.camel="camera.images = {}, camera.images = $event.detail.images, camera_capturing = false"
         class="px-5 relative">
         <div class="mb-6 text-center">
@@ -166,10 +168,10 @@
                 <button x-show="camera.status != 'running'"
                     @click="camera.status = 'preparing', res = await requestUserCamera(), res.status != 'error' ? (err_message = '') : (err_message = res.message, camera.status = 'offline')"
                     class="my-3 btn btn-outline-ocean w-full min-w-32 py-2 flex gap-2 items-center justify-center"
-                    :class="camera.status == 'preparing' ? 'pointer-events-none bg-transparent' : ''">
-                    <div x-show="camera.status == 'offline'">Aktifkan
+                    :class="camera.status == 'preparing' || !landmarker ? 'pointer-events-none bg-transparent' : ''">
+                    <div x-show="camera.status == 'offline' && landmarker">Aktifkan
                         Kamera</div>
-                    <div x-show="camera.status == 'preparing'" class="text-center small-loader"></div>
+                    <div x-show="camera.status == 'preparing' || !landmarker" class="text-center small-loader"></div>
                 </button>
             </div>
             <div x-show="steps[steps.length - 1] == 'registering'"
@@ -190,20 +192,23 @@
                             class="-scale-x-[1]" autoplay muted playsinline></video>
                         <canvas :class="!calibrated ? 'brightness-[.25] blur-sm' : ''" id="output_canvas"
                             class="-scale-x-[1] absolute top-0"></canvas>
-                        <p x-show="!calibrated"
-                            class="absolute flex gap-2 left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 btn btn-outline-ocean text-xs pointer-events-none text-white border-white">
-                            <span class="mt-1">
-                                <i class="bi bi-exclamation-circle"></i>
-                            </span>
-                            <span class="flex-grow">Harap lakukan
-                                kalibrasi
-                                terlebih dahulu,
-                                dengan menekan tombol pada kanan bawah</span>
-                        </p>
-                        <button type="button" @click="setCalibrateInitialFace(true), calibrated = true"
-                            class="absolute bottom-1 right-1 bg-white btn btn-outline-ocean text-xs">
-                            Kalibrasi <i class="bi bi-arrow-repeat"></i>
-                        </button>
+                        <div :class="!calibrated ? 'left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2' : 'right-1 bottom-1 '"
+                            class="absolute flex flex-col gap-2">
+                            <div x-show="!calibrated"
+                                class="pointer-events-none btn btn-outline-ocean text-xs text-white border-white">
+                                <span class="mt-1">
+                                    <i class="bi bi-exclamation-circle"></i>
+                                </span>
+                                <span class="flex-grow">Harap lakukan
+                                    kalibrasi
+                                    terlebih dahulu,
+                                    dengan menekan tombol berikut</span>
+                            </div>
+                            <button type="button" @click="setCalibrateInitialFace(true), calibrated = true"
+                                class="bg-white btn btn-outline-ocean text-xs">
+                                Kalibrasi <i class="bi bi-arrow-repeat"></i>
+                            </button>
+                        </div>
                         <div
                             class="absolute top-1 left-1 text-white bg-black/50 border-2 border-ocean-600 rounded-sm p-1 text-xs">
                             <p><i class="bi bi-arrows-expand"></i> <span id="pitch">-</span></p>

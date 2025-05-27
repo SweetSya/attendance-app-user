@@ -46,6 +46,13 @@ async function createFaceLandmarker() {
         runningMode,
         numFaces: 1,
     });
+    dispatchEvent(
+        new CustomEvent("set_landmarker", {
+            detail: {
+                state: true,
+            },
+        })
+    );
 }
 function setCalibrateInitialFace(state) {
     calibrateInitialFace = state;
@@ -375,6 +382,13 @@ const initBiometricFace = () => {
 };
 
 const removeAnimationFrame = () => {
+    dispatchEvent(
+        new CustomEvent("set_landmarker", {
+            detail: {
+                state: false,
+            },
+        })
+    );
     video.removeEventListener("loadeddata", predictWebcam);
     cancelAnimationFrame(animationFrameFace);
     animationFrameFace = null;
