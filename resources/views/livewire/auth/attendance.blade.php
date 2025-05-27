@@ -1,7 +1,7 @@
-<div id="data-wrapper" x-data="{ distance: { range: 0, refresh_at: '', position: [0, 0] }, drawer: { title: '', section: '' }, face: { scanning: false, last: '', height: '' } }"
+<div id="data-wrapper" x-data="{ distance: { range: 0, refresh_at: '', position: [0, 0] }, drawer: { title: '', section: '' }, face: { scanning: false, last: '', height: '', loading: false } }"
     @set_drawer.window.camel="drawer = $event.detail, drawerSection = $event.detail.section"
-    @start_check_face.window.camel="face.height = document.querySelector('#verify-camera').clientHeight ,await $wire.clock_employee_face(JSON.stringify($event.detail.face), JSON.stringify(distance.position))"
-    @set_face_scanning.window.camel="$event.detail.scanning ? (face.scanning = true, face.last = '') : (face.scanning = false, face.last = getBase64Face(), stopVideostream())"
+    @start_check_face.window.camel="face.height = document.querySelector('#verify-camera').clientHeight,face.loading = true, setTimeout(async () => {await $wire.clock_employee_face(JSON.stringify($event.detail.face), JSON.stringify(distance.position)), 1000})"
+    @set_face_scanning.window.camel="$event.detail.scanning ? (face.scanning = true, face.last = $event.detail.last ?? '', document.body.classList.add('pointer-events-none'), face.loading = false) : (face.scanning = false, face.last = $event.detail.last ?? getBase64Face(), stopVideostream(), document.body.classList.remove('pointer-events-none'), face.loading = false)"
     @set_distance.window.camel="distance = $event.detail" class="text-all-wide">
     <div wire:ignore class="h-screen">
         <div class="fixed w-full max-w-3xl h-screen">
@@ -184,7 +184,7 @@
             class="inline-flex items-center mb-4 text-base font-semibold text-gray-500 dark:text-gray-400">
             <i class="bi bi-question-circle-fill mr-3"></i><span x-text="drawer.title">Verifikasi</span>
         </h5>
-        <button data-drawer-hide="drawer-attendance" aria-controls="drawer-attendance" type="button"
+        <button @click="closeDrawer()" type="button"
             class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 absolute top-2.5 end-2.5 inline-flex items-center justify-center dark:hover:bg-gray-600 dark:hover:text-white">
             <i class="bi bi-x-lg"></i>
             <span class="sr-only">Close menu</span>
@@ -194,11 +194,11 @@
             <p class="mb-6 text-base sm:text-xl text-gray-500 text-center">Verifikasi Biometrik Wajah</p>
             <p class="mb-6 text-xs sm:text-base text-gray-500 text-center">Arahkan wajah di posisi dalam box untuk
                 memudahkan pemindaian</p>
-            <div class="mx-auto rounded border relative h-auto max-w-96 mb-4 overflow-hidden ">
+            <div class="mx-auto rounded border relative max-w-96 aspect-square mb-4 overflow-hidden">
                 <video x-show="face.scanning" muted autoplay id="verify-camera"
                     class="h-full -scale-x-[1] w-full rounded object-cover" src="">
                 </video>
-                <div x-transition x-show="!face.scanning">
+                <div class="flex h-full w-full" x-transition x-show="face.last != '' && !face.scanning">
                     <img :src="face.last" :height="face.height"
                         class="h-full w-full rounded object-cover blur-sm" alt="">
                     <div
@@ -209,9 +209,27 @@
                             </p>
                             <i class="bi bi-exclamation-circle-fill text-2xl md:text-4xl text-ocean-800"></i>
                         </div>
-                        <div class="text-center">
-                            <button @click=" await prepareCheckedIn()" type="button"
-                                class="underline text-ocean-500 font-semibold hover:no-underline">Ulangi</button>
+                        <div class="flex">
+                            <button @click="face.loading = true,await prepareCheckedIn()" type="button"
+                                class="btn btn-ocean flex w-full items-center justify-center gap-2 py-2"><span
+                                    x-show="!face.loading">
+                                    Ulangi</span>
+                                <div x-show="face.loading" class="small-loader">
+                                </div>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div x-show="face.scanning && face.loading"
+                    class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-white rounded px-4 py-4">
+                    <div class="flex items-center justify-between gap-2 mb-2">
+                        <div class="flex justify-center items-center">
+                            <p class="text-xs sm:text-base text-gray-600 mb-2">Memverifikasi wajah..
+                            </p>
+                        </div>
+                        <div class="flex items-center justify-center">
+                            <div class="small-loader">
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -250,7 +268,7 @@
             <p class="mb-6 text-xs sm:text-base text-gray-500 text-center"> Otomatis melanjutkan dalam <span
                     class="font-bold underline hover-opacity-down text-ocean-500">5 detik</span></p>
         </div>
-        <form @submit.prevent="await $wire.clock_employee_out(JSON.stringify(distance.position))"
+        <form wire:submit="clock_employee_out(JSON.stringify(distance.position))"
             x-show="drawer.section === 'checkout'">
             <p class="mb-6 text-base sm:text-xl text-gray-500 text-center">Ingin clock out sekarang?</p>
             <p class="mb-6 text-xs sm:text-base text-gray-500 text-center">Pastikan kamu sudah selesai untuk hari ini
@@ -258,7 +276,12 @@
             <div class="mx-auto rounded relative w-fit my-12">
                 <i class="bi bi-question-circle-fill text-ocean-600 text-6xl"></i>
             </div>
-            <button type="submit" class="btn btn-ocean py-3 w-full">Ya, Clock out sekarang</button>
+            <button type="submit" class="btn btn-ocean flex w-full items-center justify-center gap-2 py-3"><span
+                    wire:loading.remove wire:target="clock_employee_out">
+                    Ya, clock out sekarang</span>
+                <div wire:loading wire:target="clock_employee_out" class="small-loader">
+                </div>
+            </button>
         </form>
         <div x-show="drawer.section === 'checkedout'">
             <p class="mb-6 text-base sm:text-xl text-gray-500 text-center">Clock out Berhasil</p>
@@ -272,7 +295,7 @@
             <p class="mb-6 text-base text-gray-500 text-center">Harap diisi sesuai dengan keadaan yang sebenarnya yaa
                 <i class="bi bi-emoji-smile-fill ml-1"></i>
             </p>
-            <form @submit.prevent="await $wire.clock_employee_absence()" class="flex flex-col gap-3">
+            <form wire:submit="clock_employee_absence" class="flex flex-col gap-3">
                 <select wire:model="absence_reason"
                     class="font-semibold bg-gray-50 border border-gray-300 text-gray-600 text-sm rounded-lg focus:ring-ocean-500 focus:border-ocean-500 block w-full p-2.5">
                     <option class="font-semibold" value="">IZIN KARENA.. (PILIH)</option>
@@ -286,8 +309,14 @@
                     <textarea wire:model="absence_note" id="message" rows="4" required
                         class="block p-2.5 w-full text-sm text-gray-600 bg-gray-50 rounded-lg border border-gray-300 focus:ring-ocean-500 focus:border-ocean-500"></textarea>
                 </div>
-                <button type="submit" class="btn btn-ocean py-3">Kirimkan</button>
+                <button type="submit" class="btn btn-ocean flex items-center justify-center gap-2 py-3"><span
+                        wire:loading.remove wire:target="clock_employee_absence">
+                        Kirimkan</span>
+                    <div wire:loading wire:target="clock_employee_absence" class="small-loader">
+                    </div>
+                </button>
             </form>
+
         </div>
         <div x-show="drawer.section === 'absenced'">
             <p class="mb-6 text-base sm:text-xl text-gray-500 text-center">Permintaan Izin Dikirimkan</p>

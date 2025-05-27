@@ -164,7 +164,7 @@
             const loadingPage = document.getElementById('loading-screen');
             if (loadingPage) {
                 // Remove previous animation classes
-                loadingPage.classList.remove('animate__fadeIn', 'animate__faster'); // or any previous class
+                loadingPage.classList.remove('animate__fadeOut', 'animate__faster'); // or any previous class
                 // Force reflow (restart animation)
                 void loadingPage.offsetWidth;
                 // Add desired animation
@@ -182,10 +182,13 @@
                 // Force reflow (restart animation)
                 void loadingPage.offsetWidth;
                 // Add desired animation
-                loadingPage.classList.add('animate__fadeIn', 'animate__faster');
+                loadingPage.classList.add('animate__fadeOut', 'animate__faster');
             }
             initFlowbite()
-            toogleLoadingState(false)
+            setTimeout(() => {
+
+                toogleLoadingState(false)
+            }, 500);
         })
         document.addEventListener('livewire:init', () => {
             Livewire.on('notify', (payload) => {
