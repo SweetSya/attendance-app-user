@@ -33,7 +33,7 @@
         {{-- Drawer hamburger --}}
         <div class="min-h-screen max-w-3xl container mx-auto border-x bg-white overflow-hidden">
 
-            <div id="main-page" class="pb-10 animate__animated">
+            <div id="main-page" class="pb-10">
                 {{ $slot }}
             </div>
 
@@ -104,8 +104,8 @@
         </div>
         {{-- Screen Laoding --}}
         @persist('loading')
-            <div
-                class="loading flex fixed z-[500] top-0 left-1/2 -translate-x-1/2 w-screen h-screen max-w-3xl justify-center items-center flex-col">
+            <div id="loading-screen"
+                class="loading flex fixed z-[35] top-0 left-1/2 -translate-x-1/2 w-screen h-screen max-w-3xl justify-center items-center flex-col bg-white animate__animated">
                 <div class="loader"></div>
                 <p class="mt-4 text-ocean-600">Memuat..</p>
                 {{-- <p class=" text-ocean-600">Harap tunggu sesaat</p>
@@ -115,27 +115,7 @@
                     disini</button></p> --}}
             </div>
         @endpersist
-        {{-- <div wire:ignore id="drawer-attendance"
-            class="fixed bottom-0 !left-1/2 max-w-3xl !-translate-x-1/2 z-50 w-full p-4 overflow-y-auto transition-transform bg-white translate-y-full"
-            tabindex="-1" aria-labelledby="drawer-bottom-label" aria-hidden="true">
-            <h5 id="drawer-bottom-label"
-                class="inline-flex items-center mb-4 text-base font-semibold text-gray-500 dark:text-gray-400">
-                <i class="bi bi-question-circle-fill mr-3"></i><span>Terjadi Kesalahan</span>
-            </h5>
-            <button data-drawer-hide="drawer-attendance" aria-controls="drawer-attendance" type="button"
-                class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 absolute top-2.5 end-2.5 inline-flex items-center justify-center dark:hover:bg-gray-600 dark:hover:text-white">
-                <i class="bi bi-x-lg"></i>
-                <span class="sr-only">Close menu</span>
-            </button>
-            <div>
-                <p class="mb-6 text-base sm:text-xl text-gray-500 text-center" x-text="title"></p>
-                <div class="mx-auto rounded relative w-fit mb-4">
-                    <i class="bi bi-check-circle-fill text-ocean-600 text-6xl"></i>
-                </div>
-                <p class="mb-6 text-xs sm:text-base text-gray-500 text-center" x-text="title"> Otomatis melanjutkan dalam <span
-                        class="font-bold underline hover-opacity-down text-ocean-500">2 detik</span></p>
-            </div>
-        </div> --}}
+
     </main>
     {{-- <script src="{{ asset('build\assets\app-DdQ1e7RN.js') }}"></script> --}}
     {{-- Notfy --}}
@@ -150,6 +130,8 @@
     <script data-navigate-once src="{{ asset('assets/js/alpine-extend.js') }}"></script>
     {{-- Toastr --}}
     <script data-navigate-once src="{{ asset('assets/vendor/toastrjs/toastr.min.js') }}"></script>
+    {{-- Moment --}}
+    <script data-navigate-once src="{{ asset('assets/vendor/momentjs/moment-with-locales.min.js') }}"></script>
     {{-- LeafletJS --}}
     <script data-navigate-once src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
         integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
@@ -157,6 +139,9 @@
         navigator.serviceWorker.register("/sw.js", {
             scope: "/",
         });
+        // Set locale for Moment.js
+        moment.locale('id');
+
         let sendNotfy
         // Loading Handler
         const loadingWrapper = document.querySelector('.loading')
@@ -176,35 +161,34 @@
             }
         }
         document.addEventListener('livewire:navigate', (event) => {
-            const mainPage = document.getElementById('main-page');
-            if (mainPage) {
+            const loadingPage = document.getElementById('loading-screen');
+            if (loadingPage) {
                 // Remove previous animation classes
-                mainPage.classList.remove('animate__fadeOut', 'animate__faster'); // or any previous class
-
+                loadingPage.classList.remove('animate__fadeOut', 'animate__faster'); // or any previous class
                 // Force reflow (restart animation)
-                void mainPage.offsetWidth;
-
+                void loadingPage.offsetWidth;
                 // Add desired animation
-                mainPage.classList.add('animate__fadeOut', 'animate__faster');
+                loadingPage.classList.add('animate__fadeIn', 'animate__faster');
             }
             toogleLoadingState(true)
         })
         document.addEventListener('livewire:navigating', () => {})
         document.addEventListener('livewire:navigated', () => {
             console.log('navigated')
-            const mainPage = document.getElementById('main-page');
-            if (mainPage) {
+            const loadingPage = document.getElementById('loading-screen');
+            if (loadingPage) {
                 // Remove previous animation classes
-                mainPage.classList.remove('animate__fadeIn', 'animate__faster'); // or any previous class
-
+                loadingPage.classList.remove('animate__fadeIn', 'animate__faster'); // or any previous class
                 // Force reflow (restart animation)
-                void mainPage.offsetWidth;
-
+                void loadingPage.offsetWidth;
                 // Add desired animation
-                mainPage.classList.add('animate__fadeIn', 'animate__faster');
+                loadingPage.classList.add('animate__fadeOut', 'animate__faster');
             }
             initFlowbite()
-            toogleLoadingState(false)
+            setTimeout(() => {
+
+                toogleLoadingState(false)
+            }, 500);
         })
         document.addEventListener('livewire:init', () => {
             Livewire.on('notify', (payload) => {

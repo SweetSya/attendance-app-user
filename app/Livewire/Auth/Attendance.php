@@ -14,7 +14,7 @@ class Attendance extends Component
     public $title = "Absensi";
 
     public $DAY_OFF, $HOLIDAY, $VACATION;
-    public $employee, $office, $company, $today, $total_attend, $total_this_month, $attendances;
+    public $employee, $office, $company, $today, $total_attend, $total_this_month, $attendances, $face_state;
     public $absence_reason, $absence_note;
     public function boot()
     {
@@ -32,6 +32,7 @@ class Attendance extends Component
         }
         $this->office = $data->office;
         $this->company = $data->company;
+        $this->face_state = $data->face_biometric;
         // Check if today is day off
         $this->DAY_OFF = false;
         $this->VACATION = false;

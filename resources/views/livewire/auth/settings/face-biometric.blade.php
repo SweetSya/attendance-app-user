@@ -262,7 +262,6 @@
             }
         });
         document.addEventListener('livewire:navigate', () => {
-            console.log('NAVIGATING')
             if (window.location.pathname === '/settings/biometric-face') {
                 removeAnimationFrame()
             }

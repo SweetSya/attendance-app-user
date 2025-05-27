@@ -74,7 +74,7 @@ const refreshLocationAttendace = () => {
 const optionsDrawer = {
     placement: "bottom",
     backdrop: true,
-    bodyScrolling: false,
+    bodyScrolling: true,
     edge: false,
     edgeOffset: "",
     backdropClasses: "bg-gray-900/50 dark:bg-gray-900/80 fixed inset-0 z-30",
@@ -85,6 +85,14 @@ const optionsDrawer = {
         dispatchEvent(
             new CustomEvent("set_drawer", {
                 detail: { title: "", section: "" },
+            })
+        );
+        dispatchEvent(
+            new CustomEvent("set_face_scanning", {
+                detail: {
+                    scanning: false,
+                    last: "",
+                },
             })
         );
     },
@@ -116,23 +124,25 @@ const startVideostream = async () => {
 };
 const prepareCheckedIn = async () => {
     await startVideostream();
-    dispatchEvent(
-        new CustomEvent("set_face_scanning", {
-            detail: {
-                scanning: true,
-            },
-        })
-    );
     setTimeout(() => {
-        base64 = getBase64Face();
         dispatchEvent(
-            new CustomEvent("start_check_face", {
+            new CustomEvent("set_face_scanning", {
                 detail: {
-                    face: base64,
+                    scanning: true,
                 },
             })
         );
-    }, 150);
+        setTimeout(() => {
+            base64 = getBase64Face();
+            dispatchEvent(
+                new CustomEvent("start_check_face", {
+                    detail: {
+                        face: base64,
+                    },
+                })
+            );
+        }, 300);
+    }, 1000);
 };
 const openDrawer = (option) => {
     dispatchEvent(
