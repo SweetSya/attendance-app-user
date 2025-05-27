@@ -43,4 +43,17 @@ class FaceBiometric extends Component
         }
         return true;
     }
+    // Function for sending the image to the API (Images must be base64 encoded)
+    public function save_face_biometric($images)
+    {
+        $response = $this->API_post('view/settings/biometric-face/save', [
+            'images' => $images,
+        ]);
+        if (!$response->ok()) {
+            $this->dispatch('notify', type: 'error', message: 'Terjadi kesalahan saat menyimpan data wajah. Silakan coba lagi.');
+            return;
+        }
+        $this->dispatch('notify', type: 'success', message: 'Data biometrik wajah berhasil disimpan. Harap tunggu proses verifikasi oleh HRD.');
+        $this->refresh();
+    }
 }

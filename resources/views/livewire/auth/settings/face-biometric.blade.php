@@ -8,7 +8,7 @@
         </h5>
     </div>
     <div x-data="{
-        steps: ['authentication', 'permission'],
+        steps: [],
         camera: { permissiosn: '', status: 'offline', images: {} },
         camera_capturing: false,
         labelMap: {
@@ -232,14 +232,21 @@
                     </div>
                 </div>
             </div>
-            <div id="preview" x-transition.opacity x-show="camera.status == 'offline'" class="flex flex-col">
+            <form wire:submit="save_face_biometric(Object.values(camera.images))" id="preview" x-transition.opacity
+                x-show="camera.status == 'offline'" class="flex flex-col">
                 <template x-for="(value, index) in camera.images">
                     <div>
                         <p x-text="index"></p>
                         <img :src="value" alt="" class="w-full">
                     </div>
                 </template>
-            </div>
+                <button type="submit" class="btn btn-ocean flex w-full items-center justify-center gap-2 py-3"><span
+                        wire:loading.remove wire:target="save_face_biometric">
+                        Simpan</span>
+                    <div wire:loading wire:target="save_face_biometric" class="small-loader">
+                    </div>
+                </button>
+            </form>
         </div>
     </div>
 </div>
