@@ -183,20 +183,25 @@ async function predictWebcam() {
         }
 
         for (const landmarks of results.faceLandmarks) {
+            // Outer face oval
             drawingUtils.drawConnectors(
                 landmarks,
-                FaceLandmarker.FACE_LANDMARKS_TESSELATION,
-                { color: "#C0C0C070", lineWidth: 1 }
+                FaceLandmarker.FACE_LANDMARKS_FACE_OVAL,
+                { color: "#C0C0C0", lineWidth: 1.5 }
             );
+
+            // Right eye
             drawingUtils.drawConnectors(
                 landmarks,
                 FaceLandmarker.FACE_LANDMARKS_RIGHT_EYE,
-                { color: "#FF3030" }
+                { color: "#FF3030", lineWidth: 1 }
             );
+
+            // Left eye
             drawingUtils.drawConnectors(
                 landmarks,
                 FaceLandmarker.FACE_LANDMARKS_LEFT_EYE,
-                { color: "#30FF30" }
+                { color: "#30FF30", lineWidth: 1 }
             );
         }
     }
