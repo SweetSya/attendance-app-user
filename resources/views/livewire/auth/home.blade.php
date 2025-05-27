@@ -18,14 +18,14 @@
                     <p class="sm:text-lg font-semibold line-clamp-1">{{ $employee->full_name }}</p>
                 </div>
             </div>
-            {{-- <div>
+            <div>
                 <div
-                    class="relative hover-opacity-down rounded-full bg-ocean-500 text-white h-9 w-9 flex items-center justify-center">
+                    class="relative hover-opacity-down rounded bg-ocean-500 text-white h-9 w-9 flex items-center justify-center">
                     <span
-                        class="absolute -right-2 -top-2 bg-cinnabar-500 rounded-full w-6 h-6 text-xs p-1 flex items-center justify-center">10</span>
+                        class="absolute -right-2 -top-2 bg-cinnabar-500 rounded w-6 h-6 text-xs p-1 flex items-center justify-center">10</span>
                     <i class="bi bi-bell text-lg sm:text-xl"></i>
                 </div>
-            </div> --}}
+            </div>
         </div>
 
     </nav>
@@ -169,7 +169,8 @@
         </div> --}}
         <div class="mb-3 flex items-center gap-3 text-gray-500">
             <i class="bi bi-info-circle"></i>
-            <span class="text-sm leading-tight">Gunakan <span class="italic font-bold">handphone & jaringan data</span>
+            <span class="text-sm leading-tight">Gunakan <span class="italic font-bold">perangkat yang dilengkapi
+                    GPS</span>
                 untuk
                 meningkatkan akurasi posisi.</span>
         </div>
@@ -205,7 +206,7 @@
             <p class="font-bold text-base sm:text-xl">Histori Kehadiran</p>
             {{-- <a href="/history" class="font-light text-base sm:text-xl hover-opacity-down">Lihat semua</a> --}}
         </div>
-        <div class="relative mb-5 p-4 text-white rounded bg-gradient-ocean">
+        <div class="relative flex justify-between items-center mb-5 p-4 text-white rounded bg-gradient-ocean">
             <div class="flex flex-col justify-center gap-1">
                 <p class="font-light text-base xs:text-lg">Bulan ini</p>
                 <p class="font-bold text-xl xs:text-3xl">Sebanyak {{ $total_attend }}</p>
@@ -213,6 +214,9 @@
                         class="font-bold">{{ $total_this_month }}</span> hari
                     kerja</p>
             </div>
+            <a wire:navigate href="/history" class="hover:opacity-70 flex items-center">
+                <i class="bi bi-chevron-double-right text-xl"></i>
+            </a>
         </div>
         <div class="relative mb-5">
             <div class="flex flex-col gap-3">
@@ -253,7 +257,7 @@
                                 <p class="text-xl sm:text-3xl font-bold">
                                     {{ \Carbon\Carbon::parse($attendance->date)->isoFormat('DD') }}</p>
                                 <p class="text-xs sm:text-base text-gray-500">
-                                    {{ \Carbon\Carbon::parse($attendance->date)->isoFormat('MMM, YYYY') }}</p>
+                                    {{ \Carbon\Carbon::parse($attendance->date)->isoFormat('MMM YYYY') }}</p>
                             </div>
                         </div>
                     </div>

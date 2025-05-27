@@ -22,7 +22,7 @@ refreshLocationAttendace();
 map._handlers.forEach(function (handler) {
     handler.disable();
 });
-initFlowbite();
+// initFlowbite();
 
 drawerSection = "";
 videoStream = document.querySelector("#verify-camera");

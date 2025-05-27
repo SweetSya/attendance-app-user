@@ -29,7 +29,22 @@
             </div>
         </div>
         <div class="w-full flex flex-col gap-2 text-ocean-800 mb-5">
-            @if ($VACATION)
+            @if ($face_state == 0)
+                <div class="w-full flex gap-2 text-ocean-800 mb-3">
+                    <div
+                        class="relative text-center flex flex-col justify-center gap-1 w-full p-4 min-h-24 rounded bg-gradient-warning-soft">
+                        <p class="font-bold text-base xs:text-2xl md:text-3xl">Registrasi Biometrik</p>
+                        <p class=" text-xs xs:text-base font-">Untuk melakukan presensi, kamu harus
+                            melakukan registrasi biometrik wajah terlebih dahulu. Silakan <span
+                                class="font-semibold">hubungi Administrasi</span> atau kunjungi
+                            <a wire:navigate href="/settings/biometric-face" class="underline font-semibold">pengaturan
+                                biometrik</a> untuk
+                            melakukan
+                            registrasi.
+                        </p>
+                    </div>
+                </div>
+            @elseif ($VACATION)
                 <div class="w-full flex gap-2 text-ocean-800 mb-3">
                     <div
                         class="relative text-center flex flex-col justify-center gap-1 w-full p-4 min-h-24 rounded bg-gradient-ocean-soft">
@@ -124,7 +139,7 @@
 
         </div>
         <div class="mb-5 flex flex-wrap gap-2">
-            @if (!$HOLIDAY && !$DAY_OFF && !$VACATION)
+            @if (!$HOLIDAY && !$DAY_OFF && !$VACATION && $face_state != 0)
                 @if (!$today->clock_in)
                     <button
                         :class="distance.range >= officeRadius ? 'pointer-events-none opacity-35' :
