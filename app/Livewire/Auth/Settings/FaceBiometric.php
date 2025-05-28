@@ -53,7 +53,7 @@ class FaceBiometric extends Component
             $this->dispatch('notify', type: 'error', message: 'Terjadi kesalahan saat menyimpan data wajah. Silakan coba lagi.');
             return;
         }
-        $this->dispatch('notify', type: 'success', message: 'Data biometrik wajah berhasil disimpan. Harap tunggu proses verifikasi oleh HRD.');
+        $this->dispatch('notify', type: 'success', message: 'Data biometrik wajah berhasil disimpan. Harap tunggu proses verifikasi oleh HRDgi.');
         $this->refresh();
     }
 }

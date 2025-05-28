@@ -186,7 +186,7 @@ async function predictWebcam() {
                 sendNotfy.success("Berhasil menangkap muka");
                 console.log(`Menghadap: ${directionKey}`);
                 console.log("======================================");
-            }
+        }
         }
 
         for (const landmarks of results.faceLandmarks) {

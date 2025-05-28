@@ -1,8 +1,9 @@
-<div id="data-wrapper" x-data="{ distance: { range: 0, refresh_at: '', position: [0, 0] }, drawer: { title: '', section: '' }, face: { scanning: false, last: '', height: '', loading: false } }"
+<div id="data-wrapper" x-data="{ distance: { range: 0, refresh_at: '', position: [0, 0] }, drawer: { title: '', section: '' }, face: { scanning: false, last: '', height: '', loading: false, landmarker: false } }"
     @set_drawer.window.camel="drawer = $event.detail, drawerSection = $event.detail.section"
-    @start_check_face.window.camel="face.height = document.querySelector('#verify-camera').clientHeight,face.loading = true, setTimeout(async () => {await $wire.clock_employee_face(JSON.stringify($event.detail.face), JSON.stringify(distance.position)), 1000})"
-    @set_face_scanning.window.camel="$event.detail.scanning ? (face.scanning = true, face.last = $event.detail.last ?? '', document.body.classList.add('pointer-events-none'), face.loading = false) : (face.scanning = false, face.last = $event.detail.last ?? getBase64Face(), stopVideostream(), document.body.classList.remove('pointer-events-none'), face.loading = false)"
-    @set_distance.window.camel="distance = $event.detail" class="text-all-wide">
+    @start_check_face.window.camel="face.height = document.querySelector('#verify-camera').clientHeight, face.loading = true, setTimeout(async () => {await $wire.clock_employee_face(JSON.stringify($event.detail.face), JSON.stringify(distance.position)), 1000})"
+    @set_face_scanning.window.camel="$event.detail.scanning ? (face.scanning = true, face.last = $event.detail.last ?? '', face.loading = false) : (face.scanning = false, face.last = $event.detail.last ?? getBase64Face(), stopVideostream(), face.loading = false)"
+    @set_distance.window.camel="distance = $event.detail"
+    @set_landmarker.window.camel="face.landmarker = $event.detail.state" class="text-all-wide">
     <div wire:ignore class="h-screen">
         <div class="fixed w-full max-w-3xl h-screen">
             <div id="map" class="h-full w-full bg-gradient-ocean-soft z-10">
@@ -100,7 +101,7 @@
                             <i class="bi bi-compass-fill absolute right-2 top-2 text-2xl sm:text-4xl opacity-70"></i>
                             <p class="font-light text-base xs:text-lg">Jarakmu</p>
                             <p class="font-bold text-xl xs:text-2xl sm:text-3xl"
-                                x-text="distance.range == 0 ? 'Menghitung' : formatDistance(distance.range)">
+                                x-text="distance.range == 0 ? 'Menghitung..' : formatDistance(distance.range)">
                             </p>
                             <p class="font-light text-base xs:text-lg">Dari kantor</p>
                         </div>
@@ -142,7 +143,7 @@
             @if (!$HOLIDAY && !$DAY_OFF && !$VACATION && $face_state != 0)
                 @if (!$today->clock_in)
                     <button
-                        :class="distance.range >= officeRadius ? 'pointer-events-none opacity-35' :
+                        :class="(distance.range >= officeRadius) && !face.landmarker ? 'pointer-events-none opacity-35' :
                             'pointer-events-auto opacity-100'"
                         @click="openDrawer({title: 'Verifikasi Kehadiran', 'section': 'checkin'})"
                         class="btn btn-outline-success flex-grow min-w-52 py-3">Clock In</button>
@@ -195,12 +196,13 @@
             <p class="mb-6 text-xs sm:text-base text-gray-500 text-center">Arahkan wajah di posisi dalam box untuk
                 memudahkan pemindaian</p>
             <div class="mx-auto rounded border relative max-w-96 aspect-square mb-4 overflow-hidden">
-                <video x-show="face.scanning" muted autoplay id="verify-camera"
-                    class="h-full -scale-x-[1] w-full rounded object-cover" src="">
+                <video x-show="face.scanning" :class="face.loading ? 'blur-sm brightness-75' : ''" muted autoplay
+                    id="verify-camera" class="h-full -scale-x-[1] w-full rounded object-cover transition duration-150"
+                    src="">
                 </video>
                 <div class="flex h-full w-full" x-transition x-show="face.last != '' && !face.scanning">
                     <img :src="face.last" :height="face.height"
-                        class="h-full w-full rounded object-cover blur-sm" alt="">
+                        class="h-full -scale-x-[1] w-full rounded object-cover blur-sm" alt="">
                     <div
                         class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-white rounded px-4 py-4">
                         <div class="text-center mb-2">
@@ -221,16 +223,20 @@
                     </div>
                 </div>
                 <div x-show="face.scanning && face.loading"
-                    class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-white rounded px-4 py-4">
-                    <div class="flex items-center justify-between gap-2 mb-2">
-                        <div class="flex justify-center items-center">
-                            <p class="text-xs sm:text-base text-gray-600 mb-2">Memverifikasi wajah..
-                            </p>
+                    class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-white rounded px-4 py-2">
+                    <div class="flex items-center justify-between gap-2">
+                        <span class="text-xs md:text-base text-nowrap text-gray-600">Memverifikasi wajah..
+                        </span>
+                        <div class="small-loader">
                         </div>
-                        <div class="flex items-center justify-center">
-                            <div class="small-loader">
-                            </div>
-                        </div>
+                    </div>
+                </div>
+                <div x-show="face.scanning && !face.loading"
+                    class="absolute left-1/2 bottom-2 -translate-x-1/2 bg-white rounded px-4 py-2">
+                    <div class="flex items-center justify-between gap-2">
+                        <i class="bi bi-info-circle"></i>
+                        <p class="text-xs md:text-base text-gray-600">Kedipkan mata
+                        </p>
                     </div>
                 </div>
                 <div x-show="face.scanning"
@@ -340,6 +346,7 @@
             let attendanceDrawer
             let drawerSection
             let videostream
+            let capturing
         }
         office = [{{ $office->lat }}, {{ $office->lon }}];
         officeRadius = {{ $office->radius }};
@@ -349,11 +356,34 @@
             timeout: 5000,
             maximumAge: 0,
         };
+        capturing = false;
         /* Setting up the constraint */
         var facingMode = "user"; // Can be 'user' or 'environment' to access back or front camera
     </script>
+    <script data-navigate-once type="module" src="{{ asset('assets\js\attendance-module.js') }}"></script>
     <script data-navigate-once src="{{ asset('assets/js/attendance.js') }}"></script>
     <script src="{{ asset('assets/js/attendance-initiate-dom.js') }}"></script>
+    <script data-navigate-once>
+        document.addEventListener('livewire:navigated', () => {
+            if (window.location.pathname === '/attendance') {
+                const inititateAttendanceBiometric = () => {
+                    if (typeof attendanceCreateFaceLandmarker === 'function') {
+                        attendanceCreateFaceLandmarker()
+                    } else {
+                        setTimeout(() => {
+                            inititateAttendanceBiometric()
+                        }, 1000);
+                    }
+                }
+                inititateAttendanceBiometric()
+            }
+        });
+        document.addEventListener('livewire:navigate', () => {
+            if (window.location.pathname === '/attendance') {
+                attendanceRemoveAnimationFrame()
+            }
+        });
+    </script>
     <script>
         document.addEventListener('livewire:init', () => {
             Livewire.on('stop_face_recog', (payload) => {

@@ -124,6 +124,8 @@ const startVideostream = async () => {
 };
 const prepareCheckedIn = async () => {
     await startVideostream();
+    attendanceInitAttendaceBiometricFace();
+    console.log("Initialize Face landmarker");
     setTimeout(() => {
         dispatchEvent(
             new CustomEvent("set_face_scanning", {
@@ -132,17 +134,25 @@ const prepareCheckedIn = async () => {
                 },
             })
         );
-        setTimeout(() => {
-            base64 = getBase64Face();
+    }, 300);
+    const captureFace = () => {
+        if (attendanceIsBlinking() && !capturing) {
+            capturing = true;
+            let base64face = getBase64Face();
             dispatchEvent(
                 new CustomEvent("start_check_face", {
                     detail: {
-                        face: base64,
+                        face: base64face,
                     },
                 })
             );
-        }, 300);
-    }, 1000);
+        } else {
+            setTimeout(() => {
+                captureFace();
+            }, 500);
+        }
+    };
+    captureFace();
 };
 const openDrawer = (option) => {
     dispatchEvent(
@@ -164,6 +174,7 @@ const stopVideostream = () => {
     setTimeout(() => {
         if (isVideoStreamActive()) {
             try {
+                attendanceRemoveAnimationFrame();
                 const stream = videoStream.srcObject;
                 const tracks = stream.getTracks();
 
@@ -177,6 +188,7 @@ const stopVideostream = () => {
                 return;
             }
         }
+        capturing = false;
     }, 200);
 };
 const isVideoStreamActive = () => {

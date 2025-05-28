@@ -165,7 +165,7 @@
             if (loadingPage) {
                 // Remove previous animation classes
                 loadingPage.classList.remove('animate__fadeOut', 'animate__faster'); // or any previous class
-                // Force reflow (restart animation)
+                    // Force reflow (restart animation)
                 void loadingPage.offsetWidth;
                 // Add desired animation
                 loadingPage.classList.add('animate__fadeIn', 'animate__faster');
