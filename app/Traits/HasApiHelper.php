@@ -13,7 +13,7 @@ trait HasApiHelper
 
     public function API_get($target_url, $data = [])
     {
-        if (App::environment('production')) {
+        if (env('APP_ENV') === 'production' || App::environment('production')) {
             $response = Http::withHeaders($this->API_getHeader())
                 ->get($this->API_getURL($target_url), $data);
             return $response;
@@ -25,7 +25,7 @@ trait HasApiHelper
     }
     public function API_post($target_url, $data = [])
     {
-        if (App::environment('production')) {
+        if (env('APP_ENV') === 'production' || App::environment('production')) {
             $response = Http::asJson()->withHeaders($this->API_getHeader())
                 ->post($this->API_getURL($target_url), $data);
             return $response;

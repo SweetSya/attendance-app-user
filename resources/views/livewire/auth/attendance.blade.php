@@ -82,7 +82,7 @@
                 </div>
             @else
                 {{-- If absence --}}
-                @if (!in_array($today->type->name, ['kosong', 'sesuai']))
+                @if (!in_array($today->type->name, ['kosong', 'sesuai', 'terlambat']))
                     <div class="w-full flex gap-2 text-ocean-800 mb-3">
                         <div
                             class="relative text-center flex flex-col justify-center gap-1 w-full p-4 min-h-24 rounded bg-gradient-warning-soft">
@@ -143,8 +143,9 @@
             @if (!$HOLIDAY && !$DAY_OFF && !$VACATION && $face_state != 0)
                 @if (!$today->clock_in)
                     <button
-                        :class="(distance.range >= officeRadius) && !face.landmarker ? 'pointer-events-none opacity-35' :
-                            'pointer-events-auto opacity-100'"
+                        :class="(face.landmarker && distance.range >= officeRadius || distance.range == 0) ?
+                        'pointer-events-none opacity-35' :
+                        'pointer-events-auto opacity-100'"
                         @click="openDrawer({title: 'Verifikasi Kehadiran', 'section': 'checkin'})"
                         class="btn btn-outline-success flex-grow min-w-52 py-3">Clock In</button>
                 @endif
