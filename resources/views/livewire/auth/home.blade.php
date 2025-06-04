@@ -81,7 +81,7 @@
                             {{-- If its working day --}}
                         @else
                             {{-- If its attendance type are not kosong or sesuai, related to database, this is for checking if the employee are sick, absence or other --}}
-                            @if (!in_array($today->type->name, ['kosong', 'sesuai']))
+                            @if (!in_array($today->type->name, ['kosong', 'sesuai', 'terlambat']))
                                 <div class="w-full text-center mx-auto">
                                     <p class="opacity-70 text-base xs:text-xl md:text-2xl font-light">Tidak Hadir</p>
                                     <p class="font-bold text-base xs:text-2xl md:text-3xl">
@@ -179,24 +179,24 @@
             {{-- <a href="/history" class="font-light text-base sm:text-xl hover-opacity-down">Lihat semua</a> --}}
         </div>
         <div id="swiper-actions" class="swiper mb-2">
-            <div class="swiper-wrapper mr-2">
-                <a href="/vacation"
+            <div class="swiper-wrapper">
+                <div x-on:click="navigateToUrl('/vacation')"
                     class="swiper-slide p-4 text-sm text-ocean-800 border border-ocean-300 shadow rounded bg-gradient-ocean-soft h-20 text-center cursor-pointer hover:opacity-70">
                     <i class="bi bi-airplane-fill text-xl sm:text-2xl opacity-70"></i>
                     <p class="font-light text-xs xs:text-base">Ajukan Cuti</p>
-                </a>
+                </div>
                 <div
-                    class="swiper-slide p-4 text-sm text-ocean-800 border border-ocean-300 shadow rounded bg-gradient-ocean-soft h-20 text-center opacity-50 pointer-events-none">
+                    class="swiper-slide p-4 text-sm text-ocean-800 border border-ocean-300 shadow rounded bg-gradient-ocean-soft h-20 text-center opacity-50">
                     <i class="bi bi-info-circle-fill text-xl sm:text-2xl opacity-70"></i>
                     <p class="font-light text-xs xs:text-base">Soon</p>
                 </div>
                 <div
-                    class="swiper-slide p-4 text-sm text-ocean-800 border border-ocean-300 shadow rounded bg-gradient-ocean-soft h-20 text-center opacity-50 pointer-events-none">
+                    class="swiper-slide p-4 text-sm text-ocean-800 border border-ocean-300 shadow rounded bg-gradient-ocean-soft h-20 text-center opacity-50">
                     <i class="bi bi-info-circle-fill text-xl sm:text-2xl opacity-70"></i>
                     <p class="font-light text-xs xs:text-base">Soon</p>
                 </div>
                 <div
-                    class="swiper-slide p-4 text-sm text-ocean-800 border border-ocean-300 shadow rounded bg-gradient-ocean-soft h-20 text-center opacity-50 pointer-events-none">
+                    class="swiper-slide p-4 text-sm text-ocean-800 border border-ocean-300 shadow rounded bg-gradient-ocean-soft h-20 text-center opacity-50">
                     <i class="bi bi-info-circle-fill text-xl sm:text-2xl opacity-70"></i>
                     <p class="font-light text-xs xs:text-base">Soon</p>
                 </div>
@@ -270,6 +270,9 @@
 
 @push('scripts')
     <script data-navigate-once>
+        window.navigateToUrl = function(url) {
+            Livewire.navigate(url);
+        }
         if (typeof autoSnap == 'undefined') {
             let office
             let officeRadius
