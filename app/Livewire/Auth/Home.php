@@ -5,7 +5,11 @@ namespace App\Livewire\Auth;
 use App\Traits\HasApiHelper;
 use App\Traits\HasSessionAuthentication;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Cookie;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Redirect;
 use Livewire\Component;
+use Livewire\Features\SupportRedirects\Redirector;
 use stdClass;
 
 class Home extends Component
@@ -15,7 +19,7 @@ class Home extends Component
     public $distance = 0;
     public $DAY_OFF, $HOLIDAY, $VACATION;
 
-    public $employee, $office, $company, $today, $total_attend, $total_this_month, $attendances;
+    public $employee, $office, $company, $today, $total_attend, $total_this_month, $attendances, $is_admin, $admin_route;
 
     public function boot()
     {
@@ -38,6 +42,12 @@ class Home extends Component
         $data = $this->API_getJSON('view/home')->data;
         $this->employee = $data->employee;
         $this->today = $data->today;
+        $this->is_admin = $data->is_admin;
+        if ($this->is_admin) {
+            $token_session = Cookie::get($this->COOKIES_getSessionName());
+            $token_device = Cookie::get($this->COOKIES_getDeviceUUIDSessionName());
+            $this->admin_route = env('APP_API_HOST') . '/login-with-session-employee?emp=' . Hash::make($this->employee->id) . '&token_session=' . Hash::make($token_session) . '&device_uuid=' . Hash::make($token_device) . '&ref=' . Hash::make(env('APP_URL'));
+        }
         if (!$this->today) {
             $this->today = new stdClass;
             $this->today->clock_in = null;
@@ -68,5 +78,9 @@ class Home extends Component
             ->layout('components.layouts.app', [
                 'title' => $this->title
             ]);
+    }
+    public function redirect_admin()
+    {
+        return Redirect::to($this->admin_route);
     }
 }
