@@ -81,6 +81,18 @@ class Home extends Component
     }
     public function redirect_admin()
     {
+        $response = $this->API_get('check-login-with-session-employee', [
+            'emp' => Hash::make($this->employee->id),
+            'token_session' => Hash::make(Cookie::get($this->COOKIES_getSessionName())),
+            'device_uuid' => Hash::make(Cookie::get($this->COOKIES_getDeviceUUIDSessionName())),
+            'ref' => Hash::make(env('APP_URL')),
+        ]);
+        $data = $response->json();
+        if (!$response->ok()) {
+            $this->dispatch('notify', type: 'error', message: $data['message'] ?? 'Gagal mengakses halaman admin');
+            return;
+        }
+        $this->dispatch('notify', type: 'success', message: $data['message']);
         return Redirect::to($this->admin_route);
     }
 }

@@ -42,6 +42,6 @@ class History extends Component
     }
     public function load_show_attendaces()
     {
-    $this->shown_attendances = array_slice($this->attendances, 0, $this->pagination['count']);
+        $this->shown_attendances = array_slice($this->attendances, 0, $this->pagination['count']);
     }
 }
