@@ -42,23 +42,23 @@
                     <a wire:navigate href="/home"
                         class="inline-flex flex-col items-center justify-center px-5 hover:bg-gray-50 group">
                         <i
-                            class="bi {{ $route == 'home' ? 'bi-house-door-fill' : 'bi-house-door' }} text-xl {{ $route == 'home' ? 'text-ocean-600' : 'text-gray-500 group-hover:text-ocean-600' }}"></i>
+                            class="bi {{ in_array('home', explode('/', $route)) ? 'bi-house-door-fill' : 'bi-house-door' }} text-xl {{ in_array('home', explode('/', $route)) ? 'text-ocean-600' : 'text-gray-500 group-hover:text-ocean-600' }}"></i>
                         <span
-                            class="text-xs xs:text-sm {{ $route == 'home' ? 'text-ocean-600' : 'text-gray-500 group-hover:text-ocean-600' }}">Beranda</span>
+                            class="text-xs xs:text-sm {{ in_array('home', explode('/', $route)) ? 'text-ocean-600' : 'text-gray-500 group-hover:text-ocean-600' }}">Beranda</span>
                     </a>
                     <a wire:navigate href="/attendance"
                         class="inline-flex flex-col items-center justify-center px-5 hover:bg-gray-50 group">
                         <i
-                            class="bi {{ $route == 'attendance' ? 'bi-fingerprint' : 'bi-fingerprint' }} text-xl {{ $route == 'attendance' ? 'text-ocean-600' : 'text-gray-500 group-hover:text-ocean-600' }}"></i>
+                            class="bi {{ in_array('attendance', explode('/', $route)) ? 'bi-fingerprint' : 'bi-fingerprint' }} text-xl {{ in_array('attendance', explode('/', $route)) ? 'text-ocean-600' : 'text-gray-500 group-hover:text-ocean-600' }}"></i>
                         <span
-                            class="text-xs xs:text-sm {{ $route == 'attendance' ? 'text-ocean-600' : 'text-gray-500 group-hover:text-ocean-600' }}">Presensi</span>
+                            class="text-xs xs:text-sm {{ in_array('attendance', explode('/', $route)) ? 'text-ocean-600' : 'text-gray-500 group-hover:text-ocean-600' }}">Presensi</span>
                     </a>
                     <a wire:navigate href="/settings"
                         class="inline-flex flex-col items-center justify-center px-5 hover:bg-gray-50 group">
                         <i
-                            class="bi {{ $route == 'settings' ? 'bi-gear-fill' : 'bi-gear' }} text-xl {{ $route == 'settings' ? 'text-ocean-600' : 'text-gray-500 group-hover:text-ocean-600' }}"></i>
+                            class="bi {{ in_array('settings', explode('/', $route)) ? 'bi-gear-fill' : 'bi-gear' }} text-xl {{ in_array('settings', explode('/', $route)) ? 'text-ocean-600' : 'text-gray-500 group-hover:text-ocean-600' }}"></i>
                         <span
-                            class="text-xs xs:text-sm {{ $route == 'settings' ? 'text-ocean-600' : 'text-gray-500 group-hover:text-ocean-600' }}">Pengaturan</span>
+                            class="text-xs xs:text-sm {{ in_array('settings', explode('/', $route)) ? 'text-ocean-600' : 'text-gray-500 group-hover:text-ocean-600' }}">Pengaturan</span>
                     </a>
                     <span x-data="" @click="LogoutConfirmationDrawer.show()"
                         class="cursor-pointer inline-flex flex-col items-center justify-center px-5 hover:bg-gray-50 group">
@@ -165,7 +165,7 @@
             if (loadingPage) {
                 // Remove previous animation classes
                 loadingPage.classList.remove('animate__fadeOut', 'animate__faster'); // or any previous class
-                    // Force reflow (restart animation)
+                // Force reflow (restart animation)
                 void loadingPage.offsetWidth;
                 // Add desired animation
                 loadingPage.classList.add('animate__fadeIn', 'animate__faster');

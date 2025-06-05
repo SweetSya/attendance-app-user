@@ -41,17 +41,14 @@ Route::group(['middleware' => 'refresh_device_uuid'], function () {
         Route::get('/history', History::class)->name('history');
         Route::get('/vacation', Vacation::class)->name('vacation');
 
-        Route::get('/settings/email', SettingsEmail::class)->name('settings');
-        Route::get('/settings/personal-data', PersonalData::class)->name('settings');
-        Route::get('/settings/pin', Pin::class)->name('settings');
-        Route::get('/settings/password', Password::class)->name('settings');
-        Route::get('/settings/device-uuid', DeviceUuid::class)->name('settings');
-        Route::get('/settings/device-permission', DevicePermission::class)->name('settings');
-        Route::get('/settings/biometric-face', FaceBiometric::class)->name('settings');
-        Route::get('/settings/push-notification', PushNotification::class)->name('settings');
-        Route::get('/settings/push-notification-create', function () {
-            return VAPID::createVapidKeys();
-        })->name('settings');
+        Route::get('/settings/email', SettingsEmail::class)->name('settings/email');
+        Route::get('/settings/personal-data', PersonalData::class)->name('settings/personal-data');
+        Route::get('/settings/pin', Pin::class)->name('settings/pin');
+        Route::get('/settings/password', Password::class)->name('settings/password');
+        Route::get('/settings/device-uuid', DeviceUuid::class)->name('settings/device-uuid');
+        Route::get('/settings/device-permission', DevicePermission::class)->name('settings/device-permission');
+        Route::get('/settings/biometric-face', FaceBiometric::class)->name('settings/biometric-face');
+        Route::get('/settings/push-notification', PushNotification::class)->name('settings/push-notification');
         Route::get('/device-uuid', function () {
             return Cookie::get(env('APP_DEVICE_UUID_COOKIES_NAME'));
         });
