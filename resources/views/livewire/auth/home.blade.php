@@ -180,7 +180,7 @@
         </div>
         <div id="swiper-actions" class="swiper mb-2">
             <div class="swiper-wrapper mr-2">
-                <a href="/vacation"
+                <a wire:navigate href="/vacation"
                     class="swiper-slide p-4 text-sm text-ocean-800 border border-ocean-300 shadow rounded bg-gradient-ocean-soft h-20 text-center cursor-pointer hover:opacity-70">
                     <i class="bi bi-airplane-fill text-xl sm:text-2xl opacity-70"></i>
                     <p class="font-light text-xs xs:text-base">Ajukan Cuti</p>
