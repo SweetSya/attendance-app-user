@@ -108,45 +108,42 @@
                 @endif
             </div>
             <div>
-                <ul class="w-full space-y-1 text-gray-500 list-inside dark:text-gray-400">
-                    <li class="flex items-center">
-                        <i class="bi bi-check-circle-fill text-xs mr-2"
-                            :class="Notification.permission == 'default' ? 'text-gray-500' : Notification.permission ==
-                                'denied' ? 'text-red-500' : 'text-green-500'"></i>
-                        <div class="flex ml-1">
-                            <p> Mengizinkan pengiriman notifikasi pada perangkat.&nbsp;
-                                <span style="display: none;" x-show="Notification.permission == 'default'"
-                                    @click="requestNotificationAccess()"
-                                    class="underline text-gray-500 font-semibold cursor-pointer">(Izinkan
-                                    notifikasi)</span>
-                                <span style="display: none;" x-show="Notification.permission == 'denied'"
-                                    data-modal-target="tutorial-notification-modal"
-                                    data-modal-toggle="tutorial-notification-modal"
-                                    class="underline text-gray-500 font-semibold cursor-pointer">(Diblokir. Cek cara
-                                    membuka
-                                    blokir.)</span>
-                            </p>
-                        </div>
-                    </li>
-                    <li class="flex items-center">
-                        @if ($total <= 5)
-                            <div>
-                                <i class="bi bi-check-circle-fill text-xs text-green-500 mr-2"></i>
-                                Tidak lebih dari 5 perangkat
+                @if (!$registered)
+                    <ul class="w-full space-y-1 text-gray-500 list-inside dark:text-gray-400">
+                        <li class="flex items-center">
+                            <i class="bi bi-check-circle-fill text-xs mr-2"
+                                :class="Notification.permission == 'default' ? 'text-gray-500' : Notification.permission ==
+                                    'denied' ? 'text-red-500' : 'text-green-500'"></i>
+                            <div class="flex ml-1">
+                                <p> Mengizinkan pengiriman notifikasi pada perangkat.&nbsp;
+                                    <span style="display: none;" x-show="Notification.permission == 'default'"
+                                        @click="requestNotificationAccess()"
+                                        class="underline text-gray-500 font-semibold cursor-pointer">(Izinkan
+                                        notifikasi)</span>
+                                    <span style="display: none;" x-show="Notification.permission == 'denied'"
+                                        data-modal-target="tutorial-notification-modal"
+                                        data-modal-toggle="tutorial-notification-modal"
+                                        class="underline text-gray-500 font-semibold cursor-pointer">(Diblokir. Cek cara
+                                        membuka
+                                        blokir.)</span>
+                                </p>
                             </div>
-                        @elseif($total > 5)
-                            <div>
-                                <i class="bi bi-check-circle-fill text-xs text-red-500 mr-2"></i>
-                                Tidak lebih dari 5 perangkat
-                            </div>
-                        @else
-                            <div>
-                                <i class="bi bi-check-circle-fill text-xs text-gray-500 mr-2"></i>
-                                Tidak lebih dari 5 perangkat
-                            </div>
-                        @endif
-                    </li>
-                </ul>
+                        </li>
+                        <li class="flex items-center">
+                            @if ($total == 1)
+                                <div>
+                                    <i class="bi bi-check-circle-fill text-xs text-gray-500 mr-2"></i>
+                                    Tidak lebih dari 1 perangkat
+                                </div>
+                            @else
+                                <div>
+                                    <i class="bi bi-check-circle-fill text-xs text-green-500 mr-2"></i>
+                                    Tidak lebih dari 1 perangkat
+                                </div>
+                            @endif
+                        </li>
+                    </ul>
+                @endif
 
             </div>
             <br>
@@ -161,9 +158,8 @@
                         <div class="hidden text-center small-loader" wire:loading.class.remove="hidden"></div>
                     </button>
                 @else
-                    <button @click=" await $wire.test_push_notification(JSON.stringify('{{ $registered->id }}')) "
-                        type="button" class="btn btn-outline-ocean py-2"
-                        wire:loading.class="pointer-events-none opacity-80">
+                    <button wire:click="test_push_notification(JSON.stringify('{{ $registered->id }}')) " type="button"
+                        class="btn btn-outline-ocean py-2" wire:loading.class="pointer-events-none opacity-80">
                         <div wire:loading.class="hidden">
                             <i class="bi bi-checkmark mr-2"></i>
                             Test notifikasi
@@ -216,11 +212,13 @@
                                 <td scope="row"
                                     class="px-6 py-4 font-medium text-gray-600 whitespace-nowrap dark:text-white">
                                     <button wire:loading.class="pointer-events-none opacity-80" type="button"
-                                        @click=" await $wire.delete_subscription(JSON.stringify('{{ $item->id }}')) "
+                                        wire:click="delete_subscription(JSON.stringify('{{ $item->id }}'))"
                                         class="font-medium text-red-600 dark:text-red-500 hover:underline">
-                                        <div wire:loading.remove>Hapus</div>
+                                        <div wire:loading.remove>
+                                            Hapus</div>
                                         <div class="hidden text-center small-loader"
-                                            wire:loading.class.remove="hidden"></div>
+                                            wire:loading.class.remove="hidden">
+                                        </div>
                                     </button>
                                 </td>
                             </tr>
