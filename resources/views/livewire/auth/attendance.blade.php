@@ -156,7 +156,11 @@
                 @endif
 
                 @if (!$today->clock_in)
-                    <button @click="openDrawer({title: 'Pengajuan Izin', 'section': 'absence'})"
+                    <button
+                        :class="(distance.range == 0) ?
+                        'pointer-events-none opacity-35' :
+                        'pointer-events-auto opacity-100'"
+                        @click="openDrawer({title: 'Pengajuan Izin', 'section': 'absence'})"
                         class="btn btn-outline-warning flex-grow min-w-52 py-3">Izin</button>
                 @endif
 
@@ -302,7 +306,7 @@
             <p class="mb-6 text-base text-gray-500 text-center">Harap diisi sesuai dengan keadaan yang sebenarnya yaa
                 <i class="bi bi-emoji-smile-fill ml-1"></i>
             </p>
-            <form wire:submit="clock_employee_absence" class="flex flex-col gap-3">
+            <form wire:submit="clock_employee_absence(JSON.stringify(distance.position))" class="flex flex-col gap-3">
                 <select wire:model="absence_reason"
                     class="font-semibold bg-gray-50 border border-gray-300 text-gray-600 text-sm rounded-lg focus:ring-ocean-500 focus:border-ocean-500 block w-full p-2.5">
                     <option class="font-semibold" value="">IZIN KARENA.. (PILIH)</option>

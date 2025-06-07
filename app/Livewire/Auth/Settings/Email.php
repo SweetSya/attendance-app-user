@@ -17,7 +17,7 @@ class Email extends Component
     }
     public function refresh()
     {
-        $data = $this->API_getJSON('view/settings/device-uuid')->data;
+        $data = $this->API_getJSON('view/settings/email')->data;
         $this->email = $data->email;
         $this->verified_at = $data->verified_at;
         $this->original = $data;

@@ -107,11 +107,12 @@ class Attendance extends Component
         $this->dispatch('clear_after_done');
         $this->refresh();
     }
-    public function clock_employee_absence()
+    public function clock_employee_absence($position)
     {
         $response = $this->API_postJSON('view/attendance/absence', [
             'reason' => $this->absence_reason,
             'note' => $this->absence_note,
+            'position' => $position,
         ]);
         if ($response->status != 200) {
             $this->dispatch('clear_after_error');
