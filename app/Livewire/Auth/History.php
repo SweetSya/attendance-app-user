@@ -2,14 +2,19 @@
 
 namespace App\Livewire\Auth;
 
+use App\Livewire\BaseComponent;
 use App\Traits\HasApiHelper;
 use App\Traits\HasSessionAuthentication;
 use Livewire\Component;
 use stdClass;
 
-class History extends Component
+class History extends BaseComponent
 {
     use HasApiHelper, HasSessionAuthentication;
+
+    protected $route_name = 'history';
+    protected $api_url = 'view/history';
+
     public $title = "Histori";
     public $employee, $office, $company, $today, $total_attend, $total_this_month, $attendances, $shown_attendances = [];
     public $pagination = [
@@ -23,7 +28,12 @@ class History extends Component
     }
     public function refresh()
     {
-        $data = $this->API_getJSON('view/history')->data;
+        $data = $this->getPageSessionData($this->route_name, $this->api_url);
+        if (property_exists($data, 'error')) {
+            $this->invalidateSession($data);
+            return;
+        }
+        
         $this->employee = $data->employee;
         $this->office = $data->office;
         $this->company = $data->company;

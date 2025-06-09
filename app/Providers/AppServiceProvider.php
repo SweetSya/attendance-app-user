@@ -2,7 +2,7 @@
 
 namespace App\Providers;
 
-use App\Auth\EmployeeApiProvider;
+use App\AuthProvider\EmployeeAuthProvider;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\ServiceProvider;
@@ -22,8 +22,8 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        Auth::provider('employees', function (Application $app, array $config) {
-            return new EmployeeApiProvider();
+        Auth::provider('employees-api', function (Application $app, array $config) {
+            return new EmployeeAuthProvider();
         });
     }
 }

@@ -15,13 +15,13 @@ class PushNotification extends Component
 {
     use HasApiHelper;
     public $title = 'Pengaturan - Push Notifikasi';
-    public $data, $total, $sub, $registered;
+    public $data, $total, $sub, $registered, $employee;
 
     public function boot()
     {
         $this->refresh();
     }
-    public function refresh()
+    public function refresh(bool $refetch = false)
     {
         $response = $this->API_getJSON(
             'view/settings/push-notification',
@@ -30,7 +30,8 @@ class PushNotification extends Component
             ]
         )->data;
         $this->data = $response->subscriptions ?? [];
-        $this->registered = $response->registered ?? false;
+        $this->employee = $response->employee ?? null;
+        $this->registered = $response->registered  ?? false;
         $this->total = count($this->data);
     }
 
@@ -52,7 +53,7 @@ class PushNotification extends Component
             return;
         }
         $this->dispatch('notify', type: 'success', message: $response->data->message);
-        $this->refresh();
+        $this->refresh(true);
     }
     public function delete_subscription($id)
     {
@@ -67,7 +68,7 @@ class PushNotification extends Component
             return;
         }
         $this->dispatch('notify', type: 'success', message: $response->data->message);
-        $this->refresh();
+        $this->refresh(true);
     }
     public function test_push_notification($id)
     {

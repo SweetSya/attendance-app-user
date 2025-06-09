@@ -5,120 +5,89 @@ namespace App\Traits;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cookie;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Request;
+use Illuminate\Support\Facades\Session;
 
 trait HasSessionAuthentication
 {
     use HasApiHelper;
-    public function AUTH_login($request)
-    {
-        try {
-            $response = $this->API_post(
-                'login',
-                [
-                    'email' => $request->email,
-                    'password' => $request->password,
-                    'remember' => $request->remember,
-                    'device_uuid' => Cookie::get($this->COOKIES_getDeviceUUIDSessionName(), '')
-                ]
-            );
-            if (!$response->ok()) {
-                return (object) array(
-                    'status' => $response->status(),
-                    'data' => json_decode($response->body())
-                );
-            }
-            $response_body = json_decode($response->body());
-            $this->_setCookie($response_body->auth_access_token, $response_body->expired_at);
-            return (object) array(
-                'status' => $response->status(),
-                'data' => json_decode($response->body())
-            );
-        } catch (\Throwable $th) {
-            return false;
-        }
-    }
-    public function AUTH_loginWithPIN($request)
-    {
-        try {
-            $response = $this->API_post(
-                'login-with-pin',
-                [
-                    'pin' => $request->pin,
-                    'device_uuid' =>  Cookie::get($this->COOKIES_getDeviceUUIDSessionName(), '')
-                ]
-            );
-            if (!$response->ok()) {
-                return (object) array(
-                    'status' => $response->status(),
-                    'data' => json_decode($response->body())
-                );
-            }
-            $response_body = json_decode($response->body());
-            $this->_setCookie($response_body->auth_access_token, $response_body->expired_at);
-            return (object) array(
-                'status' => $response->status(),
-                'data' => json_decode($response->body())
-            );
-        } catch (\Throwable $th) {
-            dd($th);
-            return false;
-        }
-    }
-    public function AUTH_logout($wipe = false)
-    {
-        try {
-            $response = $this->API_get(
-                'logout',
-                [
-                    'wipe' => $wipe
-                ]
-            );
-            return (object) array(
-                'status' => $response->status(),
-                'data' => json_decode($response->body())
-            );
-        } catch (\Throwable $th) {
-            return false;
-        }
-    }
-    public function AUTH_check()
-    {
-        try {
-            $response = $this->API_get(
-                'renew-session',
-            );
-            if (!$response->ok()) {
-                return (object) array(
-                    'status' => $response->status(),
-                    'data' => json_decode($response->body())
-                );
-            }
-            $response_body = json_decode($response->body());
-            $this->_checkCookie($response_body->auth_access_token);
-            return (object) array(
-                'status' => $response->status(),
-                'data' => json_decode($response->body())
-            );
-        } catch (\Throwable $th) {
-            return false;
-        }
-    }
-    public function AUTH_get()
-    {
-        try {
-            $response = $this->API_get(
-                'get-session-data',
-            );
-            if (!$response->ok()) {
-                return redirect('/');
-            }
-            $data = json_decode($response->body());
 
-            return $data;
-        } catch (\Throwable $th) {
-            return false;
+    protected $poll_fetch = 120; //in seconds
+    protected $always_prefecth = false;
+
+    public function invalidateSession($data)
+    {
+        session()->invalidate();
+        $this->dispatch('invalidate-force-logout', message: $data->message);
+    }
+
+    public function setPageSessionRefresh(array $route_name)
+    {
+        $refresh_pages = Session::get('refresh_pages', []);
+        foreach ($route_name as $route) {
+            if (!in_array($route, $refresh_pages, true)) {
+                $refresh_pages[] = $route;
+                Session::put('refresh_pages', $refresh_pages);
+            }
         }
     }
+    public function getPageSessionData($route_name, $fetch_url, $always_prefecth = null)
+    {
+        if ($always_prefecth !== null) {
+            $this->always_prefecth = $always_prefecth;
+        }
+        // Get session data
+        $pages = Session::get('pages', []);
+        $refresh_pages = Session::get('refresh_pages', []);
+        $shouldFetch = $this->always_prefecth || !isset($pages[$route_name]) || in_array($route_name, $refresh_pages) || $pages[$route_name]->last_fetch < Carbon::now()->subSeconds($this->poll_fetch)->timestamp;
+
+        if ($shouldFetch) {
+            $response = $this->API_get($fetch_url);
+
+            if ($response->ok()) {
+                $data = json_decode($response->body());
+                if ($data) {
+                    $data->last_fetch = Carbon::now()->timestamp;
+                    $pages[$route_name] = $data;
+                    Session::put('pages', $pages);
+                    Log::info("Page session data for '{$route_name}' fetched successfully.");
+                }
+            } else {
+                $error_data = json_decode($response->body());
+                if ($response->status() === 401 && $error_data && isset($error_data->reason) && $error_data->reason === 'Unauthorized') {
+                    return (object)[
+                        'redirect' => '/',
+                        'message' => $error_data->message ?? 'Sesi telah berakhir atau double',
+                        'error' => $error_data->reason ?? 'Unauthorized',
+                        'status' => $response->status(),
+                        'ok' => $response->ok()
+                    ];
+                }
+                // Return error data for other errors as well
+                return (object)[
+                    'redirect' => '/',
+                    'message' => $error_data->message ?? 'Terjadi kesalahan',
+                    'error' => $error_data->reason ?? 'Error',
+                    'status' => $response->status(),
+                    'ok' => $response->ok()
+                ];
+            }
+
+            // Remove from refresh list if present
+            if (in_array($route_name, $refresh_pages)) {
+                $refresh_pages = array_diff($refresh_pages, [$route_name]);
+                Session::put('refresh_pages', $refresh_pages);
+            }
+        }
+
+        // Always return the latest data from session
+        $pages = Session::get('pages', []);
+        return $pages[$route_name] ?? null;
+    }
+
+
+
     protected function _setCookie($token, $expired_at)
     {
         Cookie::queue($this->COOKIES_getSessionName(), $token, Carbon::now()->diffInMinutes(Carbon::parse($expired_at)));

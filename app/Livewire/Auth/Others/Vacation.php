@@ -3,11 +3,17 @@
 namespace App\Livewire\Auth\Others;
 
 use App\Traits\HasApiHelper;
+use App\Traits\HasSessionAuthentication;
 use Livewire\Component;
 
 class Vacation extends Component
 {
-    use HasApiHelper;
+    use HasApiHelper, HasSessionAuthentication;
+
+    protected $route_name = 'vacation';
+    protected $api_url = 'view/vacation';
+
+
     public $title = "Pengajuan Cuti";
     public $start, $end, $note;
     public $vacations;
@@ -19,8 +25,13 @@ class Vacation extends Component
 
     public function refresh()
     {
-        $data = $this->API_getJSON('view/vacations')->data;
-        $this->vacations = $data;
+        $data = $this->getPageSessionData($this->route_name, $this->api_url);
+        if (property_exists($data, 'error')) {
+            $this->invalidateSession($data);
+            return;
+        }
+
+        $this->vacations = $data->vacations;
     }
     public function render()
     {

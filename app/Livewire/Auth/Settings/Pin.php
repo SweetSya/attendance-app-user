@@ -8,6 +8,10 @@ use Livewire\Component;
 class Pin extends Component
 {
     use HasApiHelper;
+
+    protected $route_name = 'settings/pin';
+    protected $api_url = 'view/settings/pin';
+
     public $title = 'Pengaturan - PIN';
     public $pin;
     public $original;
@@ -15,9 +19,17 @@ class Pin extends Component
     {
         $this->refresh();
     }
-    public function refresh()
+    public function refresh(bool $refetch = false)
     {
-        $data = $this->API_getJSON('view/settings/pin')->data;
+        // If refetch is true, we will force to fetch data from API
+        if ($refetch) {
+            $this->setPageSessionRefresh([$this->route_name]);
+        }
+        $data = $this->getPageSessionData($this->route_name, $this->api_url);
+        if (property_exists($data, 'error')) {
+            $this->invalidateSession($data);
+            return;
+        }
         $this->pin = $data->pin;
         $this->original = $data;
     }
@@ -35,6 +47,6 @@ class Pin extends Component
             dd($response);
         }
         $this->dispatch('notify', type: 'success', message: 'Perubahan berhasil disimpan');
-        $this->refresh();
+        $this->refresh(true);
     }
 }

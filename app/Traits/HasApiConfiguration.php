@@ -2,8 +2,10 @@
 
 namespace App\Traits;
 
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cookie;
 use Illuminate\Support\Facades\Request;
+use Illuminate\Support\Facades\Session;
 
 trait HasApiConfiguration
 {
@@ -48,10 +50,10 @@ trait HasApiConfiguration
             'IP-Address' => Request::ip(),
         ];
         // Check if employee are already logged in
-        if (Cookie::has($this->COOKIES_getSessionName())) {
+        if (Auth::check() && Session::has('employee_access')) {
             // If it is then push the authorization token in the header
             // because some api gate need the employee to be logged in or authorize first
-            $header['Employee-Authorization-Token'] = Cookie::get($this->COOKIES_getSessionName());
+            $header['Employee-Authorization-Token'] = Session::get('employee_access')['auth_access_token'];
         }
         return $header;
     }

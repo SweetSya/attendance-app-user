@@ -5,21 +5,37 @@ namespace App\Http\Controllers;
 use App\Traits\HasSessionAuthentication;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cookie;
+use Illuminate\Support\Facades\Session;
 
 class AuthenticateController extends Controller
 {
     use HasSessionAuthentication;
+
+    public function add_session_page_refresh(Request $request)
+    {
+        $refresh_pages = Session::get('refresh_pages', []);
+        $to_be_refreshed = explode(',', $request->name);
+        foreach ($to_be_refreshed as $page) {
+            if (!in_array($page, $refresh_pages, true)) {
+                array_push($refresh_pages, $page);
+            }
+        }
+        Session::put('refresh_pages', $refresh_pages);
+        return response()->json([
+            'message' => 'Halaman berhasil ditambahkan ke daftar refresh',
+        ]);
+    }
+    public function remove_page_session(Request $request)
+    {
+        // Remove all pages session
+        session()->forget('pages');
+    }
+
     public function logout(Request $request)
     {
-        $checked = $request->has('wipe_session') ? true : false;
-        $response = $this->AUTH_logout($checked);
-        if ($response->status == 200) {
-            $request->session()->invalidate();
-            // Forget authentication token cookie
-            session()->flash('success', 'Berhasil logout, selamat melanjutkan aktivitas!');
-            $cookie = Cookie::forget($this->COOKIES_getSessionName());
-            return redirect('/')->withCookie($cookie);
-        }
+        $request->session()->invalidate();
+        session()->flash('success', 'Berhasil logout, selamat melanjutkan aktivitas!');
+        return redirect('/');
     }
 
     public function verify_email(Request $request)

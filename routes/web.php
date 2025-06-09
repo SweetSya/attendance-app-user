@@ -4,6 +4,7 @@ use App\Http\Controllers\AuthenticateController;
 use App\Livewire\Auth\Attendance;
 use App\Livewire\Auth\History;
 use App\Livewire\Auth\Home;
+use App\Livewire\Auth\Notification;
 use App\Livewire\Auth\Others\Vacation;
 use App\Livewire\Auth\Settings;
 use App\Livewire\Auth\Settings\DevicePermission;
@@ -35,10 +36,13 @@ Route::group(['middleware' => 'refresh_device_uuid'], function () {
     Route::get('/verify-email', [AuthenticateController::class, 'verify_email']);
 
     Route::group(['middleware' => 'verify_auth_session'], function () {
+        Route::get('/remove-pages-session', [AuthenticateController::class, 'remove_page_session'])->name('remove-pages-session');
+        Route::get('/add-session-page-refresh', [AuthenticateController::class, 'add_session_page_refresh'])->name('add-session-page-refresh');
         Route::get('/home', Home::class)->name('home');
         Route::get('/attendance', Attendance::class)->name('attendance');
         Route::get('/settings', Settings::class)->name('settings');
         Route::get('/history', History::class)->name('history');
+        Route::get('/notification', Notification::class)->name('notification');
         Route::get('/vacation', Vacation::class)->name('vacation');
 
         Route::get('/settings/email', SettingsEmail::class)->name('settings/email');
@@ -53,6 +57,7 @@ Route::group(['middleware' => 'refresh_device_uuid'], function () {
             return Cookie::get(env('APP_DEVICE_UUID_COOKIES_NAME'));
         });
 
-        Route::post('/logout', [AuthenticateController::class, 'logout']);
+        Route::post('/logout', [AuthenticateController::class, 'logout'])->name('post/logout');
+        Route::get('/logout', [AuthenticateController::class, 'logout'])->name('get/logout');
     });
 });

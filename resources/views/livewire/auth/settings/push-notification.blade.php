@@ -97,12 +97,25 @@
             <div class="flex justify-start gap-1 items-center border-b border-gray-500 pb-2 mb-2">
                 <p class="text-base text-gray-500 font-bold">Perangkat ini</p>
                 <p class="text-base text-gray-500 font-bold">:</p>
-                @if (!$registered)
-                    <p class="text-red-500 border-2 rounded px-2 py-1 text-xs border-red-500 font-bold">Belum
+                @if (
+                    $registered &&
+                        $data[0]->device_remember_id == Session::get('employee_access')['device_uuid'] &&
+                        $employee->id != Session::get('employee_access')['id']
+                )
+                    <p class="text-green-500 border-2 rounded px-2 py-1 text-xs border-green-500 font-bold">Sudah
                         Aktif
                     </p>
+                @elseif (
+                    $registered &&
+                        $data[0]->device_remember_id == Session::get('employee_access')['device_uuid'] &&
+                        !$employee->id != Session::get('employee_access')['id']
+                )
+                    <p class="text-yellow-600 border-2 rounded px-2 py-1 text-xs border-yellow-600 font-bold">Aktif
+                        untuk akun
+                        lain
+                    </p>
                 @else
-                    <p class="text-green-500 border-2 rounded px-2 py-1 text-xs border-green-500 font-bold">Sudah
+                    <p class="text-red-500 border-2 rounded px-2 py-1 text-xs border-red-500 font-bold">Belum
                         Aktif
                     </p>
                 @endif
@@ -160,11 +173,11 @@
                 @else
                     <button wire:click="test_push_notification(JSON.stringify('{{ $registered->id }}')) " type="button"
                         class="btn btn-outline-ocean py-2" wire:loading.class="pointer-events-none opacity-80">
-                        <div wire:loading.class="hidden">
+                        <div wire:target="test_push_notification(JSON.stringify('{{ $registered->id }}'))" wire:loading.class="hidden">
                             <i class="bi bi-checkmark mr-2"></i>
                             Test notifikasi
                         </div>
-                        <div class="hidden text-center small-loader" wire:loading.class.remove="hidden"></div>
+                        <div class="hidden text-center small-loader" wire:target="test_push_notification(JSON.stringify('{{ $registered->id }}'))" wire:loading.class.remove="hidden"></div>
                     </button>
                 @endif
             </form>
@@ -177,6 +190,9 @@
                                 #
                             </th>
                             <th scope="col" class="px-6 py-3 text-nowrap">
+                                Akun Terpaut
+                            </th>
+                            <th scope="col" class="px-6 py-3 text-nowrap">
                                 UUID Perangkat
                             </th>
                             <th scope="col" class="px-6 py-3 text-nowrap">
@@ -186,7 +202,7 @@
                                 Tanggal Ditambahkan
                             </th>
                             <th scope="col" class="px-6 py-3 text-nowrap">
-                                Hapus
+                                Aksi
                             </th>
                         </tr>
                     </thead>
@@ -196,6 +212,10 @@
                                 class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 @if ($registered && $item->id == $registered->id) bg-ocean-600/20 @endif">
                                 <td class="px-6 py-4">
                                     {{ $key + 1 }}
+                                </td>
+                                <td scope="row"
+                                    class="px-6 py-4 font-medium text-gray-600 whitespace-nowrap dark:text-white">
+                                    {{$employee->full_name }} <br> ({{ $employee->email }})
                                 </td>
                                 <td scope="row"
                                     class="px-6 py-4 font-medium text-gray-600 whitespace-nowrap dark:text-white">
@@ -214,10 +234,10 @@
                                     <button wire:loading.class="pointer-events-none opacity-80" type="button"
                                         wire:click="delete_subscription(JSON.stringify('{{ $item->id }}'))"
                                         class="font-medium text-red-600 dark:text-red-500 hover:underline">
-                                        <div wire:loading.remove>
+                                        <div wire:target="delete_subscription" wire:loading.remove>
                                             Hapus</div>
                                         <div class="hidden text-center small-loader"
-                                            wire:loading.class.remove="hidden">
+                                            wire:target="delete_subscription" wire:loading.class.remove="hidden">
                                         </div>
                                     </button>
                                 </td>

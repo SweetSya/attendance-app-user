@@ -2,14 +2,14 @@
     @set_distance.window.camel="distance = $event.detail">
     {{-- Header --}}
     <nav class="relative w-full">
-        <img src="{{ asset('assets/images/navbar.svg') }}"
+        <img loading="lazy" src="{{ asset('assets/images/navbar.svg') }}"
             class="absolute left-0 top-0 md:-top-14 w-full object-cover h-28 md:h-44 z-10" alt="">
         <div class="relative z-20 px-4 sm:px-12 py-4 flex justify-between items-center">
             <div class="flex gap-3 flex-grow">
                 <div
                     class="relative inline-flex items-center justify-center w-12 h-12 sm:w-14 sm:h-14 overflow-hidden bg-gray-100 rounded-full border-2 border-ocean-50">
                     {{-- <span class="font-bold text-base sm:text-2xl text-gray-600">SH</span> --}}
-                    <img class="object-cover h-full w-full"
+                    <img loading="lazy" class="object-cover h-full w-full"
                         src="{{ $employee->image ? API_storage($employee->image) : API_storage($company->image) }}"
                         alt="">
                 </div>
@@ -18,21 +18,22 @@
                     <p class="sm:text-lg font-semibold line-clamp-1">{{ $employee->full_name }}</p>
                 </div>
             </div>
-            <div>
+            <a wire:navigate href="/notification">
                 <div
                     class="relative hover-opacity-down rounded bg-ocean-500 text-white h-9 w-9 flex items-center justify-center">
-                    <span
-                        class="absolute -right-2 -top-2 bg-cinnabar-500 rounded w-6 h-6 text-xs p-1 flex items-center justify-center">10</span>
+                    <span id="notification-count" :class="$wire.total_notifications > 0 ? 'block' : 'hidden'"
+                        class="absolute -right-2 -top-2 bg-cinnabar-500 rounded w-6 h-6 text-xs p-1 flex items-center justify-center">{{ $total_notifications }}</span>
                     <i class="bi bi-bell text-lg sm:text-xl"></i>
                 </div>
-            </div>
+            </a>
         </div>
 
     </nav>
     {{-- End Header --}}
     <div class="mx-auto py-8 px-4 sm:px-12 text-all-wide">
         <div class="relative mb-5 p-4 min-h-48 rounded bg-gradient-ocean shadow">
-            <img src="{{ API_storage($company->image) }}" class="absolute top-4 right-4 h-12" alt="">
+            <img loading="lazy" src="{{ API_storage($company->image) }}" class="absolute top-4 right-4 h-12"
+                alt="">
             <div class="flex flex-col text-white">
                 <div class="flex items-center gap-2 w-3/5">
                     <i class="bi bi-person-fill opacity-70 -ml-[2px] mr-[2px]"></i>
@@ -206,13 +207,13 @@
                     <p class="font-light text-xs xs:text-base">Soon</p>
                 </div>
                 <div
-                    class="swiper-slide p-4 text-sm text-ocean-800 border border-ocean-300 shadow rounded bg-gradient-ocean-soft h-20 text-center opacity-50">
+                    class="swiper-slide p-4 text-sm text-ocean-800 border border-ocean-300 shadow rounded bg-gradient-ocean-soft !h-20 text-center opacity-50">
                     <i class="bi bi-info-circle-fill text-xl sm:text-2xl opacity-70"></i>
                     <p class="font-light text-xs xs:text-base">Soon</p>
                 </div>
             </div>
         </div>
-        <div class="flex justify-between text-ocean-950/80 mb-2">
+        <div class="flex justify-between text-ocean-950/80 mt-3 mb-2">
             <p class="font-bold text-base sm:text-xl">Histori Kehadiran</p>
             {{-- <a href="/history" class="font-light text-base sm:text-xl hover-opacity-down">Lihat semua</a> --}}
         </div>
@@ -236,7 +237,7 @@
                         <div class="flex items-center justify-between">
                             <div class="rounded flex gap-3 sm:gap-7 px-1">
                                 {{-- If absence --}}
-                                @if (!in_array($attendance->type->name, ['kosong', 'sesuai']))
+                                @if (!in_array($attendance->type->name, ['sesuai', 'terlambat']))
                                     <div class="w-full text-center mx-auto">
                                         <p class="opacity-70 text-xs sm:text-base text-nowrap font-light">Tidak Hadir
                                         </p>

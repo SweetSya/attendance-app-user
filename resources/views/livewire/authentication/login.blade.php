@@ -32,7 +32,7 @@
         <div>
             <button type="submit" wire:loading.class="pointer-events-none opacity-80"
                 class="btn btn-ocean font-semibold w-full">
-                <div wire:loading.class="hidden">Masuk  </div>
+                <div wire:loading.class="hidden">Masuk </div>
                 <div class="hidden" wire:loading.class.remove="hidden">Loading..</div>
             </button>
         </div>
