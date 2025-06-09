@@ -100,7 +100,7 @@
                 @if (
                     $registered &&
                         $data[0]->device_remember_id == Session::get('employee_access')['device_uuid'] &&
-                        $employee->id != Session::get('employee_access')['id']
+                        $employee->id === Session::get('employee_access')['id']
                 )
                     <p class="text-green-500 border-2 rounded px-2 py-1 text-xs border-green-500 font-bold">Sudah
                         Aktif
@@ -173,11 +173,14 @@
                 @else
                     <button wire:click="test_push_notification(JSON.stringify('{{ $registered->id }}')) " type="button"
                         class="btn btn-outline-ocean py-2" wire:loading.class="pointer-events-none opacity-80">
-                        <div wire:target="test_push_notification(JSON.stringify('{{ $registered->id }}'))" wire:loading.class="hidden">
+                        <div wire:target="test_push_notification(JSON.stringify('{{ $registered->id }}'))"
+                            wire:loading.class="hidden">
                             <i class="bi bi-checkmark mr-2"></i>
                             Test notifikasi
                         </div>
-                        <div class="hidden text-center small-loader" wire:target="test_push_notification(JSON.stringify('{{ $registered->id }}'))" wire:loading.class.remove="hidden"></div>
+                        <div class="hidden text-center small-loader"
+                            wire:target="test_push_notification(JSON.stringify('{{ $registered->id }}'))"
+                            wire:loading.class.remove="hidden"></div>
                     </button>
                 @endif
             </form>
@@ -215,7 +218,7 @@
                                 </td>
                                 <td scope="row"
                                     class="px-6 py-4 font-medium text-gray-600 whitespace-nowrap dark:text-white">
-                                    {{$employee->full_name }} <br> ({{ $employee->email }})
+                                    {{ $employee->full_name }} <br> ({{ $employee->email }})
                                 </td>
                                 <td scope="row"
                                     class="px-6 py-4 font-medium text-gray-600 whitespace-nowrap dark:text-white">
@@ -236,8 +239,8 @@
                                         class="font-medium text-red-600 dark:text-red-500 hover:underline">
                                         <div wire:target="delete_subscription" wire:loading.remove>
                                             Hapus</div>
-                                        <div class="hidden text-center small-loader"
-                                            wire:target="delete_subscription" wire:loading.class.remove="hidden">
+                                        <div class="hidden text-center small-loader" wire:target="delete_subscription"
+                                            wire:loading.class.remove="hidden">
                                         </div>
                                     </button>
                                 </td>
