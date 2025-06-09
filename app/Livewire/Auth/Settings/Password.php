@@ -2,12 +2,18 @@
 
 namespace App\Livewire\Auth\Settings;
 
+use App\Livewire\BaseComponent;
 use App\Traits\HasApiHelper;
+use App\Traits\HasSessionAuthentication;
 use Livewire\Component;
 
-class Password extends Component
+class Password extends BaseComponent
 {
-    use HasApiHelper;
+    use HasApiHelper, HasSessionAuthentication;
+
+    protected $route_name = 'settings/password';
+    protected $api_url = 'view/settings/password';
+
     public $title = 'Pengaturan - Password';
     public $password, $re_password, $old_password;
     public $original;

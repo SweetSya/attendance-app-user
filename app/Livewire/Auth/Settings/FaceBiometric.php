@@ -2,26 +2,41 @@
 
 namespace App\Livewire\Auth\Settings;
 
+use App\Livewire\BaseComponent;
 use App\Traits\HasApiHelper;
+use App\Traits\HasSessionAuthentication;
 use Illuminate\Support\Facades\Hash;
 use Livewire\Component;
 
-class FaceBiometric extends Component
+class FaceBiometric extends BaseComponent
 {
-    use HasApiHelper;
+    use HasApiHelper, HasSessionAuthentication;
+
+    protected $route_name = 'settings/biometric-face';
+    protected $api_url = 'view/settings/biometric-face';
+
     public $title = 'Pengaturan - Biometrik Wajah';
     public $face_recognition_status = 0;
     public $employee_name = '';
     public $employee_id = '';
     public $password = '';
     public $password_check_state = false;
+
     public function boot()
     {
         $this->refresh();
     }
-    public function refresh()
+    public function refresh(bool $refetch = false)
     {
-        $data = $this->API_getJSON('view/settings/biometric-face')->data;
+        // If refetch is true, we will force to fetch data from API
+        if ($refetch) {
+            $this->setPageSessionRefresh([$this->route_name]);
+        }
+        $data = $this->getPageSessionData($this->route_name, $this->api_url);
+        if (property_exists($data, 'error')) {
+            $this->invalidateSession($data);
+            return;
+        }
         $this->face_recognition_status = $data->state;
         $this->employee_id = $data->emp_id;
         $this->employee_name = $data->emp_name;
@@ -54,6 +69,6 @@ class FaceBiometric extends Component
             return;
         }
         $this->dispatch('notify', type: 'success', message: 'Data biometrik wajah berhasil disimpan. Harap tunggu proses verifikasi oleh HRD.');
-        $this->refresh();
+        $this->refresh(true);
     }
 }

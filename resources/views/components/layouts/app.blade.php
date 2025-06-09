@@ -12,6 +12,8 @@
     <link rel="manifest" href="/manifest.json" />
     {{-- Loading --}}
     <link rel="stylesheet" href="{{ asset('assets\css\loading.css') }}">
+    {{-- Lightpick --}}
+    <link rel="stylesheet" href="{{ asset('assets\css\lightpick.css') }}">
     {{-- <link rel="stylesheet" href="{{ asset('build\assets\app-Dqu-JKAo.css') }}"> --}}
     {{-- Notfys --}}
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/notyf@3/notyf.min.css">
@@ -23,7 +25,7 @@
 
 </head>
 
-<body class="overflow-x-hidden">
+<body class="overflow-x-hidden overscroll-y-none">
 
     <?php
     $route = Route::currentRouteName();
@@ -32,13 +34,19 @@
     <main class="w-full bg-no-repeat bg-cover bg-black/50 bg-blend-darken bg-center bg-fixed">
         {{-- Drawer hamburger --}}
         <div class="min-h-screen max-w-3xl container mx-auto bg-white overflow-hidden">
-
+            <div x-data="" id="wrapper-click-to-refresh"
+                class="hidden fixed top-0 h-0 max-w-3xl z-40 w-full bg-white">
+                <button @click="clickToRefresh()" id="click-to-refresh"
+                    class="bg-white px-1.5 py-1 ml-2 md:-ml-10 mt-1 rounded border-2 text-xs border-ocean-500 text-ocean-500">
+                    <i class="bi bi-arrow-clockwise"></i>
+                </button>
+            </div>
             <div id="main-page" class="pb-10">
                 {{ $slot }}
             </div>
 
             <div class="fixed container-bottom-max-3xl z-40 w-full h-16 bg-white border-t border-gray-200">
-                <div class="grid h-full max-w-lg grid-cols-4 mx-auto font-medium">
+                <div class="relative grid h-full max-w-lg grid-cols-4 mx-auto font-medium">
                     <a wire:navigate href="/home"
                         class="inline-flex flex-col items-center justify-center px-5 hover:bg-gray-50 group">
                         <i
@@ -132,9 +140,16 @@
     <script data-navigate-once src="{{ asset('assets/vendor/toastrjs/toastr.min.js') }}"></script>
     {{-- Moment --}}
     <script data-navigate-once src="{{ asset('assets/vendor/momentjs/moment-with-locales.min.js') }}"></script>
+    {{-- Lightpick --}}
+    <script data-navigate-once src="{{ asset('assets/vendor/lightpick/lightpick.js') }}"></script>
     {{-- LeafletJS --}}
     <script data-navigate-once src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
         integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+    {{-- Touch emulator --}}
+    <script src="//unpkg.com/hammer-touchemulator@0.0.2/touch-emulator.js"></script>
+    {{-- Pull to refresh --}}
+    <script data-navigate-once src="{{ asset('assets/vendor/pull-to-refresh/index.umd.min.js') }}"></script>
+
     <script data-navigate-once>
         navigator.serviceWorker.register("/sw.js", {
             scope: "/",
@@ -142,7 +157,20 @@
         // Set locale for Moment.js
         moment.locale('id');
 
-        let sendNotfy
+        let sendNotfy;
+        let clickToRefresh;
+        let isMobile = navigator.userAgent.match(/Android/i) || navigator.userAgent.match(/iPhone/i) || navigator.userAgent
+            .match(/iPad/i) ? true : false;
+        if (!isMobile) {
+            const clickToRefreshElement = document.getElementById('click-to-refresh');
+            // Initialize the clikk to refresh element
+            let topScrollY = 40;
+            window.addEventListener('scroll', (e) => {
+                if (clickToRefreshElement) {
+
+                }
+            });
+        }
         // Loading Handler
         const loadingWrapper = document.querySelector('.loading')
         // document.querySelector('.refresh-when-loading').addEventListener('click', () => {
@@ -174,7 +202,6 @@
         })
         document.addEventListener('livewire:navigating', () => {})
         document.addEventListener('livewire:navigated', () => {
-            console.log('navigated')
             const loadingPage = document.getElementById('loading-screen');
             if (loadingPage) {
                 // Remove previous animation classes
@@ -191,6 +218,9 @@
             }, 500);
         })
         document.addEventListener('livewire:init', () => {
+            Livewire.on('invalidate-force-logout', (payload) => {
+                window.location.href = '/?force-logout=true&message=' + encodeURIComponent(payload.message);
+            });
             Livewire.on('notify', (payload) => {
                 sendNotfy.dismissAll()
                 let notification
@@ -222,6 +252,13 @@
                 })
             });
         });
+
+        // window.addEventListener('beforeunload', function(e) {
+        //     // You can call a Livewire event or do something here
+        //     console.log('Leaving the page');
+        //     // If you want to show a confirmation dialog
+        //     Livewire.dispatch('hard-refresh');
+        // });
     </script>
     {{-- Run every time page changes --}}
     <script>
@@ -241,6 +278,51 @@
                 icon: false
             }]
         });
+        // check if user accesing from phone using user agent
+        if (isMobile) {
+            // Initialize Pull to Refresh
+            const ptr = PullToRefresh.init({
+                instructionsPullToRefresh: "Tarik untuk memperbarui",
+                instructionsReleaseToRefresh: "Lepaskan untuk memperbarui",
+                instructionsRefreshing: "Memuat...",
+                mainElement: 'body',
+                onRefresh() {
+                    fetch('/add-session-page-refresh?name={{ $route }}', {
+                        method: 'GET',
+                    }).then(response => {
+                        if (response.ok) {
+                            sendNotfy.success('Halaman diperbarui');
+                            setTimeout(() => {
+                                Livewire.navigate('{{ url()->current() }}');
+                            }, 100);
+                        } else {
+                            throw new Error('Network response was not ok');
+                        }
+                    }).catch(error => {
+                        console.error('There was a problem with the fetch operation:', error);
+                    });
+                }
+            });
+        } else {
+            document.querySelector('#wrapper-click-to-refresh').classList.remove('hidden');
+            // If not mobile, just use a click to refresh
+            clickToRefresh = () => {
+                fetch('/add-session-page-refresh?name={{ $route }}', {
+                    method: 'GET',
+                }).then(response => {
+                    if (response.ok) {
+                        sendNotfy.success('Halaman akan direfresh');
+                        setTimeout(() => {
+                            Livewire.navigate('{{ url()->current() }}');
+                        }, 100);
+                    } else {
+                        throw new Error('Network response was not ok');
+                    }
+                }).catch(error => {
+                    console.error('There was a problem with the fetch operation:', error);
+                });
+            }
+        }
     </script>
     {{-- Map --}}
     <script data-navigate-once src="{{ asset('assets/js/map.js') }}"></script>

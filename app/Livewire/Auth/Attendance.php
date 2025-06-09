@@ -2,16 +2,21 @@
 
 namespace App\Livewire\Auth;
 
+use App\Livewire\BaseComponent;
 use App\Traits\HasApiHelper;
+use App\Traits\HasSessionAuthentication;
 use Carbon\Carbon;
 use Livewire\Component;
 use stdClass;
 
-class Attendance extends Component
+class Attendance extends BaseComponent
 {
+    use HasApiHelper, HasSessionAuthentication;
 
-    use HasApiHelper;
-    public $title = "Absensi";
+    protected $route_name = 'attendance';
+    protected $api_url = 'view/attendance';
+
+    public $title = "Kehadiran";
 
     public $DAY_OFF, $HOLIDAY, $VACATION;
     public $employee, $office, $company, $today, $total_attend, $total_this_month, $attendances, $face_state;
@@ -20,9 +25,17 @@ class Attendance extends Component
     {
         $this->refresh();
     }
-    public function refresh()
+    public function refresh(bool $refetch = false)
     {
-        $data = $this->API_getJSON('view/attendance')->data;
+        // If refetch is true, we will force to fetch data from API
+        if ($refetch) {
+            $this->setPageSessionRefresh([$this->route_name, 'home', 'history']);
+        }
+        $data = $this->getPageSessionData($this->route_name, $this->api_url);
+        if (property_exists($data, 'error')) {
+            $this->invalidateSession($data);
+            return;
+        }
         $this->employee = $data->employee;
         $this->today = $data->today;
         if (!$this->today) {
@@ -75,7 +88,7 @@ class Attendance extends Component
         $this->dispatch('set_drawer', title: 'Verifikasi Kehadiran', section: 'checkedin');
         $this->dispatch('clear_after_done');
         $this->dispatch('set_face_scanning', scanning: false);
-        $this->refresh();
+        $this->refresh(true);
         return true;
     }
     public function clock_employee_in($position)
@@ -91,7 +104,7 @@ class Attendance extends Component
         $this->dispatch('stop_face_recog');
         $this->dispatch('set_drawer', title: 'Verifikasi Kehadiran', section: 'checkedin');
         $this->dispatch('clear_after_done');
-        $this->refresh();
+        $this->refresh(true);
     }
     public function clock_employee_out($position)
     {
@@ -105,7 +118,7 @@ class Attendance extends Component
         }
         $this->dispatch('set_drawer', title: 'Verifikasi Clock Out', section: 'checkedout');
         $this->dispatch('clear_after_done');
-        $this->refresh();
+        $this->refresh(true);
     }
     public function clock_employee_absence($position)
     {
@@ -121,6 +134,6 @@ class Attendance extends Component
         }
         $this->dispatch('set_drawer', title: 'Pengajuan Izin', section: 'absenced');
         $this->dispatch('clear_after_done');
-        $this->refresh();
+        $this->refresh(true);
     }
 }

@@ -103,7 +103,7 @@
             </li>
             <li>
                 <div class="inline-flex items-center gap-2 justify-between w-full p-5 text-gray-500 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 cursor-pointer"
-                    @click="window.location.href = '/settings/push-notification'">
+                    wire:navigate href="/settings/push-notification">
 
                     <div class="flex items-center gap-5">
 

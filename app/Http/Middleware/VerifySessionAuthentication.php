@@ -6,6 +6,7 @@ use App\Traits\HasApiHelper;
 use App\Traits\HasSessionAuthentication;
 use Closure;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cookie;
 use Illuminate\Support\Facades\Http;
 use stdClass;
@@ -21,15 +22,11 @@ class VerifySessionAuthentication
      */
     public function handle(Request $request, Closure $next): Response
     {
-        // Check if token are present and valid on parent server's session,
-        // if it is the update the session's expired at
-        $response = $this->AUTH_check();
-        if ($response->status != 200) {
+        // Check if the user is authenticated
+        if (!Auth::check()) {
             $request->session()->invalidate();
-            // Forget authentication token cookie
-            $cookie = Cookie::forget($this->COOKIES_getSessionName());
-            session()->flash('error', $response->data->message);
-            return redirect('/')->withCookie($cookie);
+            session()->flash('error', 'Harap autentikasi terlebih dahulu.');
+            return redirect('/');
         }
         return $next($request);
     }

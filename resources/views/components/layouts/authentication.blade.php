@@ -68,6 +68,13 @@
                         break;
                 }
             });
+            // check for query params has ?force-logout=true&message=message
+            const urlParams = new URLSearchParams(window.location.search);
+            if (urlParams.has('force-logout')) {
+                const message = urlParams.get('message') || 'You have been logged out due to inactivity.';
+                sendNotfy.error(message)
+            }
+
         });
     </script>
 </body>

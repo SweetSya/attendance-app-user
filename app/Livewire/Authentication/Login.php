@@ -6,6 +6,7 @@ use App\Traits\HasApiConfiguration;
 use App\Traits\HasApiHelper;
 use App\Traits\HasSessionAuthentication;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cookie;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Request;
@@ -14,27 +15,17 @@ use Livewire\Component;
 class Login extends Component
 {
     use HasSessionAuthentication;
+    
     public $title = "Login";
 
     public $email, $password, $remember, $email_by_device;
 
     public function boot()
     {
-        $response = $this->API_get(
-            'renew-session',
-        );
-        if ($response->ok()) {
+        //    Check if the user is already logged in
+        if (Auth::check()) {
             session()->flash('logged_in');
             return redirect('/home');
-        }
-
-        $response = $this->API_get(
-            'get-device-uuid',
-            ['device_uuid' => Cookie::get($this->COOKIES_getDeviceUUIDSessionName())]
-        );
-        if ($response->ok()) {
-            $response_body = json_decode($response->body());
-            $this->email_by_device = $response_body->email;
         }
         if (session()->has('error')) {
             $this->dispatch('notify', type: 'error', message: session()->get('error'));
@@ -53,12 +44,21 @@ class Login extends Component
 
     public function login()
     {
-        $login = $this->AUTH_login($this);
-        if ($login->status == 200) {
+        $attempt = Auth::attempt([
+            'email' => $this->email,
+            'password' => $this->password,
+            'remember' => $this->remember,
+        ]);
+        if ($attempt) {
+            // If login is successful, redirect to home
             session()->flash('welcome');
-            return redirect('/home');
-        };
-        session()->flash('error', $login->data->message);
-        return redirect('/');
+            // Before login, try to prefetch the pages data for attendance and home
+            $this->getPageSessionData('home', 'view/home');
+            $this->getPageSessionData('attendance', 'view/attendance');
+
+            return redirect()->intended('/home');
+        }
+        // If login fails, flash an error message
+        $this->dispatch('notify', type: 'error', message: 'Email atau password salah.');
     }
 }

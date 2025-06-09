@@ -2,12 +2,18 @@
 
 namespace App\Livewire\Auth\Settings;
 
+use App\Livewire\BaseComponent;
 use App\Traits\HasApiHelper;
+use App\Traits\HasSessionAuthentication;
 use Livewire\Component;
 
-class Email extends Component
+class Email extends BaseComponent
 {
-    use HasApiHelper;
+    use HasApiHelper, HasSessionAuthentication;
+
+    protected $route_name = 'settings/email';
+    protected $api_url = 'view/settings/email';
+
     public $title = 'Pengaturan - Email';
     public $email, $verified_at;
     public $original;
@@ -15,9 +21,18 @@ class Email extends Component
     {
         $this->refresh();
     }
-    public function refresh()
+    public function refresh(bool $refetch = false)
     {
-        $data = $this->API_getJSON('view/settings/email')->data;
+        // If refetch is true, we will force to fetch data from API
+        if ($refetch) {
+            $this->setPageSessionRefresh([$this->route_name]);
+        }
+        $data = $this->getPageSessionData($this->route_name, $this->api_url);
+        if (property_exists($data, 'error')) {
+            $this->invalidateSession($data);
+            return;
+        }
+
         $this->email = $data->email;
         $this->verified_at = $data->verified_at;
         $this->original = $data;
@@ -38,7 +53,7 @@ class Email extends Component
             return;
         }
         $this->dispatch('notify', type: 'success', message: $response->data->message);
-        $this->refresh();
+        $this->refresh(true);
     }
     public function send_verification_email()
     {

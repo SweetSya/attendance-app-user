@@ -20,8 +20,8 @@
         <div class="relative mb-5">
             <div class="flex justify-between text-ocean-950 mb-2">
                 <p class="font-bold text-base sm:text-xl">Histori Kehadiran</p>
-                <p class="font-light text-base sm:text-xl hover-opacity-down"><i class="bi bi-filter mr-2"></i>Filter
-                </p>
+                {{-- <p class="font-light text-base sm:text-xl hover-opacity-down"><i class="bi bi-filter mr-2"></i>Filter
+                </p> --}}
             </div>
             <div class="flex flex-col gap-3">
                 <template x-for ="(attendance, index) in $wire.shown_attendances" :key="index">
@@ -30,7 +30,7 @@
                         <div class="flex items-center justify-between">
                             <div class="rounded flex gap-3 sm:gap-7 px-1">
                                 {{-- If absence --}}
-                                <div x-show="!['kosong', 'sesuai'].includes(attendance.type.name)"
+                                <div x-show="!['kosong', 'sesuai', 'terlambat'].includes(attendance.type.name)"
                                     class="w-full text-center mx-auto">
                                     <p class="opacity-70 text-xs sm:text-base text-nowrap font-light">Tidak Hadir
                                     </p>
@@ -38,7 +38,7 @@
                                     </p>
                                 </div>
                                 {{-- If present --}}
-                                <div x-show="['kosong', 'sesuai'].includes(attendance.type.name)"
+                                <div x-show="['kosong', 'sesuai', 'terlambat'].includes(attendance.type.name)"
                                     class="flex gap-3 sm:gap-7 px-1">
                                     <div class="w-1/2 text-center mx-auto">
                                         <p class="opacity-70 text-xs sm:text-base text-nowrap font-light">Clock
