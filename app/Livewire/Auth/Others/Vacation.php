@@ -10,6 +10,11 @@ class Vacation extends Component
 {
     use HasApiHelper, HasSessionAuthentication;
 
+    protected $listeners = [
+        'updateDateRange' => 'update_date_range',
+    ];
+
+
     protected $route_name = 'vacation';
     protected $api_url = 'view/vacation';
 
@@ -23,8 +28,11 @@ class Vacation extends Component
         $this->refresh();
     }
 
-    public function refresh()
+    public function refresh(bool $refetch = false)
     {
+        if ($refetch) {
+            $this->setPageSessionRefresh([$this->route_name], 'home');
+        }
         $data = $this->getPageSessionData($this->route_name, $this->api_url);
         if (property_exists($data, 'error')) {
             $this->invalidateSession($data);
@@ -40,9 +48,14 @@ class Vacation extends Component
                 'title' => $this->title
             ]);
     }
+    public function update_date_range($start, $end)
+    {
+        $this->start = $start;
+        $this->end = $end;
+    }
     public function create()
     {
-        $response = $this->API_postJSON('view/vacations/create', [
+        $response = $this->API_postJSON('view/vacation/create', [
             'start' => $this->start,
             'end' => $this->end,
             'note' => $this->note,
@@ -55,7 +68,7 @@ class Vacation extends Component
         $this->start = null;
         $this->end = null;
         $this->note = null;
-        $this->refresh();
+        $this->refresh(true);
     }
     // public function paginate($url)
     // {
@@ -65,7 +78,7 @@ class Vacation extends Component
     // }
     public function cancel($id)
     {
-        $response = $this->API_postJSON('view/vacations/cancel', [
+        $response = $this->API_postJSON('view/vacation/cancel', [
             'vacation_id' => $id,
         ]);
         if ($response->status != 200) {
@@ -73,6 +86,6 @@ class Vacation extends Component
             return;
         }
         $this->dispatch('notify', type: 'success', message: $response->data->message);
-        $this->refresh();
+        $this->refresh(true);
     }
 }

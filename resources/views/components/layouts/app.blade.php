@@ -12,6 +12,8 @@
     <link rel="manifest" href="/manifest.json" />
     {{-- Loading --}}
     <link rel="stylesheet" href="{{ asset('assets\css\loading.css') }}">
+    {{-- Lightpick --}}
+    <link rel="stylesheet" href="{{ asset('assets\css\lightpick.css') }}">
     {{-- <link rel="stylesheet" href="{{ asset('build\assets\app-Dqu-JKAo.css') }}"> --}}
     {{-- Notfys --}}
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/notyf@3/notyf.min.css">
@@ -138,6 +140,8 @@
     <script data-navigate-once src="{{ asset('assets/vendor/toastrjs/toastr.min.js') }}"></script>
     {{-- Moment --}}
     <script data-navigate-once src="{{ asset('assets/vendor/momentjs/moment-with-locales.min.js') }}"></script>
+    {{-- Lightpick --}}
+    <script data-navigate-once src="{{ asset('assets/vendor/lightpick/lightpick.js') }}"></script>
     {{-- LeafletJS --}}
     <script data-navigate-once src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
         integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>

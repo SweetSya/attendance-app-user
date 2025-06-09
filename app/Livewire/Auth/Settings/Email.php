@@ -66,6 +66,6 @@ class Email extends BaseComponent
             return;
         }
         $this->dispatch('notify', type: 'success', message: $response->data->message);
-        $this->refresh(true);
+        $this->refresh();
     }
 }

@@ -16,8 +16,8 @@ class Notification extends Component
     public $title = "Notifikasi";
     public $notifications, $shown_notifications = [];
     public $pagination = [
-        'per_page' => 2,
-        'count' => 2,
+        'per_page' => 10,
+        'count' => 10,
         'page' => 1
     ];
 
@@ -62,6 +62,10 @@ class Notification extends Component
                 if (!$notification->read_at) {
                     array_push($ids, $notification->id);
                 }
+            }
+            if (count($ids) == 0) {
+                $this->dispatch('notify', type: 'info', message: 'Tidak ada notifikasi yang perlu ditandai sebagai dibaca');
+                return;
             }
         } else {
             if (!is_array($ids)) {

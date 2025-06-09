@@ -37,8 +37,8 @@
     </div>
     <div x-show="view == 'form'" class="px-5">
         <div class="mb-6 text-center">
-            <form @submit.prevent="$wire.create()">
-                <div class="mb-2 text-left">
+            <form wire:submit.prevent="create">
+                {{-- <div class="mb-2 text-left">
                     <label for="start" class="text-base text-ocean-600 font-semibold">Dari Tanggal</label>
                     <input wire:model="start" id="start" type="date"
                         class="block p-2.5 mb-3 mt-2 w-full text-sm text-gray-600 bg-gray-50 rounded-lg border border-gray-300 focus:ring-ocean-500 focus:border-ocean-500">
@@ -47,19 +47,34 @@
                     <label for="end" class="text-base text-ocean-600 font-semibold">Hingga Tanggal</label>
                     <input wire:model="end" id="end" type="date"
                         class="block p-2.5 mb-3 mt-2 w-full text-sm text-gray-600 bg-gray-50 rounded-lg border border-gray-300 focus:ring-ocean-500 focus:border-ocean-500">
+                </div> --}}
+                <div class="mb-2 text-left">
+                    <label for="end" class="text-base text-ocean-600 font-semibold">Tanggal Cuti</label>
+                    <div class="relative">
+                        <input type="text" id="datepicker" readonly
+                            class="block p-2.5 mb-3 mt-2 w-full text-sm text-gray-600 bg-gray-50 rounded-lg border border-gray-300 focus:ring-ocean-500 focus:border-ocean-500" />
+                        {{-- <i @click="picker.reset()" x-show="$wire.daterange != ''"
+                            class="bi bi-x absolute right-2 text-lg top-2 text-gray-600 hover:opacity-80 cursor-pointer"></i> --}}
+                    </div>
+                    <p class="mb-6 text-center text-xs md:text-base text-gray-500 px-10" id="datepicker-result"></p>
                 </div>
                 <div class="mb-2 text-left">
                     <label for="note" class="text-base text-ocean-600 font-semibold">Tinggalkan Pesan</label>
                     <textarea wire:model="note" cols="30" rows="10" id="note"
                         class="block p-2.5 mb-3 mt-2 w-full text-sm text-gray-600 bg-gray-50 rounded-lg border border-gray-300 focus:ring-ocean-500 focus:border-ocean-500"></textarea>
                 </div>
-                <button type="submit" class="btn btn-outline-ocean w-full min-w-52 py-3 mt-3">Kirimkan <i
-                        class="bi bi-send"></i></button>
+                <button type="submit" class="btn btn-outline-ocean w-full min-w-52 py-3 mt-3 flex justify-center">
+                    <div wire:loading.remove wire:target="create">
+                        Kirim
+                        Pengajuan <i class="bi bi-send"></i>
+                    </div>
+                    <div wire:loading wire:target="create" class="small-loader"></div>
+                </button>
             </form>
         </div>
     </div>
     <div x-show="view == 'histori'" class="px-5">
-        <p class="text-xs mb-2 text-right text-ocean-600">*Menampilkan 20 pengajuan teratas.</p>
+        <p class="text-xs mb-2 text-right text-ocean-600">*Menampilkan 10 pengajuan teratas.</p>
         <div class="relative overflow-x-auto shadow-md sm:rounded-lg">
             <table class="w-full text-sm text-left text-gray-500 dark:text-gray-400">
                 <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
@@ -94,7 +109,7 @@
                             <td class="px-6 py-4 text-nowrap">
                                 ({{ $item->total }} Hari)
                                 {{ \Carbon\Carbon::parse($item->start)->isoFormat('DD MMM YYYY') }}
-                                -{{ \Carbon\Carbon::parse($item->end)->isoFormat('DD MMM YYYY') }}
+                                - {{ \Carbon\Carbon::parse($item->end)->isoFormat('DD MMM YYYY') }}
                             </td>
                             <td class="px-6 py-4">
                                 @if ($item->status == 'waiting')
@@ -116,8 +131,13 @@
                             </td>
                             <td class="px-6 py-4 text-right">
                                 @if ($item->status == 'waiting')
-                                    <button @click=" $wire.cancel('{{ $item->id }}')"
-                                        class="font-medium text-ocean-600 dark:text-ocean-500 hover:underline">Batalkan</button>
+                                    <button wire:click="cancel('{{ $item->id }}')"
+                                        class="font-medium text-ocean-600 dark:text-ocean-500 hover:underline">
+                                        <div wire:target="cancel('{{ $item->id }}')" wire:loading.remove>Batalkan
+                                        </div>
+                                        <div wire:target="cancel('{{ $item->id }}')" wire:loading
+                                            class="small-loader"></div>
+                                    </button>
                                 @else
                                     <span class="text-nowrap">Tidak ada aksi</span>
                                 @endif
@@ -127,6 +147,41 @@
                 </tbody>
             </table>
         </div>
-
     </div>
 </div>
+
+@push('scripts')
+    <script>
+        document.addEventListener('livewire:init', () => {
+            var picker = new Lightpick({
+                field: document.getElementById('datepicker'),
+                singleDate: false,
+                lang: 'id',
+                numberOfMonths: 1,
+                locale: {
+                    buttons: {
+                        prev: '&leftarrow;',
+                        next: '&rightarrow;',
+                        close: '&times;',
+                        reset: 'Reset',
+                        apply: 'Apply',
+                    },
+                    tooltip: {
+                        one: 'hari',
+                        other: 'hari',
+                    },
+                },
+                onSelectEnd: function() {
+                    start = this.getStartDate().format('YYYY-MM-DD')
+                    end = this.getEndDate().format('YYYY-MM-DD')
+                    if (start && end) {
+                        Livewire.dispatch('updateDateRange', {
+                            start: start,
+                            end: end
+                        });
+                    }
+                }
+            });
+        });
+    </script>
+@endpush
