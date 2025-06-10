@@ -15,7 +15,7 @@ use Livewire\Component;
 class Login extends Component
 {
     use HasSessionAuthentication;
-    
+
     public $title = "Login";
 
     public $email, $password, $remember, $email_by_device;

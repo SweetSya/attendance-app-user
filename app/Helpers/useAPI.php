@@ -24,4 +24,3 @@ if (! function_exists('employee_status')) {
         }
     }
 }
-

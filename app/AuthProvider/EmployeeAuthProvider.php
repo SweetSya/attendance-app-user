@@ -57,11 +57,9 @@ class EmployeeAuthProvider implements UserProvider
                 'device_uuid' => Cookie::get($this->COOKIES_getDeviceUUIDSessionName(), ''),
             ]
         );
-
         if (!$response->ok()) {
             return null;
-        }
-
+    }
         $authData = $response->json();
         $authData['device_uuid'] = Cookie::get($this->COOKIES_getDeviceUUIDSessionName(), '');
         // Save user data for later use in session
@@ -82,7 +80,7 @@ class EmployeeAuthProvider implements UserProvider
                 'device_uuid' => Cookie::get($this->COOKIES_getDeviceUUIDSessionName(), ''),
             ]
         );
-
+        
         if (!$response->ok()) {
             return false;
         }
