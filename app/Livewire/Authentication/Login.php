@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cookie;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Request;
+use Illuminate\Support\Facades\Session;
 use Livewire\Component;
 
 class Login extends Component
@@ -58,7 +59,15 @@ class Login extends Component
 
             return redirect()->intended('/home');
         }
-        // If login fails, flash an error message
-        $this->dispatch('notify', type: 'error', message: 'Email atau password salah.');
+        if (Session::has('login_failed')) {
+            // If login failed, check if there's a specific error message
+            $errorMessage = Session::get('login_failed');
+            // Dispatch the error message
+            $this->dispatch('notify', type: 'error', message: $errorMessage);
+        } else {
+            // If login fails, flash an error message
+            $this->dispatch('notify', type: 'error', message: 'Tidak dapat mengautentikasi saat ini, silahkan coba lagi nanti');
+        }
+        Session::forget('login_failed');
     }
 }

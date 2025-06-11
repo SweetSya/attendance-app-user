@@ -58,8 +58,9 @@ class EmployeeAuthProvider implements UserProvider
             ]
         );
         if (!$response->ok()) {
+            Session::put('login_failed', $response->json()['message'] ?? 'Login failed');
             return null;
-    }
+        }
         $authData = $response->json();
         $authData['device_uuid'] = Cookie::get($this->COOKIES_getDeviceUUIDSessionName(), '');
         // Save user data for later use in session
@@ -80,8 +81,9 @@ class EmployeeAuthProvider implements UserProvider
                 'device_uuid' => Cookie::get($this->COOKIES_getDeviceUUIDSessionName(), ''),
             ]
         );
-        
+
         if (!$response->ok()) {
+            Session::put('login_failed', $response->json()['message'] ?? 'Login failed');
             return false;
         }
 

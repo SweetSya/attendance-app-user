@@ -152,36 +152,35 @@
 
 @push('scripts')
     <script>
-        document.addEventListener('livewire:init', () => {
-            var picker = new Lightpick({
-                field: document.getElementById('datepicker'),
-                singleDate: false,
-                lang: 'id',
-                numberOfMonths: 1,
-                locale: {
-                    buttons: {
-                        prev: '&leftarrow;',
-                        next: '&rightarrow;',
-                        close: '&times;',
-                        reset: 'Reset',
-                        apply: 'Apply',
-                    },
-                    tooltip: {
-                        one: 'hari',
-                        other: 'hari',
-                    },
+        console.log('Vaction component initialized');
+        var picker = new Lightpick({
+            field: document.getElementById('datepicker'),
+            singleDate: false,
+            lang: 'id',
+            numberOfMonths: 1,
+            locale: {
+                buttons: {
+                    prev: '&leftarrow;',
+                    next: '&rightarrow;',
+                    close: '&times;',
+                    reset: 'Reset',
+                    apply: 'Apply',
                 },
-                onSelectEnd: function() {
-                    start = this.getStartDate().format('YYYY-MM-DD')
-                    end = this.getEndDate().format('YYYY-MM-DD')
-                    if (start && end) {
-                        Livewire.dispatch('updateDateRange', {
-                            start: start,
-                            end: end
-                        });
-                    }
+                tooltip: {
+                    one: 'hari',
+                    other: 'hari',
+                },
+            },
+            onSelectEnd: function() {
+                start = this.getStartDate().format('YYYY-MM-DD')
+                end = this.getEndDate().format('YYYY-MM-DD')
+                if (start && end) {
+                    Livewire.dispatch('updateDateRange', {
+                        start: start,
+                        end: end
+                    });
                 }
-            });
+            }
         });
     </script>
 @endpush
