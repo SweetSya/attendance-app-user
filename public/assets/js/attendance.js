@@ -137,6 +137,7 @@ const prepareCheckedIn = async () => {
     }, 300);
     const captureFace = () => {
         if (attendanceIsBlinking() && !capturing) {
+            console.log("Capturing face");
             capturing = true;
             let base64face = getBase64Face();
             dispatchEvent(

@@ -14,7 +14,7 @@ trait HasApiHelper
     public function API_get($target_url, $data = [])
     {
         if (App::environment('production') && env('API_VERIFY_SSL', false)) {
-            $response = Http::withHeaders($this->API_getHeader())
+        $response = Http::withHeaders($this->API_getHeader())
                 ->get($this->API_getURL($target_url), $data);
             return $response;
         } else {

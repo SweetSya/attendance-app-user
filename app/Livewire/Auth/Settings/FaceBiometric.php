@@ -17,9 +17,7 @@ class FaceBiometric extends BaseComponent
 
     public $title = 'Pengaturan - Biometrik Wajah';
     public $face_recognition_status = 0;
-    public $employee_name = '';
-    public $employee_id = '';
-    public $password = '';
+    public $face_message, $employee_name, $employee_id, $password;
     public $password_check_state = false;
 
     public function boot()
@@ -37,6 +35,7 @@ class FaceBiometric extends BaseComponent
             $this->invalidateSession($data);
             return;
         }
+        $this->face_message = $data->face_message;
         $this->face_recognition_status = $data->state;
         $this->employee_id = $data->emp_id;
         $this->employee_name = $data->emp_name;

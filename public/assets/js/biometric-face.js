@@ -160,12 +160,26 @@ async function predictWebcam() {
                         )
                     ) {
                         capturedFrame[currentDirection] = "hold";
-                        sendNotfy.open({
-                            type: "info",
-                            message: `Pertahankan posisi ${currentDirection} selama 2 detik`,
-                        });
+                        dispatchEvent(
+                            new CustomEvent("set_camera_capturing", {
+                                detail: {
+                                    state: true,
+                                },
+                            })
+                        );
+                        // sendNotfy.open({
+                        //     type: "info",
+                        //     message: `Pertahankan posisi ${currentDirection} selama 2 detik`,
+                        // });
                         setTimeout(() => {
                             capturedFrame[currentDirection] = "capturing";
+                            dispatchEvent(
+                                new CustomEvent("set_camera_capturing", {
+                                    detail: {
+                                        state: false,
+                                    },
+                                })
+                            );
                         }, 2000);
                     }
                 }
@@ -186,7 +200,7 @@ async function predictWebcam() {
                 sendNotfy.success("Berhasil menangkap muka");
                 console.log(`Menghadap: ${directionKey}`);
                 console.log("======================================");
-        }
+            }
         }
 
         for (const landmarks of results.faceLandmarks) {
@@ -267,6 +281,13 @@ function drawBlendShapes(blendShapes) {
                         new CustomEvent("set_camera_status", {
                             detail: {
                                 status: "offline",
+                            },
+                        })
+                    );
+                    dispatchEvent(
+                        new CustomEvent("add_camera_step", {
+                            detail: {
+                                step: "preview",
                             },
                         })
                     );

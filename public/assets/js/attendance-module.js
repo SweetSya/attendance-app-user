@@ -57,9 +57,11 @@ async function attendancePredictWebcam() {
     }
     attendanceDetectBlinking(attendanceResults.faceBlendshapes);
     if (attendanceWebcamRunning) {
-        attendanceAnimationFrameFace = window.requestAnimationFrame(
-            attendancePredictWebcam
-        );
+        setTimeout(() => {
+            attendanceAnimationFrameFace = window.requestAnimationFrame(
+                attendancePredictWebcam
+            );
+        }, 300);
     }
 }
 
@@ -104,6 +106,8 @@ const attendanceInitBiometricFace = () => {
 };
 
 const attendanceRemoveAnimationFrame = () => {
+    // stop video stream
+    stopVideostream();
     dispatchEvent(
         new CustomEvent("set_landmarker", {
             detail: {
@@ -111,12 +115,7 @@ const attendanceRemoveAnimationFrame = () => {
             },
         })
     );
-    if (attendanceVideo) {
-        attendanceVideo.removeEventListener(
-            "loadeddata",
-            attendancePredictWebcam
-        );
-    }
+    attendanceVideo.removeEventListener("loadeddata", attendancePredictWebcam);
     cancelAnimationFrame(attendanceAnimationFrameFace);
     attendanceAnimationFrameFace = null;
     console.log("Attendance Animation Frame Removed");
@@ -125,7 +124,6 @@ const attendanceRemoveAnimationFrame = () => {
 const attendanceIsBlinking = () => {
     return attendanceWasBlinking;
 };
-
 window.attendanceRemoveAnimationFrame = attendanceRemoveAnimationFrame;
 window.attendanceInitAttendaceBiometricFace = attendanceInitBiometricFace;
 window.attendanceCreateFaceLandmarker = attendanceCreateFaceLandmarker;

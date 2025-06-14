@@ -39,7 +39,7 @@ class Login extends Component
     {
         return view('livewire.authentication.login')
             ->layout('components.layouts.authentication', [
-                'title' => $this->title
+                'title' => $this->title,
             ]);
     }
 

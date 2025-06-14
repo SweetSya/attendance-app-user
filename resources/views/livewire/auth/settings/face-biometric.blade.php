@@ -8,20 +8,21 @@
         </h5>
     </div>
     <div x-data="{
+        {{-- 'authentication', 'permission' --}}
         steps: [],
-        camera: { permissiosn: '', status: 'offline', images: {} },
-        camera_capturing: false,
-        labelMap: {
-            'netral-netral': 'Tengah',
-            'top-netral': 'Atas',
-            'bottom-netral': 'Bawah',
-            'netral-right': 'Kanan',
-            'netral-left': 'Kiri'
-        },
-        landmarker: false,
-        calibrated: false,
-        err_message: ''
-    }"
+            camera: { permissiosn: '', status: 'offline', images: {} },
+            camera_capturing: false,
+            labelMap: {
+                'netral-netral': 'Tengah',
+                'top-netral': 'Atas',
+                'bottom-netral': 'Bawah',
+                'netral-right': 'Kanan',
+                'netral-left': 'Kiri'
+            },
+            landmarker: false,
+            calibrated: false,
+            err_message: ''
+    }" @add_camera_step.window.camel="steps.push($event.detail.step)"
         @set_camera_status.window.camel="camera.status = $event.detail.status, camera.status == 'running' ? setTimeout(() => {steps.push('registering')}, 1500) : ''"
         @set_camera_capturing.window.camel="camera_capturing = $event.detail.state"
         @set_landmarker.window.camel="landmarker = $event.detail.state"
@@ -56,6 +57,11 @@
                 <p class="text-base text-gray-500" x-text="$wire.employee_id"></p>
             </div>
         </div>
+        <div style="display: none;" x-show="$wire.face_message && $wire.face_message != 'verified' && $wire.face_recognition_status == 0"
+            class="w-full flex flex-col gap-.5">
+            <p class="text-base text-gray-500 font-bold">Pesan dari HR :</p>
+            <p class="text-base text-gray-500" x-text="$wire.face_message"></p>
+        </div>
         <div style="display: none;" class="transition ease-in-out duration-1000"
             x-show="$wire.face_recognition_status == 0 && steps.length <= 0"
             x-transition:leave="animate__animated animate__fadeOutLeft absolute"
@@ -80,8 +86,8 @@
             <p class="text-base btn-ocean py-1 text-white pointer-events-none text-center">Biometrik muka sudah
                 didaftarkan pada akun ini</p>
         </div>
-        <div class="relative transition ease-in-out duration-1000"
-            x-transition:leave="animate__animated animate__fadeOutLeft"
+        <div class="relative transition ease-in-out duration-1000" style="display: none;"
+            x-show="$wire.face_recognition_status == 0" x-transition:leave="animate__animated animate__fadeOutLeft"
             x-transition:enter="animate__animated animate__fadeInRight" x-show="steps.length > 0">
             <ol class="mt-3 flex items-center w-full">
                 <li :class="steps.length > 1 ? 'after:border-ocean-500' : 'after:border-gray-100 '"
@@ -107,10 +113,12 @@
                             :class="steps.length >= 3 ? 'text-white' : 'text-gray-500'"></i>
                     </span>
                 </li>
-                <li class="flex items-center">
-                    <span
+                <li :class="steps.length > 4 ? 'after:border-ocean-500' : 'after:border-gray-100'"
+                    class="flex items-center">
+                    <span :class="steps.length >= 4 ? 'bg-ocean-500' : 'bg-gray-100'"
                         class="flex items-center justify-center w-10 h-10 bg-gray-100 rounded-full lg:h-12 lg:w-12 shrink-0">
-                        <i class="bi bi-check-circle-fill text-gray-600"></i>
+                        <i class="bi bi-check-circle-fill text-gray-600"
+                            :class="steps.length >= 4 ? 'text-white' : 'text-gray-500'"></i>
                     </span>
                 </li>
             </ol>
@@ -183,7 +191,7 @@
                         Wajah
                     </p>
                     <p class="text-xs md:text-base text-center text-gray-500 mb-3">Harap mengikuti petunjuk yang
-                        diberikan</p>
+                        diberikan pada kotak di kanan atas dan arahan di kotak kiri bawah</p>
                 </div>
                 <div class="relative flex justify-center items-center h-fit">
                     <div id="webcam-wrapper" class="relative w-full md:w-[520px] h-fit" style="display: hidden;"
@@ -195,8 +203,8 @@
                         <div :class="!calibrated ? 'left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2' : 'right-1 bottom-1 '"
                             class="absolute flex flex-col gap-2">
                             <div x-show="!calibrated"
-                                class="pointer-events-none btn btn-outline-ocean text-xs text-white border-white">
-                                <span class="mt-1">
+                                class="pointer-events-none btn btn-outline-ocean text-xs text-white border-white flex items-center gap-1.5">
+                                <span>
                                     <i class="bi bi-exclamation-circle"></i>
                                 </span>
                                 <span class="flex-grow">Harap lakukan
@@ -209,12 +217,43 @@
                                 Kalibrasi <i class="bi bi-arrow-repeat"></i>
                             </button>
                         </div>
+                        <div x-show="calibrated && !Object.values(camera.images).every(v => v !== '')"
+                            class="absolute top-1 right-1 text-white bg-black/50 border-2 border-ocean-600 rounded-sm p-1 text-xs w-1/3 flex items-center gap-1.5">
+                            <span>
+                                <i class="bi bi-exclamation-circle"></i>
+                            </span>
+                            <span x-show="camera_capturing" class="flex-grow text-wrap">
+                                Sedang menangkap gambar, harap tunggu
+                            </span>
+                            <span x-show="!camera_capturing" class="flex-grow text-wrap">
+                                Hadapkan wajah ke atas, bawah, kiri, atau kanan untuk melanjutkan sesuai pentunjuk pada
+                                kiri bawah layar
+                            </span>
+                        </div>
+                        <div x-show="calibrated && camera_capturing"
+                            class="absolute backdrop-blur:sm top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-white bg-black/50 border-2 border-ocean-600 rounded-sm p-1 text-xs w-1/3 flex items-center gap-1.5">
+                            <span>
+                                <i class="bi bi-exclamation-circle"></i>
+                            </span>
+                            <span class="flex-grow text-wrap">
+                                Pertahankan posisi ini selama 2 detik
+                            </span>
+                        </div>
+                        <div x-show="calibrated && Object.values(camera.images).every(v => v !== '')"
+                            class="absolute top-1 right-1 text-white bg-black/50 border-2 border-ocean-600 rounded-sm p-1 text-xs w-1/3 flex items-center gap-1.5">
+                            <span>
+                                <i class="bi bi-exclamation-circle"></i>
+                            </span>
+                            <span x-show="calibrated" class="flex-grow">
+                                Kedipkan mata untuk melanjutkan
+                            </span>
+                        </div>
                         <div
                             class="absolute top-1 left-1 text-white bg-black/50 border-2 border-ocean-600 rounded-sm p-1 text-xs">
                             <p><i class="bi bi-arrows-expand"></i> <span id="pitch">-</span></p>
                             <p><i class="bi bi-arrows-expand-vertical"></i> <span id="yaw">-</span></p>
                         </div>
-                        <div x-show="calibrated && !Object.values(camera.images).every(v => v !== '')"
+                        <div x-show="calibrated"
                             class="absolute bottom-1 left-1 text-white bg-black/50 border-2 border-ocean-600 rounded-sm p-1 text-xs">
                             <template x-for="(value, index) in camera.images">
                                 <p><span x-text="labelMap[index] ?? index"></span> <i class="bi"
@@ -222,31 +261,48 @@
                                 </p>
                             </template>
                         </div>
-                        <p x-show="calibrated && Object.values(camera.images).every(v => v !== '')"
-                            class="absolute bottom-2 left-2 me-32 text-white bg-black/50 border-2 border-ocean-600 rounded-sm p-1 text-xs">
-                            <span class="mt-1">
-                                <i class="bi bi-exclamation-circle"></i>
-                            </span>
-                            <span class="flex-grow">Kedipkan mata untuk melanjutkan.</span>
-                        </p>
                     </div>
                 </div>
             </div>
-            <form wire:submit="save_face_biometric(Object.values(camera.images))" id="preview" x-transition.opacity
-                x-show="camera.status == 'offline'" class="flex flex-col">
-                <template x-for="(value, index) in camera.images">
-                    <div>
-                        <p x-text="index"></p>
-                        <img :src="value" alt="" class="w-full">
+            <div x-show="steps[steps.length - 1] == 'preview'"
+                x-transition:leave="animate__animated animate__fadeOutLeft absolute"
+                x-transition:enter="animate__animated animate__fadeInRight"
+                class="z-0 w-full transition ease-in-out duration-1000">
+                <div class="z-0 w-full group">
+                    <p class="text-base font-bold text-gray-500 uppercase text-center my-4">Hasil Tangkapan Biometrik
+                        Wajah
+                    </p>
+                    <p class="text-xs md:text-base text-center text-gray-500 mb-3">Harap dipastikan jika hasil sudah
+                        sesuai keinginan, dan posisi wajah sudah sesuai dengan arahan yang ditentukan sebelum
+                        melanjutkan</p>
+                </div>
+                <form wire:submit="save_face_biometric(Object.values(camera.images))" id="preview"
+                    x-transition.opacity x-show="camera.status == 'offline'"
+                    class="flex flex-wrap justify-center items-center gap-2">
+                    <template x-for="(value, index) in camera.images">
+                        <div class="rounded-md">
+                            <img class="max-w-60 object-contain" :src="value" alt=""
+                                class="w-full">
+                            <p class="text-base bg-gradient-ocean text-white font-semibold p-1.5"
+                                x-text="'Hadap ' + labelMap[index]"></p>
+                        </div>
+                    </template>
+                    <div class="w-full flex flex-wrap gap-2">
+                        <button type="button"
+                            @click=" calibrated = false, initBiometricFace(), steps = ['authentication', 'permission']"
+                            class="btn btn-warning flex-grow flex items-center justify-center gap-2 py-3"><span>
+                                Ambil ulang gambar</span>
+                        </button>
+                        <button type="submit"
+                            class="btn btn-ocean flex-grow flex items-center justify-center gap-2 py-3"><span
+                                wire:loading.remove wire:target="save_face_biometric">
+                                Simpan</span>
+                            <div wire:loading wire:target="save_face_biometric" class="small-loader">
+                            </div>
+                        </button>
                     </div>
-                </template>
-                <button type="submit" class="btn btn-ocean flex w-full items-center justify-center gap-2 py-3"><span
-                        wire:loading.remove wire:target="save_face_biometric">
-                        Simpan</span>
-                    <div wire:loading wire:target="save_face_biometric" class="small-loader">
-                    </div>
-                </button>
-            </form>
+                </form>
+            </div>
         </div>
     </div>
 </div>
