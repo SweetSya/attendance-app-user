@@ -35,6 +35,7 @@ class FaceBiometric extends BaseComponent
             $this->invalidateSession($data);
             return;
         }
+        $this->password = '';
         $this->face_message = $data->face_message;
         $this->face_recognition_status = $data->state;
         $this->employee_id = $data->emp_id;

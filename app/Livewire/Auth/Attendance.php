@@ -70,8 +70,14 @@ class Attendance extends BaseComponent
     public function clock_employee_face($base64_image, $position)
     {
         // Check for base64_image and position if null
-        if (is_null($base64_image) || is_null($position)) {
-            $this->dispatch('notify', type: 'error', message: 'Gambar wajah atau posisi lokasi masih kosong');
+        if (is_null($position)) {
+            $this->dispatch('notify', type: 'error', message: 'Posisi lokasi masih kosong');
+            $this->dispatch('set_face_scanning', scanning: false);
+            return false;
+        }
+        if (is_null($base64_image)) {
+            $this->dispatch('notify', type: 'error', message: 'Gambar wajah lokasi masih kosong');
+            $this->dispatch('set_face_scanning', scanning: false);
             return false;
         }
         $response = $this->API_postJSON('view/attendance/clock-face', [

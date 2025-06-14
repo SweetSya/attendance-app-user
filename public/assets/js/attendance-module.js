@@ -9,6 +9,7 @@ let attendanceLastVideoTime;
 let attendanceWebcamRunning;
 let attendanceResults;
 let attendanceWasBlinking;
+let attendanceIntervalId = null;
 
 const attendanceFilesetResolver = await FilesetResolver.forVisionTasks(
     "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.3/wasm"
@@ -22,7 +23,7 @@ async function attendanceCreateFaceLandmarker() {
             baseOptions: {
                 modelAssetPath:
                     "https://storage.googleapis.com/mediapipe-models/face_landmarker/face_landmarker/float16/1/face_landmarker.task",
-                delegate: "GPU",
+                delegate: "CPU",
             },
             outputFaceBlendshapes: true,
             runningMode: attendanceRunningMode,
@@ -57,11 +58,9 @@ async function attendancePredictWebcam() {
     }
     attendanceDetectBlinking(attendanceResults.faceBlendshapes);
     if (attendanceWebcamRunning) {
-        setTimeout(() => {
-            attendanceAnimationFrameFace = window.requestAnimationFrame(
-                attendancePredictWebcam
-            );
-        }, 300);
+        attendanceAnimationFrameFace = window.requestAnimationFrame(
+            attendancePredictWebcam
+        );
     }
 }
 

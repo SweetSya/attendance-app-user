@@ -57,7 +57,8 @@
                 <p class="text-base text-gray-500" x-text="$wire.employee_id"></p>
             </div>
         </div>
-        <div style="display: none;" x-show="$wire.face_message && $wire.face_message != 'verified' && $wire.face_recognition_status == 0"
+        <div style="display: none;"
+            x-show="$wire.face_message && $wire.face_message != 'verified' && $wire.face_recognition_status == 0"
             class="w-full flex flex-col gap-.5">
             <p class="text-base text-gray-500 font-bold">Pesan dari HR :</p>
             <p class="text-base text-gray-500" x-text="$wire.face_message"></p>
@@ -75,7 +76,7 @@
             x-show="$wire.face_recognition_status == 1"
             x-transition:leave="animate__animated animate__fadeOutLeft absolute"
             x-transition:enter="animate__animated animate__fadeInRight" x-show="steps.length < 1">
-            <p class="text-base btn-cinnabar py-1 text-center ">Biometrik muka sedang dalam proses verifikasi
+            <p class="text-base btn-warning rounded-md py-1 text-center ">Biometrik muka sedang dalam proses verifikasi
                 selanjutnya,
                 harap ditunggu atau konfirmasi pada pihak terkait</p>
         </div>
@@ -83,11 +84,12 @@
             x-show="$wire.face_recognition_status == 2"
             x-transition:leave="animate__animated animate__fadeOutLeft absolute"
             x-transition:enter="animate__animated animate__fadeInRight" x-show="steps.length < 1">
-            <p class="text-base btn-ocean py-1 text-white pointer-events-none text-center">Biometrik muka sudah
+            <p class="text-base btn-ocean rounded-md py-1 text-white pointer-events-none text-center">Biometrik muka sudah
                 didaftarkan pada akun ini</p>
         </div>
         <div class="relative transition ease-in-out duration-1000" style="display: none;"
-            x-show="$wire.face_recognition_status == 0" x-transition:leave="animate__animated animate__fadeOutLeft"
+            x-show="$wire.face_recognition_status == 0 && steps.length != 0"
+            x-transition:leave="animate__animated animate__fadeOutLeft"
             x-transition:enter="animate__animated animate__fadeInRight" x-show="steps.length > 0">
             <ol class="mt-3 flex items-center w-full">
                 <li :class="steps.length > 1 ? 'after:border-ocean-500' : 'after:border-gray-100 '"
