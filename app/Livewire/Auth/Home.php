@@ -46,12 +46,15 @@ class Home extends BaseComponent
             $this->dispatch('notify', type: 'success', message: session()->get('success'));
         }
     }
-    public function refresh()
+    public function refresh(bool $refetch = false)
     {
+        // If refetch is true, we will force to fetch data from API
+        if ($refetch) {
+            $this->setPageSessionRefresh([$this->route_name, 'home', 'history']);
+        }
         $data = $this->getPageSessionData($this->route_name, $this->api_url);
         if (property_exists($data, 'error')) {
             $this->invalidateSession($data);
-            return;
         }
         // Get home data from session
         $this->employee = $data->employee;

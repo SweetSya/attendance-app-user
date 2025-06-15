@@ -10,11 +10,12 @@
     @vite('resources/css/app.css')
 
     <link rel="manifest" href="/manifest.json" />
+
+    <link rel="stylesheet" href="{{ asset('build\assets\app-BqYkgR0G') }}">
     {{-- Loading --}}
     <link rel="stylesheet" href="{{ asset('assets\css\loading.css') }}">
     {{-- Lightpick --}}
     <link rel="stylesheet" href="{{ asset('assets\css\lightpick.css') }}">
-    {{-- <link rel="stylesheet" href="{{ asset('build\assets\app-Dqu-JKAo.css') }}"> --}}
     {{-- Notfys --}}
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/notyf@3/notyf.min.css">
     {{-- LeafletJS --}}

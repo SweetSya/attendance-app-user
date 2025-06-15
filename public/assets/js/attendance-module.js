@@ -114,9 +114,14 @@ const attendanceRemoveAnimationFrame = () => {
             },
         })
     );
-    attendanceVideo.removeEventListener("loadeddata", attendancePredictWebcam);
-    cancelAnimationFrame(attendanceAnimationFrameFace);
-    attendanceAnimationFrameFace = null;
+    if (attendanceVideo) {
+        attendanceVideo.removeEventListener(
+            "loadeddata",
+            attendancePredictWebcam
+        );
+        cancelAnimationFrame(attendanceAnimationFrameFace);
+        attendanceAnimationFrameFace = null;
+    }
     console.log("Attendance Animation Frame Removed");
 };
 

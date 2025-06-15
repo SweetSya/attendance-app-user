@@ -114,6 +114,10 @@ class Attendance extends BaseComponent
     }
     public function clock_employee_out($position)
     {
+        if (is_null($position)) {
+            $this->dispatch('notify', type: 'error', message: 'Posisi lokasi masih kosong');
+            return false;
+        }
         $response = $this->API_postJSON('view/attendance/clock-out', [
             'position' => $position,
         ]);

@@ -14,7 +14,7 @@ trait HasSessionAuthentication
     use HasApiHelper;
 
     protected $poll_fetch = 120; //in seconds
-    protected $always_prefecth = true;
+    protected $always_prefecth = false;
 
     public function invalidateSession($data)
     {
@@ -51,27 +51,20 @@ trait HasSessionAuthentication
                     $data->last_fetch = Carbon::now()->timestamp;
                     $pages[$route_name] = $data;
                     Session::put('pages', $pages);
-                    Log::info("Page session data for '{$route_name}' fetched successfully.");
                 }
             } else {
                 $error_data = json_decode($response->body());
                 if ($response->status() === 401 && $error_data && isset($error_data->reason) && $error_data->reason === 'Unauthorized') {
-                    return (object)[
-                        'redirect' => '/',
-                        'message' => $error_data->message ?? 'Sesi telah berakhir atau double',
-                        'error' => $error_data->reason ?? 'Unauthorized',
-                        'status' => $response->status(),
-                        'ok' => $response->ok()
-                    ];
+                    $pages = Session::get('pages', []);
+                    $pages[$route_name]->error = $error_data->reason ?? 'Unauthorized';
+                    $pages[$route_name]->message = $error_data->message ?? 'Sesi telah berakhir atau double';
+                    return $pages[$route_name] ?? null;
                 }
                 // Return error data for other errors as well
-                return (object)[
-                    'redirect' => '/',
-                    'message' => $error_data->message ?? 'Terjadi kesalahan',
-                    'error' => $error_data->reason ?? 'Error',
-                    'status' => $response->status(),
-                    'ok' => $response->ok()
-                ];
+                $pages = Session::get('pages', []);
+                $pages[$route_name]->error = $error_data->reason ?? 'Error';
+                $pages[$route_name]->message = $error_data->message ?? 'Terjadi kesalahan';
+                return $pages[$route_name] ?? null;
             }
 
             // Remove from refresh list if present

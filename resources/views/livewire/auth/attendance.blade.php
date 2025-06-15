@@ -1,7 +1,7 @@
 <div id="data-wrapper" x-data="{ distance: { range: 0, refresh_at: '', position: [0, 0] }, drawer: { title: '', section: '' }, face: { scanning: false, last: '', height: '', loading: false, landmarker: false } }"
     @set_drawer.window.camel="drawer = $event.detail, drawerSection = $event.detail.section"
-    @start_check_face.window.camel="face.height = document.querySelector('#verify-camera').clientHeight, face.loading = true, setTimeout(async () => {await $wire.clock_employee_face(JSON.stringify($event.detail.face), JSON.stringify(distance.position)), 1000})"
-    @set_face_scanning.window.camel="$event.detail.scanning ? (face.scanning = true, face.last = $event.detail.last ?? '', face.loading = false) : (face.scanning = false, face.last = $event.detail.last ?? getBase64Face(), stopVideostream(), face.loading = false)"
+    @start_check_face.window.camel="face.last = $event.detail.last ?? $event.detail.face, stopVideostream(),face.height = document.querySelector('#verify-camera').clientHeight, face.loading = true, setTimeout(async () => {await $wire.clock_employee_face(JSON.stringify($event.detail.face), JSON.stringify(distance.position))}, 100)"
+    @set_face_scanning.window.camel="$event.detail.scanning ? (face.scanning = true, face.last = $event.detail.last ?? '', face.loading = false) : (face.scanning = false, face.loading = false)"
     @set_distance.window.camel="distance = $event.detail"
     @set_landmarker.window.camel="face.landmarker = $event.detail.state" class="text-all-wide">
     <div wire:ignore class="h-screen">
@@ -201,14 +201,14 @@
             <p class="mb-6 text-xs sm:text-base text-gray-500 text-center">Arahkan wajah di posisi dalam box untuk
                 memudahkan pemindaian</p>
             <div class="mx-auto rounded border relative max-w-96 aspect-square mb-4 overflow-hidden">
-                <video x-show="face.scanning" :class="face.loading ? 'blur-sm brightness-75' : ''" muted autoplay
+                <video x-show="face.scanning" :class="face.loading ? 'hidden' : ''" muted autoplay
                     id="verify-camera" class="h-full -scale-x-[1] w-full rounded object-cover transition duration-150"
                     src="">
                 </video>
-                <div class="flex h-full w-full" x-transition x-show="face.last != '' && !face.scanning">
-                    <img :src="face.last" :height="face.height"
+                <div class="flex h-full w-full">
+                    <img x-show="face.last != ''" :src="face.last" :height="face.height"
                         class="h-full -scale-x-[1] w-full rounded object-cover blur-sm" alt="">
-                    <div
+                    <div x-show="face.last != '' && !face.scanning"
                         class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-white rounded px-4 py-4">
                         <div class="text-center mb-2">
                             <p class="text-xs sm:text-base text-gray-600 text-center mb-2">Verifikasi biometrik <span

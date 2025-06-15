@@ -9,6 +9,7 @@
     <link rel="manifest" href="/manifest.json" />
 
     @vite('resources/css/app.css')
+    <link rel="stylesheet" href="{{ asset('build\assets\app-BqYkgR0G') }}">
     {{-- Notfys --}}
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/notyf@3/notyf.min.css">
 </head>
