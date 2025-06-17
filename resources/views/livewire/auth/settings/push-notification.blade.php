@@ -171,7 +171,7 @@
                         <div class="hidden text-center small-loader" wire:loading.class.remove="hidden"></div>
                     </button>
                 @else
-                    <button wire:click="test_push_notification(JSON.stringify('{{ $registered->id }}')) " type="button"
+                    <button wire:click="test_push_notification(JSON.stringify('{{ $registered->id }}'))" type="button"
                         class="btn btn-outline-ocean py-2" wire:loading.class="pointer-events-none opacity-80">
                         <div wire:target="test_push_notification(JSON.stringify('{{ $registered->id }}'))"
                             wire:loading.class="hidden">

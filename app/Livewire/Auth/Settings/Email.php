@@ -15,7 +15,8 @@ class Email extends BaseComponent
     protected $api_url = 'view/settings/email';
 
     public $title = 'Pengaturan - Email';
-    public $email, $verified_at;
+    public $email, $verified_at, $verify_issue_code, $existing_issue, $existing_issue_email;
+    public $new_email_issued = false;
     public $original;
     public function boot()
     {
@@ -32,10 +33,12 @@ class Email extends BaseComponent
             $this->invalidateSession($data);
             return;
         }
-
         $this->email = $data->email;
         $this->verified_at = $data->verified_at;
+        $this->existing_issue = $data->existing_issue;
+        $this->existing_issue_email = $data->existing_issue_email;
         $this->original = $data;
+        $this->new_email_issued = false;
     }
     public function render()
     {
@@ -49,10 +52,24 @@ class Email extends BaseComponent
             'email' => $this->email,
         ]);
         if ($response->status != 200) {
-            $this->dispatch('notify', type: 'error', message: $response->data->message);
+            $this->dispatch('notify', type: 'error', message: $response->data->message ?? 'Gagal mengubah email');
             return;
         }
-        $this->dispatch('notify', type: 'success', message: $response->data->message);
+        $this->dispatch('notify', type: 'success', message: $response->data->message ?? 'Harap cek email baru untuk kode verifikasi');
+        $this->new_email_issued = true;
+        $this->refresh(true);
+    }
+    public function resend_change_email_token()
+    {
+        $response = $this->API_postJSON('view/settings/email/change', [
+            'email' => $this->existing_issue_email,
+        ]);
+        if ($response->status != 200) {
+            $this->dispatch('notify', type: 'error', message: $response->data->message ?? 'Gagal mengirimkan permintaan, harap cuba lagi');
+            return;
+        }
+        $this->dispatch('notify', type: 'success', message: $response->data->message ?? 'Harap cek email baru untuk kode verifikasi');
+        $this->new_email_issued = true;
         $this->refresh(true);
     }
     public function send_verification_email()
@@ -67,5 +84,18 @@ class Email extends BaseComponent
         }
         $this->dispatch('notify', type: 'success', message: $response->data->message);
         $this->refresh();
+    }
+    public function verify_issue_new_email()
+    {
+        $response = $this->API_postJSON('view/settings/email/verify-change', [
+            'email' => $this->email,
+            'code' => $this->verify_issue_code,
+        ]);
+        if ($response->status != 200) {
+            $this->dispatch('notify', type: 'error', message: $response->data->message ?? 'Kode verifikasi tidak valid');
+            return;
+        }
+        $this->dispatch('notify', type: 'success', message: $response->data->message ?? 'Email berhasil diverifikasi, harap tunggu approval dari HR');
+        $this->refresh(true);
     }
 }

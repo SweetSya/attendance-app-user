@@ -143,7 +143,8 @@
             @if (!$HOLIDAY && !$DAY_OFF && !$VACATION && $face_state != 0)
                 @if (!$today->clock_in)
                     <button
-                        :class="(face.landmarker && distance.range >= officeRadius || distance.range == 0) ?
+                        :class="(face.landmarker && distance.range >= officeRadius || distance.range == 0 || JSON.stringify(
+                            distance.position) != JSON.stringify([0, 0])) ?
                         'pointer-events-none opacity-35' :
                         'pointer-events-auto opacity-100'"
                         @click="openDrawer({title: 'Verifikasi Kehadiran', 'section': 'checkin'})"
@@ -157,7 +158,7 @@
 
                 @if (!$today->clock_in)
                     <button
-                        :class="(distance.range == 0) ?
+                        :class="(distance.range == 0 || JSON.stringify(distance.position) != JSON.stringify([0, 0])) ?
                         'pointer-events-none opacity-35' :
                         'pointer-events-auto opacity-100'"
                         @click="openDrawer({title: 'Pengajuan Izin', 'section': 'absence'})"
@@ -201,9 +202,8 @@
             <p class="mb-6 text-xs sm:text-base text-gray-500 text-center">Arahkan wajah di posisi dalam box untuk
                 memudahkan pemindaian</p>
             <div class="mx-auto rounded border relative max-w-96 aspect-square mb-4 overflow-hidden">
-                <video x-show="face.scanning" :class="face.loading ? 'hidden' : ''" muted autoplay
-                    id="verify-camera" class="h-full -scale-x-[1] w-full rounded object-cover transition duration-150"
-                    src="">
+                <video x-show="face.scanning" :class="face.loading ? 'hidden' : ''" muted autoplay id="verify-camera"
+                    class="h-full -scale-x-[1] w-full rounded object-cover transition duration-150" src="">
                 </video>
                 <div class="flex h-full w-full">
                     <img x-show="face.last != ''" :src="face.last" :height="face.height"
