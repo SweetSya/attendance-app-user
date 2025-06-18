@@ -153,6 +153,9 @@
     .bg-gradient-ocean-soft {
         @apply bg-gradient-to-br from-ocean-300/40 via-ocean-200/40 to-ocean-100/40 border-ocean-300;
     }
+    .bg-gradient-cinnabar-soft {
+        @apply bg-gradient-to-br from-cinnabar-600/40 via-cinnabar-500/40 to-cinnabar-400/40;
+    }
     .bg-gradient-cinnabar {
         @apply bg-gradient-to-br from-cinnabar-600 via-cinnabar-500 to-cinnabar-400;
     }

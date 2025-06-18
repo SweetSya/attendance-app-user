@@ -8,45 +8,65 @@
         </h5>
     </div>
     <div class="px-5">
-        <div class="mb-6 text-center">
+        <div class="mb-6 text-left">
             <div>
                 <p class="mb-6 text-xs md:text-base text-gray-500">Harap gunakan email yang aktif, karena akan digunakan
                     pada saat
                     login, mengirimkan notifikasi, dan keperluan lainnya.</p>
             </div>
             <div x-show="!$wire.new_email_issued">
+                <div x-show="$wire.issue_state === 'approval'" class="text-left">
+                    <div class="mt-2 border p-3 rounded text-left flex items-center gap-3 bg-gray-50">
+                        <i class="bi bi-info-circle text-ocean-500 text-lg md:text-2xl"></i>
+                        <p class="text-xs md:text-base text-gray-500">Email ini sedang dalam <span
+                                class="text-ocean-500">proses perubahan</span> dari <span class="text-ocean-500"
+                                x-text="$wire.email"></span> menjadi <span x-text="$wire.existing_issue.email"
+                                class="text-ocean-500"></span>
+                        </p>
+                    </div>
+                </div>
                 <form class="text-left" wire:submit.prevent="change_email">
-                    <input :class="$wire.existing_issue == 'approval' ? 'pointer-events-none' : ''" wire:model="email"
-                        type="text" id="email"
-                        class="block p-2.5 mb-3 w-full text-sm text-gray-600 bg-gray-50 rounded-lg border border-gray-300 focus:ring-ocean-500 focus:border-ocean-500">
-                    <div style="display: none;" class="text-right" x-transition
-                        x-show="$wire.email != $wire.original.email">
-                        <button wire:loading.remove type="button" @click="$wire.email = $wire.original.email"
-                            class="btn btn-outline-cinnabar flex-grow py-2"> <i class="bi bi-back"></i>
-                            Kembalikan</button>
-                        <button type="submit" class="btn btn-outline-ocean flex-grow py-2 ">
-                            <div wire:loading.class="hidden">
-                                <i class="bi bi-check"></i>
-                                Ajukan perubahan email
-                            </div>
-                            <div class="hidden text-center small-loader" wire:loading.class.remove="hidden"></div>
-                        </button>
+                    <div class="mb-6">
+                        <label for="email" class="text-ocean-500 font-semibold">Email</label>
+                        <input x-show="$wire.issue_state != 'approval'" wire:model="email" type="text" id="email"
+                            class="block p-2.5 mb-3 w-full text-sm text-gray-600 bg-gray-50 rounded-lg border border-gray-300 focus:ring-ocean-500 focus:border-ocean-500">
+                        <p x-show="$wire.issue_state != 'approval'" class="mb-2 text-xs md:text-base text-gray-500">
+                            Untuk mengajukan perubahan
+                            email, harap ubah
+                            email berikut dengan email yang baru</p>
+                        <div style="display: none;" class="text-right" x-transition
+                            x-show="$wire.email != $wire.original.email">
+                            <button wire:loading.remove type="button" @click="$wire.email = $wire.original.email"
+                                class="btn btn-outline-cinnabar flex-grow py-2"> <i class="bi bi-back"></i>
+                                Kembalikan</button>
+                            <button type="submit" class="btn btn-outline-ocean flex-grow py-2 ">
+                                <div wire:loading.class="hidden">
+                                    <i class="bi bi-check"></i>
+                                    Ajukan perubahan email
+                                </div>
+                                <div class="hidden text-center small-loader" wire:loading.class.remove="hidden"></div>
+                            </button>
+                        </div>
                     </div>
                 </form>
-                <div x-show="$wire.existing_issue === 'approval'">
-                    <p class="mb-2 text-xs md:text-base text-gray-500">Email ini sedang dalam proses pengecekan</p>
+                <div x-show="$wire.issue_state === 'approval'" class="text-center">
+                    <p class="mb-3 text-xs md:text-base text-gray-500">Harap <span class=text-ocean-500">menunggu
+                            konfirmasi</span> dari HR.
+                        Setelah
+                        dikonfirmasi, <span class="text-ocean-500">balasan akan
+                            dikirimkan melalui email lama.</span></p>
                 </div>
-            </div>
-            <div x-show="$wire.new_email_issued && !$wire.existing_issue_status" class="mb-3">
-                <div class="flex justify-between">
-                    <p class="text-base text-gray-500"><span class="font-bold">Status Email :</span></p>
-                    <p class="text-base text-gray-500"><span class="text-green-500 font-bold">Menunggu Approval</span>
+
+                <div x-show="$wire.issue_state && $wire.issue_state === 'pending'">
+                    <p class="mb-2 text-xs md:text-base text-gray-500">Sudah memiliki kode pengajuan?</p>
+                    <button type="button" @click="$wire.new_email_issued = true"
+                        class="btn btn-outline-ocean flex-grow py-2">
+                        Masukan kode Pengajuan <i class="bi bi-arrow-right"></i></button>
                 </div>
-                {{-- <p class="mb-6 text-xs md:text-base text-gray-500">Harap cek email baru dan isi kolom dengan kode
-                    verifikasi
-                    yang diberikan untuk melanjutkan</p> --}}
+
             </div>
             <div x-show="$wire.new_email_issued">
+
                 <input wire:model="verify_issue_code" type="text" wire:target="verify_issue_new_email"
                     wire:loading.class="pointer-events-none opacity-50"
                     @input.debounce.500ms="$el.value.length == 6 ?  $wire.verify_issue_new_email() : ($el.value.length > 6 ? sendNotfy.error('Kode belum sesuai format') : '') "
@@ -58,59 +78,24 @@
                         verifikasi
                         yang diberikan untuk melanjutkan</p>
                     <p class="mb-6 text-xs md:text-base text-gray-500">Token kadaluarsa? <span
-                            class="text-ocean-600 underline font-semibold cursor-pointer"
-                            wire:click="resend_change_email_token" wire:loading.remove
-                            wire:target="resend_change_email_token">Kirim ulang</span>
-                        <span class="text-ocean-600 font-semibold opacity-60 cursor-pointer"
-                            wire:click="resend_change_email_token" wire:loading
-                            wire:target="resend_change_email_token">Mengirimkan ulang..</span>
+                            class="text-ocean-600 underline cursor-pointer" wire:click="resend_change_email_token"
+                            wire:loading.remove wire:target="resend_change_email_token">Kirim ulang</span>
+                        <span class="text-ocean-600 opacity-60 cursor-pointer" wire:click="resend_change_email_token"
+                            wire:loading wire:target="resend_change_email_token">Mengirimkan ulang..</span>
                     </p>
                 </div>
                 <div wire:loading wire:target="verify_issue_new_email"
-                    class="flex gap-2 mb-6 text-xs md:text-base text-gray-500">
+                    class="flex gap-2 mb-6 text-xs md:text-base text-gray-500 text-center">
                     <div class="small-loader"></div>
                     Pengecekan kode
                 </div>
+                <p class="mb-2 text-xs md:text-base text-gray-500">Ajukan perubahan dengan email lain?</p>
+                <button type="button" @click="$wire.new_email_issued = false"
+                    class="btn btn-outline-ocean flex-grow py-2">
+                    Ya, kembali <i class="bi bi-arrow-left"></i></button>
             </div>
         </div>
-        {{-- @if ($verified_at)
-            <div class="flex items-center gap-3">
-                <div class="w-full">
-                    <div class="flex justify-between">
-                        <p class="text-base text-gray-500"><span class="font-bold">Status :</span></p>
-                        <p class="text-base text-gray-500"><span class="text-green-500 font-bold">Sudah
-                                verifikasi</span>
-                    </div>
-                    <br>
-                    <div class="flex justify-between">
-                        <p class="text-base text-gray-500"><span class="font-bold">Waktu :</span></p>
-                        <p class="text-base text-gray-500">
-                            <span
-                                class="pr-2">{{ \Carbon\Carbon::parse($verified_at)->isoFormat('DD MMMM YYYY, HH:mm:ss') }}</span>
-                        </p>
-                    </div>
-                </div>
-            </div>
-        @else
-            <div class="flex items-center gap-3">
-                <form @submit.prevent="$wire.send_verification_email()" class="w-full">
-                    <div class="flex justify-between">
-                        <p class="text-base text-gray-500"><span class="font-bold">Status :</span></p>
-                        <p class="text-base text-gray-500"><span class="text-red-500 font-bold">Belum
-                                verifikasi</span>
-                    </div>
-                    <br>
-                    <div class="flex justify-end">
-                        <button type="submit" class="btn btn-outline-ocean py-2"
-                            wire:loading.class="pointer-events-none opacity-80">
-                            <div wire:loading.class="hidden"><i class="bi bi-send mr-2"></i>Kirimkan
-                                email verifikasi</div>
-                            <div class="hidden text-center small-loader" wire:loading.class.remove="hidden"></div>
-                        </button>
-                    </div>
-                </form>
-            </div>
-        @endif --}}
+
     </div>
 </div>
 

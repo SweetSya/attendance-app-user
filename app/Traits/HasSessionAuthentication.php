@@ -14,7 +14,7 @@ trait HasSessionAuthentication
     use HasApiHelper;
 
     protected $poll_fetch = 120; //in seconds
-    protected $always_prefecth = false;
+    protected $always_prefecth = true;
 
     public function invalidateSession($data)
     {

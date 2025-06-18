@@ -108,7 +108,7 @@ class Home extends BaseComponent
         $data = $response->json();
         if (!$response->ok()) {
             $this->dispatch('notify', type: 'error', message: $data['message'] ?? 'Gagal mengakses halaman admin');
-            return;
+            return $this->redirect('/home', navigate: true);
         }
         $this->dispatch('notify', type: 'success', message: $data['message']);
         return Redirect::to($this->admin_route);

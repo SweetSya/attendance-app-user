@@ -183,10 +183,10 @@
             <div class="swiper-wrapper">
                 @if ($is_admin)
                     <div wire:click="redirect_admin"
-                        class="swiper-slide p-4 text-sm text-ocean-800 border border-ocean-300 shadow rounded bg-gradient-ocean-soft !h-20 text-center cursor-pointer hover:opacity-70">
+                        class="swiper-slide p-4 text-sm text-cinnabar-800 border border-cinnabar-300 shadow rounded bg-gradient-cinnabar-soft !h-20 text-center cursor-pointer hover:opacity-70">
                         <i class="bi bi-shield-lock-fill text-xl sm:text-2xl opacity-70"></i>
                         <p class="font-light text-xs xs:text-base"><span wire:loading.remove
-                                wire:target="redirect_admin">Sebagai` Admin</span>
+                                wire:target="redirect_admin">Sebagai Admin</span>
                         <div wire:loading wire:target="redirect_admin" class="small-loader"></div>
                         </p>
                     </div>
