@@ -36,6 +36,5 @@ This project is designed for employees to check in/out securely using location b
 - **Face Recognition:** OpenCV (LBPH Algorithm)  
 - **Geofencing:** Haversine Formula (distance calculation)  
 - **Database:** MySQL / MariaDB  
-- **Auth:** Laravel Breeze / Fortify (configurable)  
 
 ---
