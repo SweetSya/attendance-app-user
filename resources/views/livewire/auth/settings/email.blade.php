@@ -34,12 +34,13 @@
                             Untuk mengajukan perubahan
                             email, harap ubah
                             email berikut dengan email yang baru</p>
-                        <div style="display: none;" class="text-right" x-transition
-                            x-show="$wire.email != $wire.original.email">
+                        <div
+                            class="fixed bottom-0 right-0 container-bottom-max-3xl pb-[75px] px-3 pt-3 w-full flex flex-wrap gap-3 border-t shadow">
                             <button wire:loading.remove type="button" @click="$wire.email = $wire.original.email"
                                 class="btn btn-outline-cinnabar flex-grow py-2"> <i class="bi bi-back"></i>
                                 Kembalikan</button>
-                            <button type="submit" class="btn btn-outline-ocean flex-grow py-2 ">
+                            <button :class="$wire.email == $wire.original.email ? 'opacity-50 cursor-not-allowed pointer-events-none' : ''" type="submit"
+                                class="btn btn-outline-ocean flex-grow py-2 ">
                                 <div wire:loading.class="hidden">
                                     <i class="bi bi-check"></i>
                                     Ajukan perubahan email

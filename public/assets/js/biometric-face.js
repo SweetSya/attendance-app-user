@@ -105,10 +105,10 @@ async function predictWebcam() {
                 initialFace.yaw = yaw;
                 capturedFrame = {
                     "netral-netral": "",
-                    "top-netral": "",
-                    "bottom-netral": "",
-                    "netral-right": "",
-                    "netral-left": "",
+                    // "top-netral": "",
+                    // "bottom-netral": "",
+                    // "netral-right": "",
+                    // "netral-left": "",
                 };
                 dispatchEvent(
                     new CustomEvent("set_camera_capture", {
@@ -315,10 +315,10 @@ async function requestUserCamera() {
         });
         capturedFrame = {
             "netral-netral": "",
-            "top-netral": "",
-            "bottom-netral": "",
-            "netral-right": "",
-            "netral-left": "",
+            // "top-netral": "",
+            // "bottom-netral": "",
+            // "netral-right": "",
+            // "netral-left": "",
         };
         dispatchEvent(
             new CustomEvent("set_camera_capture", {
@@ -376,10 +376,10 @@ const initBiometricFace = () => {
 
     capturedFrame = {
         "netral-netral": "",
-        "top-netral": "",
-        "bottom-netral": "",
-        "netral-right": "",
-        "netral-left": "",
+        // "top-netral": "",
+        // "bottom-netral": "",
+        // "netral-right": "",
+        // "netral-left": "",
     };
 
     dispatchEvent(

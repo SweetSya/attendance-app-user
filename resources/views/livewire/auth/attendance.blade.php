@@ -143,8 +143,7 @@
             @if (!$HOLIDAY && !$DAY_OFF && !$VACATION && $face_state != 0)
                 @if (!$today->clock_in)
                     <button
-                        :class="(face.landmarker && distance.range >= officeRadius || distance.range == 0 || JSON.stringify(
-                            distance.position) != JSON.stringify([0, 0])) ?
+                        :class="(!face.landmarker || distance.range > officeRadius || distance.range == 0) ?
                         'pointer-events-none opacity-35' :
                         'pointer-events-auto opacity-100'"
                         @click="openDrawer({title: 'Verifikasi Kehadiran', 'section': 'checkin'})"
@@ -201,7 +200,10 @@
             <p class="mb-6 text-base sm:text-xl text-gray-500 text-center">Verifikasi Biometrik Wajah</p>
             <p class="mb-6 text-xs sm:text-base text-gray-500 text-center">Arahkan wajah di posisi dalam box untuk
                 memudahkan pemindaian</p>
-            <div class="mx-auto rounded border relative max-w-96 aspect-square mb-4 overflow-hidden">
+            <div class="mx-auto rounded relative max-w-96 aspect-square mb-4 overflow-hidden">
+                <div class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
+                    <div x-show="!face.loading || !face.scanning" class="small-loader"></div>
+                </div>
                 <video x-show="face.scanning" :class="face.loading ? 'hidden' : ''" muted autoplay id="verify-camera"
                     class="h-full -scale-x-[1] w-full rounded object-cover transition duration-150" src="">
                 </video>
@@ -365,7 +367,7 @@
         /* Setting up the constraint */
         var facingMode = "user"; // Can be 'user' or 'environment' to access back or front camera
     </script>
-    <script data-navigate-once type="module" src="{{ asset('assets\js\attendance-module.js') }}"></script>
+    <script data-navigate-once type="module" src="{{ asset('assets/js/attendance-module.js') }}"></script>
     <script data-navigate-once src="{{ asset('assets/js/attendance.js') }}"></script>
     <script src="{{ asset('assets/js/attendance-initiate-dom.js') }}"></script>
     <script data-navigate-once>
@@ -381,6 +383,9 @@
                     }
                 }
                 inititateAttendanceBiometric()
+            }
+            if(typeof refreshLocationAttendace === 'function') {
+                refreshLocationAttendace(true)
             }
         });
         document.addEventListener('livewire:navigate', () => {

@@ -63,7 +63,7 @@ class Home extends BaseComponent
         if ($this->is_admin) {
             $token_session = Auth::user()->auth_access_token;
             $token_device = Auth::user()->device_uuid;
-            $this->admin_route = env('APP_API_HOST') . '/login-with-session-employee?emp=' . Hash::make($this->employee->id) . '&token_session=' . Hash::make($token_session) . '&device_uuid=' . Hash::make($token_device) . '&ref=' . Hash::make(env('APP_URL'));
+        $this->admin_route = env('APP_API_HOST') . '/login-with-session-employee?emp=' . $this->employee->id . '&ref=' . env('APP_API_PUBLIC_TOKEN');
         }
         if (!$this->today) {
             $this->today = new stdClass;
@@ -99,18 +99,20 @@ class Home extends BaseComponent
     }
     public function redirect_admin()
     {
+        $secret = env('APP_API_PRIVATE_TOKEN'); // same key on both apps
+
         $response = $this->API_get('check-login-with-session-employee', [
-            'emp' => Hash::make($this->employee->id),
-            'token_session' => Hash::make(Auth::user()->auth_access_token),
-            'device_uuid' => Hash::make(Auth::user()->device_uuid),
-            'ref' => Hash::make(env('APP_URL')),
+            'emp'           => $this->employee->id,
+            'token_session' => hash_hmac('sha256', Auth::user()->auth_access_token, $secret),
+            'device_uuid'   => hash_hmac('sha256', Auth::user()->device_uuid, $secret),
+            'ref'           => hash_hmac('sha256', env('APP_URL'), $secret),
         ]);
         $data = $response->json();
         if (!$response->ok()) {
-            $this->dispatch('notify', type: 'error', message: $data['message'] ?? 'Gagal mengakses halaman admin');
+            session()->flash('error', $data['message'] ?? 'Gagal mengakses halaman admin');
             return $this->redirect('/home', navigate: true);
         }
         $this->dispatch('notify', type: 'success', message: $data['message']);
-        return Redirect::to($this->admin_route);
+        return Redirect::to($this->admin_route . '&admin-access-token=' . $data['temporary_admin_access_token']);
     }
 }

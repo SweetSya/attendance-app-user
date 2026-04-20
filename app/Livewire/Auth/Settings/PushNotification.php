@@ -3,6 +3,7 @@
 namespace App\Livewire\Auth\Settings;
 
 use App\Traits\HasApiHelper;
+use App\Traits\HasSessionAuthentication;
 use Illuminate\Support\Facades\Cookie;
 use Illuminate\Support\Facades\Log;
 use Livewire\Component;
@@ -13,7 +14,7 @@ use Minishlink\WebPush\WebPush;
 
 class PushNotification extends Component
 {
-    use HasApiHelper;
+    use HasApiHelper, HasSessionAuthentication;
     public $title = 'Pengaturan - Push Notifikasi';
     public $data, $total, $sub, $registered, $employee;
 

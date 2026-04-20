@@ -3,11 +3,12 @@
 namespace App\Livewire\Auth\Settings;
 
 use App\Traits\HasApiHelper;
+use App\Traits\HasSessionAuthentication;
 use Livewire\Component;
 
 class Pin extends Component
 {
-    use HasApiHelper;
+    use HasApiHelper, HasSessionAuthentication;
 
     protected $route_name = 'settings/pin';
     protected $api_url = 'view/settings/pin';

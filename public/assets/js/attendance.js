@@ -4,7 +4,13 @@ const getBase64Face = () => {
     const base64Image = canvas.toDataURL("image/png");
     return base64Image;
 };
-const refreshLocationAttendace = () => {
+let currentPositionRoutine = null;
+const refreshLocationAttendace = (destroy = false) => {
+    if (destroy) {
+        clearTimeout(currentPositionRoutine);
+        currentPositionRoutine = null;
+        return;
+    }
     navigator.geolocation.getCurrentPosition(
         (e) => {
             latlong = [e.coords.latitude, e.coords.longitude];
@@ -52,6 +58,13 @@ const refreshLocationAttendace = () => {
                     radius: officeRadius,
                 }).addTo(map);
             }
+            console.log({
+                detail: {
+                    position: latlong,
+                    range: distance,
+                    refresh_at: new Date().toLocaleTimeString(),
+                },
+            });
             dispatchEvent(
                 new CustomEvent("set_distance", {
                     detail: {
@@ -59,13 +72,13 @@ const refreshLocationAttendace = () => {
                         range: distance,
                         refresh_at: new Date().toLocaleTimeString(),
                     },
-                })
+                }),
             );
         },
         (e) => {},
-        geopt
+        geopt,
     );
-    setTimeout(() => {
+    currentPositionRoutine = setTimeout(() => {
         refreshLocationAttendace();
     }, 1500);
 };
@@ -85,7 +98,7 @@ const optionsDrawer = {
         dispatchEvent(
             new CustomEvent("set_drawer", {
                 detail: { title: "", section: "" },
-            })
+            }),
         );
         dispatchEvent(
             new CustomEvent("set_face_scanning", {
@@ -93,7 +106,7 @@ const optionsDrawer = {
                     scanning: false,
                     last: "",
                 },
-            })
+            }),
         );
     },
 };
@@ -132,21 +145,23 @@ const prepareCheckedIn = async () => {
                 detail: {
                     scanning: true,
                 },
-            })
+            }),
         );
     }, 300);
     const captureFace = () => {
         if (attendanceIsBlinking() && !capturing) {
             console.log("Capturing face");
             capturing = true;
-            let base64face = getBase64Face();
-            dispatchEvent(
-                new CustomEvent("start_check_face", {
-                    detail: {
-                        face: base64face,
-                    },
-                })
-            );
+            setTimeout(async () => {
+                let base64face = await getBase64Face();
+                dispatchEvent(
+                    new CustomEvent("start_check_face", {
+                        detail: {
+                            face: base64face,
+                        },
+                    }),
+                );
+            }, 200);
         } else {
             setTimeout(() => {
                 captureFace();
@@ -159,7 +174,7 @@ const openDrawer = (option) => {
     dispatchEvent(
         new CustomEvent("set_drawer", {
             detail: option,
-        })
+        }),
     );
     if (drawerSection === "checkin") {
         prepareCheckedIn();

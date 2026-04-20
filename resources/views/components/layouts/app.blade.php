@@ -11,7 +11,6 @@
 
     <link rel="manifest" href="/manifest.json" />
 
-    <link rel="stylesheet" href="{{ asset('build\assets\app-BqYkgR0G') }}">
     {{-- Loading --}}
     <link rel="stylesheet" href="{{ asset('assets\css\loading.css') }}">
     {{-- Lightpick --}}
@@ -38,8 +37,8 @@
             <div x-data="" id="wrapper-click-to-refresh"
                 class="hidden fixed top-0 h-0 max-w-3xl z-40 w-full bg-white">
                 <button @click="clickToRefresh()" id="click-to-refresh"
-                    class="bg-white px-1.5 py-1 ml-2 md:-ml-10 mt-1 rounded border-2 text-xs border-ocean-500 text-ocean-500">
-                    <i class="bi bi-arrow-clockwise"></i>
+                    class="bg-white px-1.5 py-1 ml-2 md:-ml-20 mt-1 rounded border-2 text-xs border-ocean-500 text-ocean-500">
+                    <i class="bi bi-arrow-clockwise"></i> Refresh
                 </button>
             </div>
             <div id="main-page" class="pb-10">
@@ -127,6 +126,7 @@
 
     </main>
     {{-- <script src="{{ asset('build\assets\app-DdQ1e7RN.js') }}"></script> --}}
+    {{-- @vite('resources/js/app.js') --}}
     {{-- Notfy --}}
     <script data-navigate-once src="https://cdn.jsdelivr.net/npm/notyf@3/notyf.min.js"></script>
     {{-- Flowbite --}}
@@ -152,9 +152,11 @@
     <script data-navigate-once src="{{ asset('assets/vendor/pull-to-refresh/index.umd.min.js') }}"></script>
 
     <script data-navigate-once>
-        navigator.serviceWorker.register("/sw.js", {
-            scope: "/",
-        });
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register("/sw.js", {
+                scope: "/"
+            });
+        }
         // Set locale for Moment.js
         moment.locale('id');
 

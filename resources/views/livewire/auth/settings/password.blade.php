@@ -34,13 +34,12 @@
                             class="bi absolute z-10 right-3 top-2 text-ocean-900 hover-opacity-down"></i>
                     </div>
                 </div>
-                <div x-data="{ open: false }" class="relative z-0 w-full group">
+                <div class="relative z-0 w-full group">
                     <div class="mb-2 text-left">
-                        <input wire:model="re_password" :type="open ? 'text' : 'password'" id="re_password" required
+                        <input wire:model="re_password" type="password" id="re_password" required
                             placeholder="Ulangi password baru"
                             class="block p-2.5 mb-3 w-full text-sm text-gray-600 bg-gray-50 rounded-lg border border-gray-300 focus:ring-ocean-500 focus:border-ocean-500">
-                        <i @click="open = ! open" :class="open ? 'bi-eye' : 'bi-eye-slash'"
-                            class="bi absolute z-10 right-3 top-2 text-ocean-900 hover-opacity-down"></i>
+
                     </div>
                 </div>
                 <div style="display: none;"
@@ -50,11 +49,16 @@
                     <span class="text-sm leading-tight">Password yang digunakan<span class="font-bold"> tidak
                             sama</span>, harap dicek kembali.</span>
                 </div>
-                <div style="display: none;" class="text-right" x-transition
-                    x-show="$wire.password != '' && $wire.re_password != '' && $wire.password == $wire.re_password">
-                    <button wire:loading.remove type="button" @click=" $wire.password = '', $wire.re_password = ''"
+                <div
+                    class="fixed bottom-0 right-0 container-bottom-max-3xl pb-[75px] px-3 pt-3 w-full flex flex-wrap gap-3 border-t shadow">
+                    <button type="button" @click=" $wire.password = '', $wire.re_password = ''"
                         class="btn btn-outline-cinnabar flex-grow py-2"> <i class="bi bi-back"></i> Kembalikan</button>
-                    <button type="submit" class="btn btn-outline-ocean flex-grow py-2 ">
+                    <button
+                        :class="{
+                            'opacity-50 pointer-events-none': $wire.password == '' || $wire.re_password == '' || $wire
+                                .password != $wire.re_password
+                        }"
+                        type="submit" class="btn btn-outline-ocean flex-grow py-2 ">
                         <div wire:loading.class="hidden">
                             <i class="bi bi-check"></i>
                             Simpan perubahan

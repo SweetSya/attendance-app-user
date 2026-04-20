@@ -32,6 +32,9 @@
     position: relative;
     animation: l24 1s infinite linear;
   }
+  .small-loader.white {
+    border-right-color: #fff;
+  }
   .small-loader:before,
   .small-loader:after {
     content: "";

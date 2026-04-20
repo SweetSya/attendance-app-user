@@ -298,7 +298,14 @@
             timeout: 5000,
             maximumAge: 0,
         };
-        const refreshLocationHome = () => {
+        let refreshHomeLocationRoutine = null;
+        const refreshLocationHome = (destroy = false) => {
+            if (destroy) {
+                clearTimeout(refreshHomeLocationRoutine);
+                refreshHomeLocationRoutine = null;
+                return;
+            }
+            console.log("Refreshing home location");
             navigator.geolocation.getCurrentPosition((e) => {
                 latlong = [e.coords.latitude, e.coords.longitude]
                 if (userMarker != null) {
@@ -312,7 +319,7 @@
                 }
                 // Create a new marker at the user's location
                 userMarker = L.marker(latlong, {
-                    icon: userIcon,
+                icon: userIcon,
                 }).addTo(map);
                 officeIconMarker = L.marker(office, {
                     icon: officeIcon,
@@ -356,7 +363,7 @@
             }, (e) => {
 
             }, geopt);
-            setTimeout(() => {
+            refreshHomeLocationRoutine = setTimeout(() => {
                 refreshLocationHome()
             }, 1500)
         }
@@ -379,6 +386,11 @@
                 autoSnap = true
             }
         }
+        document.addEventListener('livewire:navigated', () => {
+            if (typeof refreshLocationHome === 'function') {
+                refreshLocationHome(true)
+            }
+        });
     </script>
 
     <script src="{{ asset('assets/js/home-initiate-dom.js') }}"></script>

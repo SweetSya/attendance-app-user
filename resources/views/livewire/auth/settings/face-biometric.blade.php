@@ -309,7 +309,7 @@
     </div>
 </div>
 @push('scripts')
-    <script data-navigate-once type="module" src="{{ asset('assets\js\biometric-face.js') }}"></script>
+    <script data-navigate-once type="module" src="{{ asset('assets/js/biometric-face.js') }}"></script>
     <script data-navigate-once>
         document.addEventListener('livewire:navigated', () => {
             if (window.location.pathname === '/settings/biometric-face') {

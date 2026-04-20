@@ -15,16 +15,21 @@
             </div>
             <form @submit.prevent="$wire.change_pin()">
                 <div x-data="{ open: false }" class="relative z-0 w-full mb-8 group">
-                    <input wire:model="pin" :type="open ? 'text' : 'password'" id="pin" pattern="[0-9]*" required
+                    <input wire:model="pin" :type="open ? 'text' : 'password'" id="pin" pattern="[0-9]*" 
                         inputmode="numeric"
                         class="block p-2.5 mb-3 w-full text-sm text-gray-600 bg-gray-50 rounded-lg border border-gray-300 focus:ring-ocean-500 focus:border-ocean-500">
                     <i @click="open = ! open" :class="open ? 'bi-eye' : 'bi-eye-slash'"
                         class="bi absolute z-10 right-3 top-2 text-ocean-900 hover-opacity-down"></i>
                 </div>
-                <div style="display: none;" class="text-right" x-transition x-show="$wire.pin != $wire.original.pin">
-                    <button wire:loading.remove type="button" @click="$wire.pin = $wire.original.pin"
+                <div
+                    class="fixed bottom-0 right-0 container-bottom-max-3xl pb-[75px] px-3 pt-3 w-full flex flex-wrap gap-3 border-t shadow">
+                    <button type="button" @click="$wire.pin = $wire.original.pin"
                         class="btn btn-outline-cinnabar flex-grow py-2"> <i class="bi bi-back"></i> Kembalikan</button>
-                    <button type="submit" class="btn btn-outline-ocean flex-grow py-2 ">
+                    <button
+                        :class="{
+                            'opacity-50 pointer-events-none': $wire.pin != $wire.original.pin
+                        }"
+                        type="submit" class="btn btn-outline-ocean flex-grow py-2 ">
                         <div wire:loading.class="hidden">
                             <i class="bi bi-check"></i>
                             Simpan perubahan
